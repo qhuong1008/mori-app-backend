@@ -1,8 +1,19 @@
-const account = require("../model/accountSchema");
+const account = require("../model/account.model");
 
-exports.create = (req, res) => {};
+exports.create = async (req, res) => {
+  var accountDetail = new book(req.body);
+  await accountDetail
+    .save()
+    .then(() => {
+      res.json("Account added successfully!");
+    })
+    .catch((err) => console.log(err));
+};
 
-exports.findAll = (req, res) => {};
+exports.findAll = async (req, res) => {
+  const accounts = await account.find({});
+  res.json({ accounts: accounts, statusCode: 200 });
+};
 
 exports.findOne = (req, res) => {};
 

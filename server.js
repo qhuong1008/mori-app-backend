@@ -5,8 +5,12 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
-const bookRouter = require("./route/book");
-const accountRouter = require("./route/account");
+const bookRouter = require("./route/book.route");
+const accountRouter = require("./route/account.route");
+const heartedRouter = require("./route/hearted.route");
+const membershipRouter = require("./route/membership.route");
+const readHistoryRouter = require("./route/readHistory.route");
+const transactionRouter = require("./route/transaction.route");
 
 const app = express();
 app.use(express.json());
@@ -31,7 +35,11 @@ mongoose
   .catch((err) => console.log("Error MongoDB: ", err));
 
 app.use("/api/book", bookRouter);
-// app.use("/account", accountRouter);
+app.use("/api/account", accountRouter);
+app.use("/api/hearted", heartedRouter);
+app.use("/api/membership", membershipRouter);
+app.use("/api/readHistory", readHistoryRouter);
+app.use("/api/transaction", transactionRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

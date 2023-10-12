@@ -1,0 +1,16 @@
+const book1 = {
+  name: "hhi",
+  author: "hhi",
+  image: "hhi",
+  content: "hhi",
+  audio: "hhi",
+  intro: "hhi",
+  totalPages: 23,
+  totalRead: 23,
+  totalSaved: 23,
+  totalHearted: 23,
+  tags: ["yeuthich", "trinhtham"],
+  liked: 23,
+  access_level: 23,
+  is_active: 0,
+};
