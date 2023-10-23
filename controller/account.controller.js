@@ -1,13 +1,18 @@
 const account = require("../model/account.model");
 
 exports.create = async (req, res) => {
-  var accountDetail = new book(req.body);
-  await accountDetail
-    .save()
-    .then(() => {
-      res.json("Account added successfully!");
-    })
-    .catch((err) => console.log(err));
+  const isExist = await account.findOne(req.body);
+  if (!isExist) {
+    var accountDetail = new account(req.body);
+    await accountDetail
+      .save()
+      .then(() => {
+        res.json("Account added successfully!");
+      })
+      .catch((err) => console.log(err));
+  } else {
+    res.json("Account already exist!");
+  }
 };
 
 exports.findAll = async (req, res) => {
@@ -15,7 +20,10 @@ exports.findAll = async (req, res) => {
   res.json({ accounts: accounts, statusCode: 200 });
 };
 
-exports.findOne = (req, res) => {};
+exports.findOne = async (req, res) => {
+  const account = await account.findOne(req.body);
+  res.json({ account: account, statusCode: 200 });
+};
 
 exports.update = (req, res) => {};
 

@@ -7,4 +7,6 @@ router.get("/get-account", cors(), account.findAll);
 
 router.post("/add-account", cors(), account.create);
 
+router.post("/find-account", cors(), account.findOne);
+
 module.exports = router;
