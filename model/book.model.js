@@ -1,17 +1,18 @@
 const { Schema, model } = require("mongoose");
 
 const book = new Schema({
-  name: { type: String },
-  author: { type: String },
+  name: { type: String, unique: true, index: "text" },
+  author: { type: String, index: "text" },
   image: { type: String },
-  content: { type: String },
   audio: { type: String },
   intro: { type: String },
+  pdf: { type: String },
   totalPages: { type: Number },
   totalRead: { type: Number },
   totalSaved: { type: Number },
   totalHearted: { type: Number },
-  tags: { type: [String] },
+  rating: { type: Number },
+  tags: { type: [String], index: "text" },
   liked: { type: Number },
   access_level: { type: Number },
   is_active: { type: Boolean },

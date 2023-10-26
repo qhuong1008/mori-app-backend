@@ -30,7 +30,10 @@ const databaseUrl =
   "mongodb+srv://moribook:Mori123456@cluster0.xdqbzc5.mongodb.net/moridb";
 
 mongoose
-  .connect(databaseUrl, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(databaseUrl, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connect Mongodb successfully"))
   .catch((err) => console.log("Error MongoDB: ", err));
 
