@@ -7,11 +7,11 @@ exports.create = async (req, res) => {
     await accountDetail
       .save()
       .then(() => {
-        res.json("Account added successfully!");
+        res.json(0);
       })
       .catch((err) => console.log(err));
   } else {
-    res.json("Account already exist!");
+    res.json(1);
   }
 };
 
@@ -21,8 +21,8 @@ exports.findAll = async (req, res) => {
 };
 
 exports.findOne = async (req, res) => {
-  const account = await account.findOne(req.body);
-  res.json({ account: account, statusCode: 200 });
+  const result = await account.findOne(req.body);
+  res.json({ account: result, statusCode: 200 });
 };
 
 exports.update = (req, res) => {};

@@ -15,60 +15,59 @@ exports.findAll = async (req, res) => {
   res.json({ books: books, statusCode: 200 });
 };
 
+exports.findById = async (req, res) => {
+  const bookId = req.params.id;
+  try {
+    const bookResult = await book.findById(bookId);
+    res.json({ book: bookResult, statusCode: 200 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Server error" });
+  }
+};
+
 exports.findBookWithSearchValue = async (req, res) => {
   const result = await book.find({
     $text: { $search: JSON.stringify(req.body.searchValue) },
   });
-  // const result = req.body.searchValue;
 
-  res.json({ searchResult: result, statusCode: 200 });
+  res.json({ books: result, statusCode: 200 });
 };
 
-exports.uploadPDF = async (req, res) => {
-  try {
-    const {
-      name,
-      author,
-      image,
-      intro,
-      totalPages,
-      totalRead,
-      totalSaved,
-      totalHearted,
-      tags,
-      liked,
-      access_level,
-      is_active,
-    } = req.body;
+exports.findOne = async (req, res) => {
+  const result = await book.findOne(req.body);
+  res.json({ book: result, statusCode: 200 });
+};
 
-    const bookPDF = new book({
-      name,
-      author,
-      image,
-      intro,
-      totalPages,
-      totalRead,
-      totalSaved,
-      totalHearted,
-      tags,
-      liked,
-      access_level,
-      is_active,
-      pdf: {
-        data: req.file.buffer,
-        contentType: req.file.mimetype,
+exports.increaseTotalRead = async (req, res) => {
+  const bookId = req.params.id;
+  try {
+    const bookResult = await book.findById(bookId);
+    await bookResult.updateOne({
+      $inc: {
+        totalRead: 1,
       },
     });
-    await bookPDF.save();
-    res.json({ message: "File uploaded successfully", statusCode: 200 });
+    res.json({ message: "Increased by 1!", statusCode: 200 });
   } catch (err) {
-    res.json({ message: err, statusCode: 400 });
-    console.log("err:", err);
+    res.json({ error: err, statusCode: 500 });
   }
 };
 
-exports.findOne = (req, res) => {};
-
+exports.increaseTotalSaved = async (req, res) => {
+  const bookId = req.params.id;
+  try {
+    const bookResult = await book.findById(bookId);
+    await bookResult.updateOne({
+      $inc: {
+        totalSaved: 1,
+      },
+    });
+    res.json({ message: "Increased by 1!", statusCode: 200 });
+  } catch (err) {
+    res.json({ error: err, statusCode: 500 });
+  }
+};
 exports.update = (req, res) => {};
 
 exports.delete = (req, res) => {};

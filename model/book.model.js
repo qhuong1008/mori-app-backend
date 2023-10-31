@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const book = new Schema({
-  name: { type: String, unique: true, index: "text" },
+  name: { type: String, index: "text", unique: true },
   author: { type: String, index: "text" },
   image: { type: String },
   audio: { type: String },
