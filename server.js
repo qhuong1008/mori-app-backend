@@ -13,6 +13,14 @@ const membershipRouter = require("./route/membership.route");
 const readHistoryRouter = require("./route/readHistory.route");
 const transactionRouter = require("./route/transaction.route");
 
+const bookCategoryRouter = require("./route/bookCategory.route");
+const commentRouter = require("./route/comment.route");
+const membershipTypeRouter = require("./route/membershipType.route");
+const myLibraryRouter = require("./route/myLibrary.route");
+const noteRouter = require("./route/note.route");
+const replyRouter = require("./route/reply.route");
+const tagRouter = require("./route/tag.route");
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -45,6 +53,14 @@ app.use("/api/hearted", heartedRouter);
 app.use("/api/membership", membershipRouter);
 app.use("/api/readHistory", readHistoryRouter);
 app.use("/api/transaction", transactionRouter);
+
+app.use("/api/bookCategory", bookCategoryRouter);
+app.use("/api/comment", commentRouter);
+app.use("/api/membershipType", membershipTypeRouter);
+app.use("/api/myLibrary", myLibraryRouter);
+app.use("/api/note", noteRouter);
+app.use("/api/reply", replyRouter);
+app.use("/api/tag", tagRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
