@@ -8,6 +8,7 @@ const account = new Schema({
   role: { type: Number },
   is_member: { type: Boolean },
   is_blocked: { type: Boolean },
+  is_active: { type: Boolean },
 });
 
 module.exports = model("account", account);

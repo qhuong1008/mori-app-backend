@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 
 const bookRouter = require("./route/book.route");
 const accountRouter = require("./route/account.route");
+const tagRouter = require("./route/tag.route");
 const heartedRouter = require("./route/hearted.route");
 const membershipRouter = require("./route/membership.route");
 const readHistoryRouter = require("./route/readHistory.route");
@@ -39,6 +40,7 @@ mongoose
 
 app.use("/api/book", bookRouter);
 app.use("/api/account", accountRouter);
+app.use("/api/tag", tagRouter);
 app.use("/api/hearted", heartedRouter);
 app.use("/api/membership", membershipRouter);
 app.use("/api/readHistory", readHistoryRouter);

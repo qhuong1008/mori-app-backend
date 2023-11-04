@@ -15,7 +15,9 @@ exports.createTag = async (req, res) => {
     // Lưu tag vào cơ sở dữ liệu
     await newTag.save();
 
-    return res.status(201).json({ message: "Tag created successfully", newTag });
+    return res
+      .status(201)
+      .json({ message: "Tag created successfully", newTag });
   } catch (error) {
     console.error("Error creating tag:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -32,6 +34,20 @@ exports.getAllTags = async (req, res) => {
   } catch (error) {
     console.error("Error getting all tags:", error);
     return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+exports.findOne = async (req, res) => {
+  const result = await Tag.findOne(req.body);
+  res.json({ tag: result, statusCode: 200 });
+};
+exports.findById = async (req, res) => {
+  const tagId = req.params.id;
+  try {
+    const tagResult = await Tag.findById(tagId);
+    res.json({ tag: tagResult, statusCode: 200 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Server error" });
   }
 };
 
@@ -56,7 +72,9 @@ exports.updateTag = async (req, res) => {
     // Lưu tag đã cập nhật vào cơ sở dữ liệu
     await tagToUpdate.save();
 
-    return res.status(200).json({ message: "Tag updated successfully", updatedTag: tagToUpdate });
+    return res
+      .status(200)
+      .json({ message: "Tag updated successfully", updatedTag: tagToUpdate });
   } catch (error) {
     console.error("Error updating tag:", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -75,7 +93,9 @@ exports.deleteTag = async (req, res) => {
       return res.status(404).json({ message: "Tag not found" });
     }
 
-    return res.status(200).json({ message: "Tag deleted successfully", deletedTag });
+    return res
+      .status(200)
+      .json({ message: "Tag deleted successfully", deletedTag });
   } catch (error) {
     console.error("Error deleting tag:", error);
     return res.status(500).json({ error: "Internal Server Error" });

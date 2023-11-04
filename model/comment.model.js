@@ -7,7 +7,8 @@ const comment = new Schema({
   postedDate: { type: Date },
   liked: { type: Number },
   disliked: { type: Number },
-  replies: [{ type: Schema.Types.ObjectId, ref: 'Reply' }],
+  replies: [{ type: Schema.Types.ObjectId, ref: "Reply" }],
+  is_active: { type: Boolean },
 });
 
 module.exports = model("comment", comment);

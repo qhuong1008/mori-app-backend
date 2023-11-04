@@ -13,7 +13,6 @@ const book = new Schema({
   totalHearted: { type: Number },
   rating: { type: Number },
   tags: { type: [String], index: "text" },
-  liked: { type: Number },
   access_level: { type: Number },
   is_active: { type: Boolean },
 });

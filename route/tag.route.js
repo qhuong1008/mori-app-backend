@@ -7,9 +7,10 @@ const tagController = require("../controller/tag.controller");
 // router.use(cors());
 
 // Routes for tags
-router.post("/tags", cors(), tagController.createTag);
-router.get("/tags", cors(), tagController.getAllTags);
-router.put("/tags/:id", cors(), tagController.updateTag);
-router.delete("/tags/:id", cors(), tagController.deleteTag);
+router.post("/new", cors(), tagController.createTag);
+router.get("/get-tags", cors(), tagController.getAllTags);
+router.get("/:id", cors(), tagController.findById);
+router.put("/:id", cors(), tagController.updateTag);
+router.delete("/:id", cors(), tagController.deleteTag);
 
 module.exports = router;
