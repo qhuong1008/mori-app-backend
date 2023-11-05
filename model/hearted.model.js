@@ -1,9 +1,8 @@
 const { Schema, model } = require("mongoose");
 
 const hearted = new Schema({
-  book: { type: Object },
-  user: { type: Object },
-  is_active: { type: Boolean },
+  book: { type: Schema.Types.ObjectId, ref: "Book" },
+  user: { type: Schema.Types.ObjectId, ref: "Account" },
 });
 
-module.exports = model("hearted", hearted);
+module.exports = model("Hearted", hearted);

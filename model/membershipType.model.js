@@ -1,9 +1,9 @@
-const {Schema, model} = require("mongoose")
+const { Schema, model } = require("mongoose");
 const membershipType = new Schema({
-    name: String,
-    description: String,
-    duration: Number,
-    price: Number,
-  });
+  name: String,
+  description: String,
+  duration: Number,
+  price: Number,
+});
 
-module.exports = model("membershipType", membershipType)
+module.exports = model("MembershipType", membershipType);

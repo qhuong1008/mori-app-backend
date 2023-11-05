@@ -9,4 +9,4 @@ const reply = new Schema({
   disliked: { type: Number },
 });
 
-module.exports = model("reply", reply);
+module.exports = model("Reply", reply);

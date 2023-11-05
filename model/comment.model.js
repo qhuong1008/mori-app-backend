@@ -10,4 +10,4 @@ const comment = new Schema({
   replies: [{ type: Schema.Types.ObjectId, ref: "Reply" }],
 });
 
-module.exports = model("comment", comment);
+module.exports = model("Comment", comment);

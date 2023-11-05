@@ -6,4 +6,4 @@ const bookCategory = new Schema({
   is_active: { type: Boolean },
 });
 
-module.exports = model("bookCategory", bookCategory);
+module.exports = model("BookCategory", bookCategory);

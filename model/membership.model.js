@@ -1,10 +1,9 @@
 const { Schema, model } = require("mongoose");
 
 const membership = new Schema({
-  user: { type: Object, index: "text" },
+  user: { type: Schema.Types.ObjectId, ref: "Account" },
   start_date: { type: Date },
   outdated_on: { type: Date },
-  is_active: { type: Boolean },
 });
 
-module.exports = model("membership", membership);
+module.exports = model("Membership", membership);
