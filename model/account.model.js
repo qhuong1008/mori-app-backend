@@ -6,9 +6,9 @@ const account = new Schema({
   phoneNumber: { type: String },
   avatar: { type: String },
   role: { type: Number },
-  is_member: { type: Boolean },
-  is_blocked: { type: Boolean },
-  is_active: { type: Boolean },
+  is_member: { type: Boolean, default: false },
+  is_blocked: { type: Boolean, default: false },
+  is_active: { type: Boolean, default: true },
 });
 
-module.exports = model("account", account);
+module.exports = model("Account", account);

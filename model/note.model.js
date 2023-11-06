@@ -8,4 +8,4 @@ const note = new Schema({
   content: { type: String },
 });
 
-module.exports = model("note", note);
+module.exports = model("Note", note);

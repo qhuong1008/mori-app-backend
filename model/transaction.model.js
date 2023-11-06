@@ -7,4 +7,4 @@ const transaction = new Schema({
   amount: { type: Number },
 });
 
-module.exports = model("transaction", transaction);
+module.exports = model("Transaction", transaction);

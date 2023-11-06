@@ -7,4 +7,4 @@ const myLibrary = new Schema({
   progress: { type: Number },
 });
 
-module.exports = model("myLibrary", myLibrary);
+module.exports = model("MyLibrary", myLibrary);

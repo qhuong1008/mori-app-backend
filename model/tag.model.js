@@ -4,4 +4,4 @@ const tag = new Schema({
   description: { type: String },
 });
 
-module.exports = model("tag", tag);
+module.exports = model("Tag", tag);
