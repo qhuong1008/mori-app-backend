@@ -19,7 +19,8 @@ const membershipTypeRouter = require("./route/membershipType.route");
 const myLibraryRouter = require("./route/myLibrary.route");
 const noteRouter = require("./route/note.route");
 const replyRouter = require("./route/reply.route");
-const tagRouter = require("./route/tag.route");
+
+const bookRankingRouter = require("./route/bookRanking.route");
 
 const app = express();
 app.use(express.json());
@@ -61,6 +62,11 @@ app.use("/api/myLibrary", myLibraryRouter);
 app.use("/api/note", noteRouter);
 app.use("/api/reply", replyRouter);
 app.use("/api/tag", tagRouter);
+
+app.use("/api/bookRanking", bookRankingRouter);
+
+const authRouter = require('./auth/auth.routes');
+app.use('/auth', authRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
