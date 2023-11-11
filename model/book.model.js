@@ -19,9 +19,3 @@ const book = new Schema({
 });
 
 module.exports = model("Book", book);
-
-
-list<book> bookList
-function get30book_ma_co_totalReadLonNhat(){
-  
-}
