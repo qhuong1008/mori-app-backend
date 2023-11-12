@@ -1,5 +1,45 @@
 const account = require("../model/account.model");
 
+// tìm user bằng username
+exports.findByUsername = async (username) => {
+  try {
+    const data = await account.findOne({ username: username });
+    return data;
+  } catch {
+    return null;
+  }
+};
+
+// tạo user khi dùng username, mật khẩu, mail
+exports.createByUsername = async (user) => {
+  try {
+    var accountDetail = new account(user);
+    await accountDetail.save();
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+// refresh token
+// Mỗi tài khoản mình chỉ phát sinh một refresh token, 
+// nếu nó đã tồn tại (đã được phát sinh ở lần đăng nhập trước) thì không phát sinh lại
+exports.updateRefreshToken = async (username, refreshToken) => {
+	try {
+		await db
+			.get(TABLENAME)
+			.find({username: username})
+			.assign({refreshToken: refreshToken})
+			.write();
+		return true;
+	} catch {
+		return false;
+	}
+};
+
+
+// tạo user khi dùng tài khoản gg
 exports.create = async (req, res) => {
   const isExist = await account.findOne(req.body);
   if (!isExist) {
