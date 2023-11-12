@@ -10,6 +10,7 @@ const accountRouter = require("./route/account.route");
 const tagRouter = require("./route/tag.route");
 const heartedRouter = require("./route/hearted.route");
 const membershipRouter = require("./route/membership.route");
+const membershipTypeRouter = require("./route/membershipType.route");
 const readHistoryRouter = require("./route/readHistory.route");
 const transactionRouter = require("./route/transaction.route");
 
@@ -52,6 +53,7 @@ app.use("/api/account", accountRouter);
 app.use("/api/tag", tagRouter);
 app.use("/api/hearted", heartedRouter);
 app.use("/api/membership", membershipRouter);
+app.use("/api/membershipType", membershipTypeRouter);
 app.use("/api/readHistory", readHistoryRouter);
 app.use("/api/transaction", transactionRouter);
 
