@@ -1,13 +1,18 @@
 const membership = require("../model/membership.model");
 
 exports.create = async (req, res) => {
-  var membershipDetail = new membership(req.body);
-  await membershipDetail
-    .save()
-    .then(() => {
-      res.json("membership added successfully!");
-    })
-    .catch((err) => console.log(err));
+  const isExist = await membership.findOne(req.body);
+  if (!isExist) {
+    var membershipDetail = new membership(req.body);
+    await membershipDetail
+      .save()
+      .then(() => {
+        res.json(0);
+      })
+      .catch((err) => console.log(err));
+  } else {
+    res.json(1);
+  }
 };
 
 exports.findAll = async (req, res) => {

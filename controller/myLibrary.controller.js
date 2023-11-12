@@ -1,3 +1,4 @@
+const { Schema, model } = require("mongoose");
 const MyLibrary = require("../model/myLibrary.model");
 
 // khởi tạo cùng với tài khoản
@@ -17,51 +18,32 @@ exports.create = async (req, res) => {
 };
 
 exports.addBookToMyLibrary = async function (req, res) {
-  const user = res.locals.account;
-  const bookId = req.body;
   try {
-    const existingBook = await MyLibrary.findOne({
-      user: user.id,
-      book: bookId,
-    });
+    const existingBook = await MyLibrary.findOne(req.body);
     if (existingBook) {
-      return res
-        .status(400)
-        .json({ error: "This book is already in your MyLibrary" });
+      return res.json(1);
+    } else {
+      const newBookInMyLibrary = new MyLibrary(req.body);
+      await newBookInMyLibrary.save();
+      return res.json(0);
     }
-    const newBookInMyLibrary = new Book({
-      user: user.id,
-      book: bookId,
-      status: "unread",
-      currentPage: 1, // Trang hiện tại khi thêm vào
-      progress: 0, // Tiến độ đọc
-    });
-    await newBookInMyLibrary.save();
-    return res.status(200).json({
-      message: "Book added to MyLibrary successfully",
-      entry: newBookInMyLibrary,
-    });
   } catch (err) {
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ message: err });
     console.log(err);
   }
 };
 
-exports.getAllBookInMyLibrary = async (req, res) => {
-  const user = res.locals.account;
-  MyLibrary.find({ user: user.id }, ["user", "book", "progress"])
-    .populate({
-      path: "book",
-      select: ["id", "name", "author", "image", "is_active"],
-      match: { is_active: 1 },
-    })
-    .then((booksInMyLibrary) => {
-      res.status(200).json(booksInMyLibrary);
-    })
-    .catch((err) => {
-      res.status(500).json({ message: "Something went wrong" });
-      console.log(err);
+exports.getAllBooksInMyLibrary = async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const libraryResult = await MyLibrary.find({
+      user: userId,
     });
+    return res.json({ myLibrary: libraryResult });
+  } catch (err) {
+    console.log(err);
+    return res.json({ message: err }).status(500);
+  }
 };
 
 exports.deleteBookFromMyLibrary = async (req, res) => {

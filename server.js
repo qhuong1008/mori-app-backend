@@ -13,6 +13,7 @@ const membershipRouter = require("./route/membership.route");
 const membershipTypeRouter = require("./route/membershipType.route");
 const readHistoryRouter = require("./route/readHistory.route");
 const transactionRouter = require("./route/transaction.route");
+const myLibraryRouter = require("./route/myLibrary.route");
 
 const app = express();
 app.use(express.json());
@@ -47,6 +48,7 @@ app.use("/api/membership", membershipRouter);
 app.use("/api/membershipType", membershipTypeRouter);
 app.use("/api/readHistory", readHistoryRouter);
 app.use("/api/transaction", transactionRouter);
+app.use("/api/myLibrary", myLibraryRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
