@@ -14,6 +14,6 @@ router.get(
   cors(),
   myLibraryController.getAllBooksInMyLibrary
 );
-router.delete("/book/:id", cors(), myLibraryController.deleteBookFromMyLibrary);
+router.delete("/book", cors(), myLibraryController.deleteBookFromMyLibrary);
 
 module.exports = router;

@@ -48,22 +48,12 @@ exports.getAllBooksInMyLibrary = async (req, res) => {
 
 exports.deleteBookFromMyLibrary = async (req, res) => {
   try {
-    const { bookId } = req.params;
-    const user = res.locals.account;
-
-    // Xóa sách khỏi myLibrary của người dùng
-    const deletedEntry = await MyLibrary.findOneAndRemove({
-      user: user.id,
-      book: bookId,
-    });
+    const deletedEntry = await MyLibrary.deleteOne(req.body);
 
     if (deletedEntry) {
-      return res.status(200).json({
-        message: "Book removed from MyLibrary successfully",
-        deletedEntry,
-      });
+      return res.status(200).json(0);
     } else {
-      return res.status(404).json({ message: "Book not found in MyLibrary" });
+      return res.status(404).json(404);
     }
   } catch (error) {
     console.error("Error removing book from MyLibrary:", error);
