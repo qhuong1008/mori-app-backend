@@ -13,15 +13,11 @@ const membershipRouter = require("./route/membership.route");
 const membershipTypeRouter = require("./route/membershipType.route");
 const readHistoryRouter = require("./route/readHistory.route");
 const transactionRouter = require("./route/transaction.route");
-const myLibraryRouter = require("./route/myLibrary.route");
-
 const bookCategoryRouter = require("./route/bookCategory.route");
 const commentRouter = require("./route/comment.route");
-const membershipTypeRouter = require("./route/membershipType.route");
 const myLibraryRouter = require("./route/myLibrary.route");
 const noteRouter = require("./route/note.route");
 const replyRouter = require("./route/reply.route");
-
 const bookRankingRouter = require("./route/bookRanking.route");
 
 const app = express();
@@ -69,8 +65,8 @@ app.use("/api/tag", tagRouter);
 
 app.use("/api/bookRanking", bookRankingRouter);
 
-const authRouter = require('./auth/auth.routes');
-app.use('/auth', authRouter);
+const authRouter = require("./auth/auth.routes");
+app.use("/auth", authRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
