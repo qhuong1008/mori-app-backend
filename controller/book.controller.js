@@ -32,6 +32,17 @@ exports.findBookWithSearchValue = async (req, res) => {
   res.json({ books: result, statusCode: 200 });
 };
 
+exports.findBookByCategory = async (req, res) => {
+  const searchValue = req.body.searchValue;
+  const result = await book.find({
+    tags: {
+      $in: [searchValue],
+    },
+  });
+
+  res.json({ books: result, statusCode: 200 });
+};
+
 exports.findOne = async (req, res) => {
   const result = await book.findOne(req.body);
   res.json({ book: result, statusCode: 200 });
