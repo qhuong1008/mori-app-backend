@@ -8,8 +8,12 @@ const myLibraryController = require("../controller/myLibrary.controller");
 
 // Routes for my libraries
 // router.post("/mylibraries", cors(), myLibraryController.create);
-router.post("/mylibraries", cors(), myLibraryController.addBookToMyLibrary);
-router.get("/mylibraries", cors(), myLibraryController.getAllBookInMyLibrary);
-router.delete("/mylibraries/:id", cors(), myLibraryController.deleteBookFromMyLibrary);
+router.post("/add-book", cors(), myLibraryController.addBookToMyLibrary);
+router.get(
+  "/get-books/:id",
+  cors(),
+  myLibraryController.getAllBooksInMyLibrary
+);
+router.delete("/book", cors(), myLibraryController.deleteBookFromMyLibrary);
 
 module.exports = router;

@@ -8,9 +8,10 @@ const book = require("../controller/book.controller");
 
 router.get("/get-book", cors(), book.findAll);
 router.get("/get-book/:id", cors(), book.findById);
+router.post("/get-book/category", cors(), book.findBookByCategory);
 router.post("/add-book", cors(), book.create);
 router.post("/search", cors(), book.findBookWithSearchValue);
 router.post("/total-read/:id", cors(), book.increaseTotalRead);
-router.post("/total-saved/:id", cors(), book.increaseTotalSaved);
+router.post("/total-saved/:id", cors(), book.updateTotalSaved);
 
 module.exports = router;

@@ -27,8 +27,17 @@ exports.findById = async (req, res) => {
 };
 
 exports.findBookWithSearchValue = async (req, res) => {
+  const result = await book.find({ $text: { $search: req.body.searchValue } });
+
+  res.json({ books: result, statusCode: 200 });
+};
+
+exports.findBookByCategory = async (req, res) => {
+  const searchValue = req.body.searchValue;
   const result = await book.find({
-    $text: { $search: JSON.stringify(req.body.searchValue) },
+    tags: {
+      $in: [searchValue],
+    },
   });
 
   res.json({ books: result, statusCode: 200 });
@@ -54,17 +63,33 @@ exports.increaseTotalRead = async (req, res) => {
   }
 };
 
-exports.increaseTotalSaved = async (req, res) => {
+exports.updateTotalSaved = async (req, res) => {
   const bookId = req.params.id;
+
   try {
-    const bookResult = await book.findById(bookId);
-    await bookResult.updateOne({
-      $inc: {
-        totalSaved: 1,
+    const requestedBook = await book.findById(bookId);
+    const isExist = await book.findOne({
+      _id: bookId,
+      totalSaved: {
+        $elemMatch: {
+          $eq: req.body.user,
+        },
       },
     });
-    res.json({ message: "Increased by 1!", statusCode: 200 });
+    if (!isExist) {
+      await requestedBook.updateOne(
+        { $push: { totalSaved: req.body.user } },
+        { upsert: true }
+      );
+      res.json({ message: "Saved into library!", statusCode: 200 });
+    } else {
+      res.json({
+        message: "This user already saved the book into his library.",
+        statusCode: 200,
+      });
+    }
   } catch (err) {
+    console.log("err:", err);
     res.json({ error: err, statusCode: 500 });
   }
 };

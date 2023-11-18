@@ -13,13 +13,11 @@ const membershipRouter = require("./route/membership.route");
 const membershipTypeRouter = require("./route/membershipType.route");
 const readHistoryRouter = require("./route/readHistory.route");
 const transactionRouter = require("./route/transaction.route");
-
 const bookCategoryRouter = require("./route/bookCategory.route");
 const commentRouter = require("./route/comment.route");
 const myLibraryRouter = require("./route/myLibrary.route");
 const noteRouter = require("./route/note.route");
 const replyRouter = require("./route/reply.route");
-
 const bookRankingRouter = require("./route/bookRanking.route");
 
 const app = express();
@@ -55,6 +53,7 @@ app.use("/api/membership", membershipRouter);
 app.use("/api/membershipType", membershipTypeRouter);
 app.use("/api/readHistory", readHistoryRouter);
 app.use("/api/transaction", transactionRouter);
+app.use("/api/myLibrary", myLibraryRouter);
 
 app.use("/api/bookCategory", bookCategoryRouter);
 app.use("/api/comment", commentRouter);
