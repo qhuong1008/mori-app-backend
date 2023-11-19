@@ -1,5 +1,5 @@
 const Reply = require("../model/reply.model");
-const Comment = require("../model/comment.model");
+const Review = require("../model/review.model");
 
 // Hàm tạo mới reply cho một comment
 exports.createReply = async function (req, res) {
@@ -12,7 +12,7 @@ exports.createReply = async function (req, res) {
       content: content,
     });
     await newReply.save();
-    let comment = await Comment.findById(commentId);
+    let comment = await Review.findById(commentId);
     comment.replies.push(newReply.id);
     comment.save();
     return res.status(200).json(newReply);
