@@ -14,7 +14,7 @@ exports.registerAccount = async (req, res) => {
   const email = req.body.email;
 
   const user = await accountController.findByUsername(username);
-  if (user) res.status(409).send("Username has already existed!");
+  if (user) res.status(409).json("Username has already existed!");
   else {
     const hashPassword = bcrypt.hashSync(req.body.password, SALT_ROUNDS); // băm mật khẩu rồi lưu vào db
     const newUser = {
@@ -26,11 +26,11 @@ exports.registerAccount = async (req, res) => {
     };
     const createUser = await accountController.createByUsername(newUser); // trả về true/false và lưu xuống db
     if (!createUser) {
-      return res.status(400).send({
+      return res.status(400).json({
         message: "There was an error creating the account, please try again.",
       });
     }
-    return res.send({
+    return res.json({
       username,
       message: "Account created successfully",
     });
@@ -44,12 +44,12 @@ exports.login = async (req, res) => {
 
   const user = await accountController.findByUsername(username);
   if (!user) {
-    return res.status(401).send("Username does not exist!");
+    return res.status(401).json("Username does not exist!");
   }
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);
   if (!isPasswordValid) {
-    return res.status(401).send("Incorrect password!");
+    return res.status(401).json("Incorrect password!");
   }
 
   const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
     accessTokenLife
   );
   if (!accessToken) {
-    return res.status(401).send("Login failed, please try again.");
+    return res.status(401).json("Login failed, please try again.");
   }
 
   let refreshToken = randToken.generate(jwtVariable.refreshTokenSize); // tạo 1 refresh token ngẫu nhiên
