@@ -1,7 +1,7 @@
 const readHistory = require("../model/readHistory.model");
 
 exports.create = async (req, res) => {
-  var readHistoryDetail = new book(req.body);
+  var readHistoryDetail = new readHistory(req.body);
   await readHistoryDetail
     .save()
     .then(() => {
@@ -14,7 +14,12 @@ exports.findAll = async (req, res) => {
   const readHistorys = await readHistory.find({});
   res.json({ readHistorys: readHistorys, statusCode: 200 });
 };
-
+exports.findAllWithUser = async (req, res) => {
+  const result = await readHistory.find({
+    user: req.params.id,
+  });
+  res.json({ readHistory: result, statusCode: 200 });
+};
 exports.findOne = (req, res) => {};
 
 exports.update = (req, res) => {};
