@@ -86,7 +86,6 @@ exports.getReviewsByBook = async (req, res) => {
     } else {
       res.json({ message: "No reviews found for the book", statusCode: 200 });
     }
-    return res.status(200).json(reviews);
   } catch (err) {
     console.log({ err });
     return res.status(500).json({ error: "Something went wrong!" });
