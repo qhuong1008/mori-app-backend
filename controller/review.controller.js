@@ -13,7 +13,6 @@ exports.ratingBook = async (req, res) => {
       { user_id },
       { content: null }
     );
-    console.log(existingRating);
 
     if (existingRating && existingRating.content == null) {
       return res
@@ -45,10 +44,6 @@ exports.reviewBook = async (req, res) => {
     const user_id = req.body.user_id;
     const rating = req.body.rating;
     const content = req.body.content;
-
-    console.log(book_id);
-    console.log(user_id);
-    console.log(content);
 
     // tạo mới đánh giá và nhận xét
     let newReview = new Review({
