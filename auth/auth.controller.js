@@ -1,42 +1,49 @@
 const accountController = require("../controller/account.controller");
+const account = require("../model/account.model");
 const authMethod = require("./auth.methods");
 const randToken = require("rand-token");
 const bcrypt = require("bcrypt");
 const SALT_ROUNDS = 10;
+require("dotenv/config");
 const jwtVariable = {
   refreshTokenSize: 16, // Kích thước refresh token mong muốn
 };
 
 // tạo account
 exports.registerAccount = async (req, res) => {
-  const username = req.body.username.toLowerCase();
+  const username = req.body.username.trim().toLowerCase();
+  const password = req.body.password;
   const displayName = req.body.displayName;
   const email = req.body.email;
 
-  const user = await accountController.findByUsername(username);
-  if (user) res.status(409).json("Username has already existed!");
-  else {
-    const hashPassword = bcrypt.hashSync(req.body.password, SALT_ROUNDS); // băm mật khẩu rồi lưu vào db
-    const newUser = {
-      username: username,
-      password: hashPassword,
-      displayName: displayName,
-      email: email,
-      //... Thêm các tham số khác tại đây ...
-    };
-    const createUser = await accountController.createByUsername(newUser); // trả về true/false và lưu xuống db
-    if (!createUser) {
-      return res.status(400).json({
-        message: "There was an error creating the account, please try again.",
+  if (username && email && password && displayName) {
+    const user = await account.findOne({
+      $or: [{ username }, { email }],
+    });
+    if (user) res.status(409).json("Username or email has already existed!");
+    else {
+      const newUser = {
+        username: username,
+        password: password,
+        displayName: displayName,
+        email: email,
+      };
+      const createUser = await accountController.createByUsername(newUser); // trả về true/false và lưu xuống db
+      if (!createUser) {
+        return res.status(400).json({
+          message: "There was an error creating the account, please try again.",
+        });
+      }
+      return res.json({
+        username,
+        message: "Account created successfully",
       });
     }
-    return res.json({
-      username,
-      message: "Account created successfully",
-    });
+  } else {
+    res.status(400).json("Fill in missing user information");
   }
 };
-//TODO: làm này nè
+
 // login
 exports.login = async (req, res) => {
   const username = req.body.username.toLowerCase();

@@ -1,9 +1,9 @@
-const account = require("../model/account.model");
+const Account = require("../model/account.model");
 
 // tìm user bằng username
 exports.findByUsername = async (username) => {
   try {
-    const data = await account.findOne({ username: username });
+    const data = await Account.findOne({ username: username });
     return data;
   } catch {
     return null;
@@ -13,7 +13,7 @@ exports.findByUsername = async (username) => {
 // tạo user khi dùng username, mật khẩu, mail
 exports.createByUsername = async (user) => {
   try {
-    var accountDetail = new account(user);
+    var accountDetail = new Account(user);
     await accountDetail.save();
     return true;
   } catch (err) {
@@ -23,27 +23,24 @@ exports.createByUsername = async (user) => {
 };
 
 // refresh token
-// Mỗi tài khoản mình chỉ phát sinh một refresh token, 
+// Mỗi tài khoản mình chỉ phát sinh một refresh token,
 // nếu nó đã tồn tại (đã được phát sinh ở lần đăng nhập trước) thì không phát sinh lại
 exports.updateRefreshToken = async (username, refreshToken) => {
-	try {
-		await db
-			.get(TABLENAME)
-			.find({username: username})
-			.assign({refreshToken: refreshToken})
-			.write();
-		return true;
-	} catch {
-		return false;
-	}
+  try {
+    await Account.find({ username: username })
+      .assign({ refreshToken: refreshToken })
+      .write();
+    return true;
+  } catch {
+    return false;
+  }
 };
-
 
 // tạo user khi dùng tài khoản gg
 exports.create = async (req, res) => {
-  const isExist = await account.findOne(req.body);
+  const isExist = await Account.findOne(req.body);
   if (!isExist) {
-    var accountDetail = new account(req.body);
+    var accountDetail = new Account(req.body);
     await accountDetail
       .save()
       .then(() => {
@@ -56,21 +53,22 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const accounts = await account.find({});
+  const accounts = await Account.find({});
   res.json({ accounts: accounts, statusCode: 200 });
 };
 exports.findById = async (req, res) => {
   const acctId = req.params.id;
   try {
-    const acctResult = await account.findById(acctId);
+    const acctResult = await Account.findById(acctId);
     res.json({ account: acctResult, statusCode: 200 });
   } catch (err) {
     console.error(err);
     res.status(500).json({ err: "Server error" });
   }
 };
+
 exports.findOne = async (req, res) => {
-  const result = await account.findOne(req.body);
+  const result = await Account.findOne(req.body);
   res.json({ account: result, statusCode: 200 });
 };
 
