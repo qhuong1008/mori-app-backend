@@ -55,7 +55,7 @@ exports.forgotPassword = async (req, res) => {
 //////
 exports.resetPassword = async (req, res) => {
   // Validate the password reset token
-  const tokenEmail = req.query.tokenEmail;
+  const tokenEmail = req.query.token;
   const decodedToken = jwt.verify(tokenEmail, process.env.JWT_SECRET);
 
   // Find the user by their ID and token, and check if the token is still valid

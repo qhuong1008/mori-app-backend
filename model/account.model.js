@@ -64,6 +64,7 @@ const account = new Schema({
   is_member: { type: Boolean, default: false },
   is_blocked: { type: Boolean, default: false },
   is_active: { type: Boolean, default: true },
+  is_verify_email: { type: Boolean, default: false },
   passwordResetToken: { type: String, default: null },
   passwordResetExpires: { type: Date, default: null },
 });
