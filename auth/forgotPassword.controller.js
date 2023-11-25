@@ -45,10 +45,10 @@ exports.forgotPassword = async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.json({ message: "Password reset email sent", tokenEmail: token });
+    return res.json({ message: "Password reset email sent", tokenEmail: token });
   } catch (err) {
     console.error("Failed to send password reset email:", err);
-    res.status(500).json({ error: "Failed to send password reset email" });
+    return res.status(500).json({ error: "Failed to send password reset email" });
   }
 };
 
@@ -89,10 +89,10 @@ exports.resetPassword = async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    res.json({ message: "Password reset successful" });
+    return res.json({ message: "Password reset successful" });
   } catch (err) {
     console.error("Failed to send password reset confirmation email:", err);
-    res
+    return res
       .status(500)
       .json({ error: "Failed to send password reset confirmation email" });
   }
