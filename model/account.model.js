@@ -74,9 +74,14 @@ account.pre("save", async function (next) {
   try {
     // Nếu mật khẩu đã được thay đổi hoặc là tài khoản mới
     if (this.isModified("password") || this.isNew) {
-      const salt = await bcrypt.genSalt(10);
-      const hashedPassword = await bcrypt.hash(this.password, salt);
-      this.password = hashedPassword;
+      if (this.password && this.password.trim() !== "") {
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(this.password, salt);
+        this.password = hashedPassword;
+      } else {
+        // Bỏ qua nếu mật khẩu rỗng
+        return next();
+      }
     }
     return next();
   } catch (error) {
