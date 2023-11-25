@@ -1,7 +1,7 @@
 const BookCategory = require("../model/bookCategory.model");
 
 exports.createBookCategory = async (req, res) => {
-  const isExist = await BookCategory.findOne(req.body);
+  const isExist = await BookCategory.findOne(req.body.tag);
   if (!isExist) {
     var categoryDetail = new BookCategory(req.body);
     await categoryDetail

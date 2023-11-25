@@ -54,7 +54,7 @@ exports.findById = async (req, res) => {
 // Hàm cập nhật thông tin của một tag
 exports.updateTag = async (req, res) => {
   try {
-    const tagId = req.params.tagId;
+    const tagId = req.params.id;
     const { name, description, is_active } = req.body;
 
     // Tìm tag dựa trên tagId
@@ -84,10 +84,10 @@ exports.updateTag = async (req, res) => {
 // Hàm xóa một tag
 exports.deleteTag = async (req, res) => {
   try {
-    const tagId = req.params.tagId;
+    const tagId = req.params.id;
 
     // Xóa tag dựa trên tagId
-    const deletedTag = await Tag.findByIdAndRemove(tagId);
+    const deletedTag = await Tag.findByIdAndDelete(tagId);
 
     if (!deletedTag) {
       return res.status(404).json({ message: "Tag not found" });
