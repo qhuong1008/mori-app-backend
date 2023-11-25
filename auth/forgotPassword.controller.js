@@ -27,7 +27,7 @@ exports.forgotPassword = async (req, res) => {
   await account.save();
 
   // Send the password reset email
-  const resetUrl = `http://${req.headers.host}/auth/reset-password?token=${token}`;
+  const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: account.email,
@@ -45,17 +45,22 @@ exports.forgotPassword = async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    return res.json({ message: "Password reset email sent", tokenEmail: token });
+    return res.json({
+      message: "Password reset email sent",
+      tokenEmail: token,
+    });
   } catch (err) {
     console.error("Failed to send password reset email:", err);
-    return res.status(500).json({ error: "Failed to send password reset email" });
+    return res
+      .status(500)
+      .json({ error: "Failed to send password reset email" });
   }
 };
 
 //////
 exports.resetPassword = async (req, res) => {
   // Validate the password reset token
-  const tokenEmail = req.query.tokenEmail;
+  const tokenEmail = req.body.token;
   const decodedToken = jwt.verify(tokenEmail, process.env.JWT_SECRET);
 
   // Find the user by their ID and token, and check if the token is still valid
@@ -75,6 +80,7 @@ exports.resetPassword = async (req, res) => {
   account.password = req.body.password;
   account.passwordResetToken = undefined;
   account.passwordResetExpires = undefined;
+
   await account.save();
 
   // Send a confirmation email
