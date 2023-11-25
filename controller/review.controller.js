@@ -1,4 +1,5 @@
 const Review = require("../model/review.model");
+const Account = require("../model/account.model");
 
 // rating book
 exports.ratingBook = async (req, res) => {
@@ -19,10 +20,11 @@ exports.ratingBook = async (req, res) => {
         .status(400)
         .json({ error: "You have already rated this book." });
     }
+    const account = await Account.findById(user_id);
 
     // Nếu chưa đánh giá *sao, tạo mới đánh giá
     let newRating = new Review({
-      user_id: user_id,
+      user: account,
       book_id: book_id,
       rating: rating,
     });
@@ -45,9 +47,11 @@ exports.reviewBook = async (req, res) => {
     const rating = req.body.rating;
     const content = req.body.content;
 
+    const user = await Account.findById(user_id);
+
     // tạo mới đánh giá và nhận xét
-    let newReview = new Review({
-      user_id: user_id,
+    const newReview = new Review({
+      user: user_id,
       book_id: book_id,
       rating: rating,
       content: content,
@@ -56,14 +60,14 @@ exports.reviewBook = async (req, res) => {
     // Kiểm tra xem người dùng đã nhập đầy đủ nội dung comment hay chưa
     if (!content) {
       return res.status(400).json({ error: "Please enter comment content." });
+    } else {
+      await newReview.save();
+
+      return res.status(200).json({
+        newReview: newReview,
+        message: "Comment and rating added successfully!",
+      });
     }
-
-    await newReview.save();
-
-    return res.status(200).json({
-      newReview: newReview,
-      message: "Comment and rating added successfully!",
-    });
   } catch (err) {
     console.log({ err });
     return res.status(500).json({ error: "Something went wrong!" });
@@ -73,23 +77,19 @@ exports.reviewBook = async (req, res) => {
 // get reviews by book
 exports.getReviewsByBook = async (req, res) => {
   try {
-    const book_id = req.params.book_id;
+    const book_id = req.params.id;
 
     // Lấy tất cả các đánh giá có nội dung cho quyển sách
     const reviews = await Review.find({
-      book_id,
-      content: { $ne: null },
-    }).populate("user_id");
+      book_id: book_id,
+    })
+      .populate("user")
+      .exec();
 
-    if (reviews.length > 0) {
-      res.json({ reviews: reviews, statusCode: 200 });
-    } else {
-      res.json({ message: "No reviews found for the book", statusCode: 200 });
-    }
-    return res.status(200).json(reviews);
+    res.json({ reviews: reviews, statusCode: 200 });
   } catch (err) {
     console.log({ err });
-    return res.status(500).json({ error: "Something went wrong!" });
+    return res.status(500).json({ error: err });
   }
 };
 

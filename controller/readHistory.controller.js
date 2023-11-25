@@ -1,13 +1,16 @@
 const readHistory = require("../model/readHistory.model");
 
 exports.create = async (req, res) => {
-  var readHistoryDetail = new readHistory(req.body);
-  await readHistoryDetail
-    .save()
-    .then(() => {
-      res.json("readHistory added successfully!");
-    })
-    .catch((err) => console.log(err));
+  const isExist = await readHistory.findOne(req.body);
+  if(!isExist) {
+    var readHistoryDetail = new readHistory(req.body);
+    await readHistoryDetail
+      .save()
+      .then(() => {
+        res.json("readHistory added successfully!");
+      })
+      .catch((err) => console.log(err));
+  }
 };
 
 exports.findAll = async (req, res) => {
