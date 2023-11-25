@@ -5,7 +5,6 @@ const validator = require("validator");
 const account = new Schema({
   username: {
     type: String,
-    required: true,
     unique: true,
     validate: {
       validator: function (value) {
@@ -17,7 +16,6 @@ const account = new Schema({
   },
   password: {
     type: String,
-    required: true,
     minlength: 6,
     validate: {
       validator: function (value) {
