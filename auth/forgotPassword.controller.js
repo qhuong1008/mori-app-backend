@@ -27,7 +27,7 @@ exports.forgotPassword = async (req, res) => {
   await account.save();
 
   // Send the password reset email
-  const resetUrl = `http://localhost:3000/auth/reset-password?token=${token}`;
+  const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: account.email,
@@ -59,47 +59,58 @@ exports.forgotPassword = async (req, res) => {
 
 //////
 exports.resetPassword = async (req, res) => {
-  // Validate the password reset token
-  const tokenEmail = req.query.token;
-  const decodedToken = jwt.verify(tokenEmail, process.env.JWT_SECRET);
+  try {
+    // Validate the password reset token
+    const tokenEmail = req.query.token;
+    const decodedToken = jwt.verify(tokenEmail, process.env.JWT_SECRET);
 
-  // Find the user by their ID and token, and check if the token is still valid
-  const account = await Account.findOne({
-    _id: decodedToken.id,
-    passwordResetToken: tokenEmail,
-    passwordResetExpires: { $gt: Date.now() },
-  });
+    // Find the user by their ID and token, and check if the token is still valid
+    const account = await Account.findOne({
+      _id: decodedToken.id,
+      passwordResetToken: tokenEmail,
+      passwordResetExpires: { $gt: Date.now() },
+    });
 
-  if (!account) {
-    return res
-      .status(401)
-      .json({ error: "Invalid or expired password reset token" });
-  }
+    if (!account) {
+      return res
+        .status(401)
+        .json({ error: "Invalid or expired password reset token" });
+    }
+    // Validate the new password
+    const newPassword = req.body.password;
 
-  // Update the user's password and remove the reset token and its expiration date
-  account.password = req.body.password;
-  account.passwordResetToken = undefined;
-  account.passwordResetExpires = undefined;
+    if (!newPassword || newPassword.trim() === "") {
+      return res.status(400).json({ error: "New password is required" });
+    }
 
-  await account.save();
+    // Update the user's password and remove the reset token and its expiration date
+    account.password = req.body.password;
+    account.passwordResetToken = undefined;
+    account.passwordResetExpires = undefined;
 
-  // Send a confirmation email
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: account.email,
-    subject: "Đặt lại mật khẩu thành công - Ứng Dụng đọc sách online Mori",
-    html: `
+    await account.save();
+
+    // Send a confirmation email
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: account.email,
+      subject: "Đặt lại mật khẩu thành công - Ứng Dụng đọc sách online Mori",
+      html: `
     <p>Mật khẩu của bạn đã được đặt lại thành công. Nếu bạn không thực hiện yêu cầu này, vui lòng liên hệ với chúng tôi ngay lập tức.</p>
   `,
-  };
+    };
 
-  try {
-    await transporter.sendMail(mailOptions);
-    return res.json({ message: "Password reset successful" });
-  } catch (err) {
-    console.error("Failed to send password reset confirmation email:", err);
-    return res
-      .status(500)
-      .json({ error: "Failed to send password reset confirmation email" });
+    try {
+      await transporter.sendMail(mailOptions);
+      return res.json({ message: "Password reset successful" });
+    } catch (err) {
+      console.error("Failed to send password reset confirmation email:", err);
+      return res
+        .status(500)
+        .json({ error: "Failed to send password reset confirmation email" });
+    }
+  } catch (error) {
+    console.error("Error validating password reset token:", error);
+    res.status(401).json({ error: "Error validating password reset token" });
   }
 };
