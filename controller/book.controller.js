@@ -93,6 +93,32 @@ exports.updateTotalSaved = async (req, res) => {
     res.json({ error: err, statusCode: 500 });
   }
 };
-exports.update = (req, res) => {};
+exports.update = async (req, res) => {
+  const bookId = req.params.id;
+  const updated = req.body.book;
+  try {
+    book
+      .findByIdAndUpdate(bookId, updated, { new: true })
+      .then((updatedBook) => {
+        if (updatedBook) {
+          res.json({ updatedBook: updatedBook, updated: updated });
+        } else {
+          res.json("Book not found!");
+        }
+      });
+  } catch (err) {
+    console.log("err:", err);
+    res.json({ error: err, statusCode: 500 });
+  }
+};
 
-exports.delete = (req, res) => {};
+exports.delete = async (req, res) => {
+  const bookId = req.params.id;
+  try {
+    await book.findByIdAndDelete(bookId);
+    res.json({ message: "Deleted book successfully!", statusCode: 200 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Server error" });
+  }
+};
