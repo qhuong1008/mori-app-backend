@@ -111,6 +111,8 @@ exports.resetPassword = async (req, res) => {
     }
   } catch (error) {
     console.error("Error validating password reset token:", error);
-    res.status(401).json({ error: "Error validating password reset token" });
+    res
+      .status(401)
+      .json({ error: "Invalid token or error validating password reset" });
   }
 };

@@ -20,6 +20,8 @@ const noteRouter = require("./route/note.route");
 const replyRouter = require("./route/reply.route");
 const bookRankingRouter = require("./route/bookRanking.route");
 
+const uploadImg = require("./controller/upload-file/upload-image.controller");
+
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -54,7 +56,6 @@ app.use("/api/membershipType", membershipTypeRouter);
 app.use("/api/readHistory", readHistoryRouter);
 app.use("/api/transaction", transactionRouter);
 app.use("/api/myLibrary", myLibraryRouter);
-
 app.use("/api/bookCategory", bookCategoryRouter);
 app.use("/api/review", ReviewRouter);
 app.use("/api/membershipType", membershipTypeRouter);
@@ -62,8 +63,9 @@ app.use("/api/myLibrary", myLibraryRouter);
 app.use("/api/note", noteRouter);
 app.use("/api/reply", replyRouter);
 app.use("/api/tag", tagRouter);
-
 app.use("/api/bookRanking", bookRankingRouter);
+
+app.use("/api/account", uploadImg);
 
 const authRouter = require("./auth/auth.routes");
 app.use("/auth", authRouter);
