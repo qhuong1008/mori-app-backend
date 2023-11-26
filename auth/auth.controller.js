@@ -20,62 +20,68 @@ const transporter = nodemailer.createTransport({
 
 // tạo account
 exports.registerAccount = async (req, res) => {
-  const username = req.body.username.trim().toLowerCase();
+  const username = req.body.username;
+  // const username = req.body.username.trim().toLowerCase();
   const password = req.body.password;
   const displayName = req.body.displayName;
   const email = req.body.email;
 
   // Check if all required fields are provided
-  if (username && email && password && displayName) {
-    const newUser = {
-      username: username,
-      password: password,
-      displayName: displayName,
-      email: email,
-    };
+  // if (username && email && password && displayName) {
+  const newUser = {
+    username: username,
+    password: password,
+    displayName: displayName,
+    email: email,
+  };
+  console.log("username", username);
 
-    // Create new user and check validation
-    const createUser = await accountController.createByUsername(newUser);
+  // Create new user and check validation
+  const createUser = await accountController.createByUsername(newUser);
 
-    // Generate JWT token
-    const token = jwt.sign({ email: email }, process.env.JWT_SECRET);
+  // Generate JWT token
+  const token = jwt.sign({ email: email }, process.env.JWT_SECRET);
 
-    // Return the result
-    if (createUser === 1) {
-      const verifyEmail = `http://${req.headers.host}/verify?email=${email}&token=${token}`;
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: email,
-        subject: "Xác thực mail tạo tài khoản - Ứng dụng đọc sách online Mori",
-        html: `<p>Chúng tôi nhận được yêu cầu tạo tài khoản của bạn.
+  // Return the result
+  if (createUser === 1) {
+    const verifyEmail = `http://${req.headers.host}/verify?email=${email}&token=${token}`;
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: "Xác thực mail tạo tài khoản - Ứng dụng đọc sách online Mori",
+      html: `<p>Chúng tôi nhận được yêu cầu tạo tài khoản của bạn.
                 <br>Vui lòng nhấp vào liên kết dưới đây để xác thực email tạo tài khoản: <a href="${verifyEmail}"> Xác thực mail</a></br>
                 <br>Nếu bạn không thực hiện yêu cầu này, hãy bỏ qua email này.</br></p>
                 <p>Trân trọng,
                 <br>Đội ngũ hỗ trợ Mori</br></p>`,
-      };
+    };
 
-      try {
-        await transporter.sendMail(mailOptions);
-        return res.json({
-          username,
-          message: "Account created successfully",
-          tokenVerify: token,
-        });
-      } catch (err) {
-        console.error("Failed to send verify email:", err);
-        return res.status(500).json({ error: "Failed to send verify email" });
-      }
-    } else if (createUser === 2) {
+    try {
+      await transporter.sendMail(mailOptions);
       return res.json({
-        message: "Username or email has already existed!",
+        username,
+        message: "Account created successfully",
+        tokenVerify: token,
       });
+    } catch (err) {
+      console.error("Failed to send verify email:", err);
+      return res.status(500).json({ error: "Failed to send verify email" });
     }
-    return res.status(400).json({
-      message: "There was an error in validate the account, please try again.",
+  } else if (createUser === 2) {
+    return res.json({
+      error: "error",
+      message: "Username or email has already existed!",
     });
-  } else {
-    return res.status(400).json("Fill in missing user information");
   }
+  return res.status(400).json({
+    error: "error",
+    message: "There was an error in validate the account, please try again.",
+  });
+  // } else {
+  //   return res
+  //     .status(400)
+  //     .json({ error: "error", message: "Fill in missing user information" });
+  // }
 };
 
 // Xác nhận email
