@@ -13,12 +13,20 @@ exports.findByUsername = async (username) => {
 // tạo user khi dùng username, mật khẩu, mail
 exports.createByUsername = async (user) => {
   try {
-    var accountDetail = new Account(user);
-    await accountDetail.save();
-    return true;
+    const username = user.username;
+    const email = user.email;
+    const isExist = await Account.findOne({ $or: [{ username }, { email }] });
+    if (!isExist) {
+      var accountDetail = new Account(user);
+      await accountDetail.save();
+      return 1;
+    } else if (isExist) {
+      console.log("isExist", isExist);
+      return 2;
+    }
+    return 0;
   } catch (err) {
-    console.log(err);
-    return false;
+    return 0;
   }
 };
 
@@ -46,7 +54,7 @@ exports.create = async (req, res) => {
       .then(() => {
         res.json(0);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => res.json(err));
   } else {
     res.json(1);
   }
@@ -72,6 +80,23 @@ exports.findOne = async (req, res) => {
   res.json({ account: result, statusCode: 200 });
 };
 
-exports.update = (req, res) => {};
+exports.update = (req, res) => {
+  const id = req.params.id;
+  const updated = req.body.account;
+  try {
+    Account.findByIdAndUpdate(id, updated, { new: true }).then(
+      (updatedAccount) => {
+        if (updatedAccount) {
+          res.json({ updatedAccount: updatedAccount, updated: updated });
+        } else {
+          res.json("Account not found!");
+        }
+      }
+    );
+  } catch (err) {
+    console.log("err:", err);
+    res.json({ error: err, statusCode: 500 });
+  }
+};
 
 exports.delete = (req, res) => {};

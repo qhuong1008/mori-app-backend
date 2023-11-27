@@ -14,7 +14,7 @@ const book = new Schema({
   totalHearted: { type: [Schema.ObjectId], ref: "Account", default: [] },
   rating: { type: Number, default: 5 },
   tags: { type: [String] },
-  access_level: { type: Number },
+  access_level: { type: Number , default: 0},
   is_active: { type: Boolean },
 });
 
