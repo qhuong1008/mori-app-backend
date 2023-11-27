@@ -45,7 +45,7 @@ exports.uploadBookImg = async (req, res) => {
   const blobName = getBlobName(req.file.originalname),
     blobService = new BlockBlobClient(
       process.env.AZURE_STORAGE_CONNECTION_STRING,
-      process.env.AZURE_STORAGE_CONTAINER_NAME_PDF,
+      process.env.AZURE_STORAGE_CONTAINER_NAME_IMG,
       blobName
     ),
     stream = getStream(req.file.buffer),
@@ -74,12 +74,15 @@ exports.uploadBookPdf = async (req, res) => {
   blobService
     .uploadStream(stream, streamLength)
     .then(() => {
+      // console.log("res:", res.json());
       res.json({
         blobUrl: blobService.url,
         message: "File uploaded to Azure Blob storage.",
       });
     })
     .catch((err) => {
+      // console.log("err:", err);
+
       res.json({ err: err.message });
     });
 };
