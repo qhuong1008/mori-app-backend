@@ -1,0 +1,16 @@
+name: CI - Backend
+on:
+  pull_request:
+    paths:
+      - "**/*"
+jobs:
+  ci-backend:
+    runs-on: ubuntu-latest
+    container:
+      image: docker:dind
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login docker
+        run: docker login -u nguyenlien -p C!gtnH7yWyM24uX
+      - name: Build backend
+        run: docker build -t nguyenlien/mori-backend .
