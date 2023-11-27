@@ -52,8 +52,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
-const databaseUrl =
-  "mongodb+srv://moribook:Mori123456@cluster0.xdqbzc5.mongodb.net/moridb";
+const databaseUrl = process.env.MONGODB_URL;
 
 mongoose
   .connect(databaseUrl, {
