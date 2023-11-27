@@ -83,7 +83,6 @@ app.use("/api/bookRanking", bookRankingRouter);
 
 app.use("/api/account", uploadImg);
 
-const authRouter = require("./auth/auth.routes");
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/auth", authRouter);
