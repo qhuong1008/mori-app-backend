@@ -10,7 +10,8 @@ const tagController = require("../controller/tag.controller");
 router.post("/add-tag", cors(), tagController.createTag);
 router.get("/get-tags", cors(), tagController.getAllTags);
 router.get("/get-tag/:id", cors(), tagController.findById);
-router.put("/update/:id", cors(), tagController.updateTag);
-router.delete("/delete/:id", cors(), tagController.deleteTag);
+router.put("/:id", cors(), tagController.updateTag);
+router.post("", cors(), tagController.createTag);
+router.delete("/:id", cors(), tagController.deleteTag);
 
 module.exports = router;
