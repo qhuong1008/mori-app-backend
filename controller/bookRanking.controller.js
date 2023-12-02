@@ -1,4 +1,5 @@
 const BookRanking = require("../model/bookRanking.model");
+const Book = require("../model/book.model");
 
 // Hàm tăng số lượt đọc trong ngày của quyển sách đó
 exports.increaseTotalReadDaily = async (req, res) => {
@@ -13,6 +14,9 @@ exports.increaseTotalReadDaily = async (req, res) => {
         $lt: new Date().setHours(23, 59, 59, 999),
       },
     });
+
+    // hàm này cập nhật lại lượt đọc -> lướt xuống dưới cùng để xem
+    updateAllTotalRead();
 
     if (bookRanking) {
       // Nếu đã có, cập nhật total_read
@@ -77,7 +81,7 @@ exports.getBookRanking = async (req, res) => {
       case "monthly":
         console.log("call ranking monthly");
         startDate = new Date();
-        startDate.setMonth(startDate.getMonth() - 1);//set về ngày này tháng trước
+        startDate.setMonth(startDate.getMonth() - 1); //set về ngày này tháng trước
         startDate.setHours(0, 0, 0, 0);
 
         endDate = new Date();
@@ -206,5 +210,41 @@ exports.getBookRankingDateOfBook = async (req, res) => {
   } catch (error) {
     console.error("Error getting book ranking by date:", error);
     res.json({ error, statusCode: 500 });
+  }
+};
+
+const updateAllTotalRead = async () => {
+  try {
+    // Lấy danh sách tất cả các sách
+    const allBooks = await Book.find({}, "_id");
+
+    // Lặp qua từng sách
+    for (const book of allBooks) {
+      await updateTotalRead(book._id);
+    }
+
+    console.log("All totalRead updated successfully");
+  } catch (error) {
+    console.error(`Error updating all totalRead: ${error.message}`);
+  }
+};
+
+// Hàm tổng hợp lượt đọc và cập nhật Book.totalRead
+const updateTotalRead = async (bookId) => {
+  try {
+    // Tính toán tổng lượt đọc từ bookRanking
+    const rankingData = await BookRanking.aggregate([
+      { $match: { book_id: bookId } },
+      { $group: { _id: null, totalRead: { $sum: "$totalRead" } } },
+    ]);
+
+    const totalRead = rankingData.length > 0 ? rankingData[0].totalRead : 0;
+
+    // Cập nhật giá trị Book.totalRead
+    await Book.updateOne({ _id: bookId }, { totalRead: totalRead });
+
+    console.log(`Updated totalRead for Book with ID ${bookId}: ${totalRead}`);
+  } catch (error) {
+    console.error(`Error updating totalRead: ${error.message}`);
   }
 };
