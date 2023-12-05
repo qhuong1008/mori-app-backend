@@ -16,6 +16,7 @@ const book = new Schema({
   tags: { type: [String] },
   access_level: { type: Number , default: 0},
   is_active: { type: Boolean },
+  chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter" }],
 });
 
 module.exports = model("Book", book);

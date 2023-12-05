@@ -11,14 +11,14 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const books = await book.find({});
+  const books = await book.find({}).populate("chapters");;
   res.json({ books: books, statusCode: 200 });
 };
 
 exports.findById = async (req, res) => {
   const bookId = req.params.id;
   try {
-    const bookResult = await book.findById(bookId);
+    const bookResult = await book.findById(bookId).populate("chapters");
     res.json({ book: bookResult, statusCode: 200 });
   } catch (err) {
     console.error(err);
@@ -27,7 +27,7 @@ exports.findById = async (req, res) => {
 };
 
 exports.findBookWithSearchValue = async (req, res) => {
-  const result = await book.find({ $text: { $search: req.body.searchValue } });
+  const result = await book.find({ $text: { $search: req.body.searchValue } }).populate("chapters");
 
   res.json({ books: result, statusCode: 200 });
 };
@@ -38,13 +38,13 @@ exports.findBookByCategory = async (req, res) => {
     tags: {
       $in: [searchValue],
     },
-  });
+  }).populate("chapters");
 
   res.json({ books: result, statusCode: 200 });
 };
 
 exports.findOne = async (req, res) => {
-  const result = await book.findOne(req.body);
+  const result = await book.findOne(req.body).populate("chapters");
   res.json({ book: result, statusCode: 200 });
 };
 

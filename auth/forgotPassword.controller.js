@@ -12,7 +12,11 @@ const transporter = nodemailer.createTransport({
 
 exports.forgotPassword = async (req, res) => {
   // Find the user by email
-  const account = await Account.findOne({ email: req.body.email });
+  const account = await Account.findOne({
+    email: req.body.email,
+    username: { $exists: true },
+    password: { $exists: true },
+  });
 
   if (!account) {
     return res.status(404).json({ error: "Account not found" });
