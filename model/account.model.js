@@ -41,13 +41,13 @@ const account = new Schema({
   displayName: { type: String, required: true, minlength: 3, maxlength: 30 },
   phoneNumber: {
     type: String,
-    validate: {
-      validator: function (value) {
-        // Sử dụng validator để kiểm tra số điện thoại ở Việt Nam
-        return validator.isMobilePhone(value, "vi-VN");
-      },
-      message: "Invalid phone number.",
-    },
+    // validate: {
+    //   validator: function (value) {
+    //     // Sử dụng validator để kiểm tra số điện thoại ở Việt Nam
+    //     return validator.isMobilePhone(value, "vi-VN");
+    //   },
+    //   message: "Invalid phone number.",
+    // },
   },
   avatar: {
     type: String,
