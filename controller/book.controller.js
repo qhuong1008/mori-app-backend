@@ -11,10 +11,24 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const books = await book.find({}).populate("chapters");;
+  const books = await book.find({}).populate("chapters");
   res.json({ books: books, statusCode: 200 });
 };
 
+exports.findAllEBooks = async (req, res) => {
+  const books = await book.find({
+    pdf: {
+      $type: "string",
+    },
+  });
+  res.json({ books: books, statusCode: 200 });
+};
+exports.findAllAudioBooks = async (req, res) => {
+  const books = await book.find({
+    chapters: { $exists: true, $ne: [] },
+  });
+  res.json({ books: books, statusCode: 200 });
+};
 exports.findById = async (req, res) => {
   const bookId = req.params.id;
   try {
@@ -27,18 +41,22 @@ exports.findById = async (req, res) => {
 };
 
 exports.findBookWithSearchValue = async (req, res) => {
-  const result = await book.find({ $text: { $search: req.body.searchValue } }).populate("chapters");
+  const result = await book
+    .find({ $text: { $search: req.body.searchValue } })
+    .populate("chapters");
 
   res.json({ books: result, statusCode: 200 });
 };
 
 exports.findBookByCategory = async (req, res) => {
   const searchValue = req.body.searchValue;
-  const result = await book.find({
-    tags: {
-      $in: [searchValue],
-    },
-  }).populate("chapters");
+  const result = await book
+    .find({
+      tags: {
+        $in: [searchValue],
+      },
+    })
+    .populate("chapters");
 
   res.json({ books: result, statusCode: 200 });
 };
