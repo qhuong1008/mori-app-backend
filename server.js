@@ -22,6 +22,7 @@ const myLibraryRouter = require("./route/myLibrary.route");
 const noteRouter = require("./route/note.route");
 const replyRouter = require("./route/reply.route");
 const bookRankingRouter = require("./route/bookRanking.route");
+const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const azureStorageRouter = require("./azure/azure-storage.routes");
 
@@ -79,6 +80,7 @@ app.use("/api/note", noteRouter);
 app.use("/api/reply", replyRouter);
 app.use("/api/tag", tagRouter);
 app.use("/api/bookRanking", bookRankingRouter);
+app.use("/api/chapter", chapterRouter);
 
 app.use("/api/account", uploadImg);
 
