@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const storageController = require("./azure-storage.controller");
+const uploadAudioController = require("./upload-bookandchapter.controller");
 const multer = require("multer");
 const inMemoryStorage = multer.memoryStorage();
 const uploadStrategy = multer({ storage: inMemoryStorage }).single("file");
@@ -23,6 +24,10 @@ router.post(
   "/upload/account-avatar",
   uploadStrategy,
   storageController.uploadAccountAvatar
+);
+router.post(
+  "/upload/chapter",
+  uploadAudioController.uploadChapter
 );
 
 module.exports = router;
