@@ -83,6 +83,21 @@ exports.increaseTotalRead = async (req, res) => {
   }
 };
 
+exports.increaseTotalHearted = async (req, res) => {
+  const bookId = req.params.id;
+  try {
+    const bookResult = await book.findById(bookId);
+    await bookResult.updateOne({
+      $inc: {
+        totalHearted: 1,
+      },
+    });
+    res.json({ message: "Increased by 1!", statusCode: 200 });
+  } catch (err) {
+    res.json({ error: err.message, statusCode: 500 });
+  }
+};
+
 exports.updateTotalSaved = async (req, res) => {
   const bookId = req.params.id;
 
