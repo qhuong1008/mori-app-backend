@@ -9,11 +9,18 @@ const uploadStrategy = multer({ storage: inMemoryStorage }).single("file");
 router.get("/storage-img", storageController.getStorageBookImg);
 
 router.get("/storage-pdf", storageController.getStorageBookPdf);
+router.get("/storage-audio", storageController.getStorageBookAudio);
 
 router.post(
   "/upload/book-img",
   uploadStrategy,
   storageController.uploadBookImg
+);
+
+router.post(
+  "/upload/book-audio",
+  uploadStrategy,
+  storageController.uploadBookAudio
 );
 router.post(
   "/upload/book-pdf",

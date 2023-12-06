@@ -24,9 +24,11 @@ exports.findAllEBooks = async (req, res) => {
   res.json({ books: books, statusCode: 200 });
 };
 exports.findAllAudioBooks = async (req, res) => {
-  const books = await book.find({
-    chapters: { $exists: true, $ne: [] },
-  });
+  const books = await book
+    .find({
+      chapters: { $exists: true, $ne: [] },
+    })
+    .populate("chapters");
   res.json({ books: books, statusCode: 200 });
 };
 exports.findById = async (req, res) => {
