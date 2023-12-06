@@ -107,3 +107,40 @@ exports.uploadAccountAvatar = async (req, res) => {
       res.json({ err: err.message });
     });
 };
+
+exports.getStorageBookAudio = async (req, res) => {
+  let list = [];
+  const blobs = blobServiceClient
+    .getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME_AUDIO)
+    .listBlobsFlat();
+  for await (let blob of blobs) {
+    list.push(blob.name);
+  }
+  return res.json({
+    audioList: list,
+  });
+};
+exports.uploadBookAudio = async (req, res) => {
+  const blobName = getBlobName(req.file.originalname),
+    blobService = new BlockBlobClient(
+      process.env.AZURE_STORAGE_CONNECTION_STRING,
+      process.env.AZURE_STORAGE_CONTAINER_NAME_AUDIO,
+      blobName
+    ),
+    stream = getStream(req.file.buffer),
+    streamLength = req.file.buffer.length;
+  blobService
+    .uploadStream(stream, streamLength)
+    .then(() => {
+      // console.log("res:", res.json());
+      res.json({
+        blobUrl: blobService.url,
+        message: "File uploaded to Azure Blob storage.",
+      });
+    })
+    .catch((err) => {
+      // console.log("err:", err);
+
+      res.json({ err: err.message });
+    });
+};
