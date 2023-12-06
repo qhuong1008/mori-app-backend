@@ -74,14 +74,40 @@ exports.reviewBook = async (req, res) => {
   }
 };
 
+// get ratings by book
+exports.getRatingsByBook = async (req, res) => {
+  try {
+    const bookId = req.params.bookId;
+
+    // Tính tổng số lượt review
+    const totalReviews = await Review.countDocuments({ book_id: bookId });
+
+    // Tính tổng rating
+    const totalRating = await Review.aggregate([
+      { $match: { book_id: bookId } },
+      { $group: { _id: null, totalRating: { $sum: "$rating" } } },
+    ]);
+
+    // Tính rating trung bình
+    const averageRating = totalRating.length > 0 ? totalRating[0].totalRating / totalReviews : 0;
+
+    res.status(200).json({
+      totalReviews: totalReviews,
+      averageRating: averageRating,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "error", message: error.message });
+  }
+};
+
 // get reviews by book
 exports.getReviewsByBook = async (req, res) => {
   try {
     const book_id = req.params.id;
 
-    // Lấy tất cả các đánh giá có nội dung cho quyển sách
     const reviews = await Review.find({
       book_id: book_id,
+      content: { $exists: true },
     })
       .populate("user")
       .exec();
