@@ -16,7 +16,7 @@ exports.increaseTotalReadDaily = async (req, res) => {
     });
 
     // hàm này cập nhật lại lượt đọc -> lướt xuống dưới cùng để xem
-    updateAllTotalRead();
+    updateTotalRead(book_id);
 
     if (bookRanking) {
       // Nếu đã có, cập nhật total_read
@@ -213,6 +213,7 @@ exports.getBookRankingDateOfBook = async (req, res) => {
   }
 };
 
+// chỉ dùng khi nào cần check lại đồng bộ
 const updateAllTotalRead = async () => {
   try {
     // Lấy danh sách tất cả các sách
