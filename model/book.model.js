@@ -11,7 +11,7 @@ const book = new Schema({
   totalListened: { type: Number, default: 0 },
   totalRead: { type: Number, default: 0 },
   totalSaved: { type: [Schema.ObjectId], ref: "Account", default: [] },
-  totalHearted: { type: [Schema.ObjectId], ref: "Account", default: [] },
+  totalHearted: { type: Number, default: 0 },
   rating: { type: Number, default: 5 },
   tags: { type: [String] },
   access_level: { type: Number, default: 0 },
