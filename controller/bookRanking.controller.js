@@ -16,7 +16,8 @@ exports.increaseTotalReadDaily = async (req, res) => {
     });
 
     // hàm này cập nhật lại lượt đọc -> lướt xuống dưới cùng để xem
-    updateTotalRead(book_id);
+    updateAllTotalRead();
+    // updateAllTotalRead(book_id);
 
     if (bookRanking) {
       // Nếu đã có, cập nhật total_read
@@ -238,6 +239,7 @@ const updateTotalRead = async (bookId) => {
       { $match: { book_id: bookId } },
       { $group: { _id: null, totalRead: { $sum: "$totalRead" } } },
     ]);
+    console.log("rankingData", rankingData);
 
     const totalRead = rankingData.length > 0 ? rankingData[0].totalRead : 0;
 

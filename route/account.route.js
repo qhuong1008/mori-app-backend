@@ -8,6 +8,7 @@ router.patch("/:id", cors(), account.update);
 router.get("/get-account/:id", cors(), account.findById);
 router.post("/add-account", cors(), account.create);
 router.post("/find-account", cors(), account.findOne);
+router.post("/change-password", cors(), account.changePassword);
 
 // route cho các api cần xác thực đăng nhập bằng username, password
 const authMiddleware = require("../auth/auth.middlewares");

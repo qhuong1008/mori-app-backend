@@ -1,4 +1,5 @@
 const Account = require("../model/account.model");
+const bcrypt = require("bcrypt");
 
 // tìm user bằng username
 exports.findByUsername = async (username) => {
@@ -96,6 +97,41 @@ exports.update = (req, res) => {
   } catch (err) {
     console.log("err:", err);
     res.json({ error: err, statusCode: 500 });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { username, currentPassword, newPassword } = req.body;
+
+    // Tìm tài khoản bằng tên người dùng
+    const user = await Account.findOne({ username });
+    if (!user.password) {
+      return res
+        .status(401)
+        .json({ error: "error", message: "Tài khoản không tồn tại" });
+    }
+
+
+    // Kiểm tra xem mật khẩu cũ có khớp không
+    const isPasswordValid = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return res
+        .status(401)
+        .json({ error: "error", message: "Mật khẩu cũ không hợp lệ" });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    return res.status(200).json({ message: "Cập nhật mật khẩu thành công" });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "error", message: error.message });
   }
 };
 
