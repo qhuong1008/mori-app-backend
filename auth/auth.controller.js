@@ -75,7 +75,7 @@ exports.registerAccount = async (req, res) => {
   }
   return res.status(400).json({
     error: "error",
-    message: "There was an error in validate the account, please try again.",
+    message: createUser.message,
   });
   // } else {
   //   return res
