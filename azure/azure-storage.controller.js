@@ -35,6 +35,18 @@ exports.getStorageBookPdf = async (req, res) => {
     pdfList: list,
   });
 };
+exports.getStorageBookEpub = async (req, res) => {
+  let list = [];
+  const blobs = blobServiceClient
+    .getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME_EPUB)
+    .listBlobsFlat();
+  for await (let blob of blobs) {
+    list.push(blob.name);
+  }
+  return res.json({
+    epubList: list,
+  });
+};
 
 const getBlobName = (originalName) => {
   const identifier = Math.random().toString().replace(/0\./, ""); // remove "0." from start of string
@@ -83,6 +95,27 @@ exports.uploadBookPdf = async (req, res) => {
     .catch((err) => {
       // console.log("err:", err);
 
+      res.json({ err: err.message });
+    });
+};
+exports.uploadBookEpub = async (req, res) => {
+  const blobName = getBlobName(req.file.originalname),
+    blobService = new BlockBlobClient(
+      process.env.AZURE_STORAGE_CONNECTION_STRING,
+      process.env.AZURE_STORAGE_CONTAINER_NAME_EPUB,
+      blobName
+    ),
+    stream = getStream(req.file.buffer),
+    streamLength = req.file.buffer.length;
+  blobService
+    .uploadStream(stream, streamLength)
+    .then(() => {
+      res.json({
+        blobUrl: blobService.url,
+        message: "File uploaded to Azure Blob storage.",
+      });
+    })
+    .catch((err) => {
       res.json({ err: err.message });
     });
 };
