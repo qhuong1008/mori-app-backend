@@ -1,12 +1,13 @@
 const { Schema, model } = require("mongoose");
 
 const book = new Schema({
-  name: { type: String, unique: true },
+  name: { type: String },
   author: { type: String },
   image: { type: String },
   audio: { type: String },
   intro: { type: String },
   pdf: { type: String },
+  epub: { type: String },
   totalPages: { type: Number, default: 0 },
   totalListened: { type: Number, default: 0 },
   totalRead: { type: Number, default: 0 },

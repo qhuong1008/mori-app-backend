@@ -10,6 +10,7 @@ router.get("/storage-img", storageController.getStorageBookImg);
 
 router.get("/storage-pdf", storageController.getStorageBookPdf);
 router.get("/storage-audio", storageController.getStorageBookAudio);
+router.get("/storage-epub", storageController.getStorageBookEpub);
 
 router.post(
   "/upload/book-img",
@@ -28,13 +29,15 @@ router.post(
   storageController.uploadBookPdf
 );
 router.post(
+  "/upload/book-epub",
+  uploadStrategy,
+  storageController.uploadBookEpub
+);
+router.post(
   "/upload/account-avatar",
   uploadStrategy,
   storageController.uploadAccountAvatar
 );
-router.post(
-  "/upload/chapter",
-  uploadAudioController.uploadChapter
-);
+router.post("/upload/chapter", uploadAudioController.uploadChapter);
 
 module.exports = router;
