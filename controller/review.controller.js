@@ -77,7 +77,7 @@ exports.reviewBook = async (req, res) => {
 // get ratings by book
 exports.getRatingsByBook = async (req, res) => {
   try {
-    const bookId = req.params.bookId;
+    const bookId = req.params.id;
 
     // Tính tổng số lượt review
     const totalReviews = await Review.countDocuments({ book_id: bookId });
@@ -87,6 +87,7 @@ exports.getRatingsByBook = async (req, res) => {
       { $match: { book_id: bookId } },
       { $group: { _id: null, totalRating: { $sum: "$rating" } } },
     ]);
+    console.log(totalRating);
 
     // Tính rating trung bình
     const averageRating = totalRating.length > 0 ? totalRating[0].totalRating / totalReviews : 0;

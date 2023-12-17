@@ -239,14 +239,14 @@ const updateTotalRead = async (bookId) => {
       { $match: { book_id: bookId } },
       { $group: { _id: null, totalRead: { $sum: "$totalRead" } } },
     ]);
-    console.log("rankingData", rankingData);
+    // console.log("rankingData", rankingData);
 
     const totalRead = rankingData.length > 0 ? rankingData[0].totalRead : 0;
 
     // Cập nhật giá trị Book.totalRead
     await Book.updateOne({ _id: bookId }, { totalRead: totalRead });
 
-    console.log(`Updated totalRead for Book with ID ${bookId}: ${totalRead}`);
+    // console.log(`Updated totalRead for Book with ID ${bookId}: ${totalRead}`);
   } catch (error) {
     console.error(`Error updating totalRead: ${error.message}`);
   }
