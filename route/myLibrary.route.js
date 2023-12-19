@@ -13,6 +13,10 @@ router.get(
   "/get-books/:id",
   cors(),
   myLibraryController.getAllBooksInMyLibrary
+);router.get(
+  "/get-books",
+  cors(),
+  myLibraryController.findAll
 );
 router.delete("/book", cors(), myLibraryController.deleteBookFromMyLibrary);
 
