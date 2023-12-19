@@ -40,13 +40,16 @@ exports.createOrUpdateReadHistory = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const readHistorys = await readHistory.find({});
+  // removeDuplicateMyLibraries();
+  const readHistorys = await readHistory.find({}).populate("book");
   res.json({ readHistorys: readHistorys, statusCode: 200 });
 };
 exports.findAllWithUser = async (req, res) => {
-  const result = await readHistory.find({
-    user: req.params.id,
-  }).populate("book");
+  const result = await readHistory
+    .find({
+      user: req.params.id,
+    })
+    .populate("book");
   res.json({ readHistory: result, statusCode: 200 });
 };
 
@@ -73,25 +76,29 @@ exports.findOne = async (req, res) => {
   }
 };
 
-// hàm xóa nếu có bản bị trùng 
-const removeDuplicateReadHistories = async () => {
-  const allRecords = await readHistory.find();
+// hàm xóa nếu có bản bị trùng
+const removeDuplicateMyLibraries = async () => {
+  const allRecords = await readHistory.find({});
 
   const recordsToDelete = [];
   const recordsToKeep = [];
 
   // Tìm các bản ghi trùng và giữ lại bản ghi mới nhất
   for (const record of allRecords) {
-    const existingRecord = recordsToKeep.find(
-      (r) => r.book.toString() === record.book.toString() && r.user.toString() === record.user.toString()
+    const duplicateRecords = recordsToKeep.filter(
+      (r) => r.book.equals(record.book) && r.user.equals(record.user)
     );
 
-    if (existingRecord) {
-      // Nếu đã có, so sánh thời gian và giữ lại bản ghi mới nhất
-      if (record.time > existingRecord.time) {
-        recordsToKeep.splice(recordsToKeep.indexOf(existingRecord), 1);
+    if (duplicateRecords.length > 0) {
+      // Nếu đã có, tìm bản ghi có thời gian lớn nhất
+      const maxTimeRecord = duplicateRecords.reduce((maxRecord, currentRecord) =>
+        currentRecord.time > maxRecord.time ? currentRecord : maxRecord
+      );
+
+      if (record.time > maxTimeRecord.time) {
+        recordsToKeep.splice(recordsToKeep.indexOf(maxTimeRecord), 1);
         recordsToKeep.push(record);
-        recordsToDelete.push(existingRecord);
+        recordsToDelete.push(maxTimeRecord);
       } else {
         recordsToDelete.push(record);
       }

@@ -1,7 +1,5 @@
-const { Schema, model } = require("mongoose");
 const MyLibrary = require("../model/myLibrary.model");
 
-// khởi tạo cùng với tài khoản
 exports.create = async (req, res) => {
   const isExist = await MyLibrary.findOne(req.body);
   if (!isExist) {
@@ -34,11 +32,12 @@ exports.addBookToMyLibrary = async function (req, res) {
 };
 
 exports.getAllBooksInMyLibrary = async (req, res) => {
+  // removeDuplicateMyLibraries();
   const userId = req.params.id;
   try {
     const libraryResult = await MyLibrary.find({
       user: userId,
-    });
+    }).populate("book");
     return res.json({ myLibrary: libraryResult });
   } catch (err) {
     console.log(err);
@@ -61,8 +60,49 @@ exports.deleteBookFromMyLibrary = async (req, res) => {
   }
 };
 
-// hàm này có cần không?
 exports.findOne = async (req, res) => {
-  const myLibrary = await MyLibrary.findOne(req.body);
+  const myLibrary = await MyLibrary.findOne(req.body).populate("book");
   res.json({ myLibrary: myLibrary, statusCode: 200 });
+};
+
+// hàm xóa nếu có bản bị trùng
+const removeDuplicateMyLibraries = async () => {
+  const allRecords = await MyLibrary.find({});
+
+  const recordsToDelete = [];
+  const recordsToKeep = [];
+
+  // Tìm các bản ghi trùng và giữ lại bản ghi mới nhất
+  for (const record of allRecords) {
+    const duplicateRecords = recordsToKeep.filter(
+      (r) => r.book.equals(record.book) && r.user.equals(record.user)
+    );
+
+    if (duplicateRecords.length > 0) {
+      // Nếu đã có, tìm bản ghi có thời gian lớn nhất
+      const maxTimeRecord = duplicateRecords.reduce((maxRecord, currentRecord) =>
+        currentRecord.time > maxRecord.time ? currentRecord : maxRecord
+      );
+
+      if (record.time > maxTimeRecord.time) {
+        recordsToKeep.splice(recordsToKeep.indexOf(maxTimeRecord), 1);
+        recordsToKeep.push(record);
+        recordsToDelete.push(maxTimeRecord);
+      } else {
+        recordsToDelete.push(record);
+      }
+    } else {
+      // Nếu chưa có, thêm vào danh sách giữ lại
+      recordsToKeep.push(record);
+    }
+  }
+
+  // Xóa các bản ghi trùng
+  for (const recordToDelete of recordsToDelete) {
+    await MyLibrary.findByIdAndDelete(recordToDelete._id);
+  }
+};
+exports.findAll = async (req, res) => {
+  const myLibraries = await MyLibrary.find({}).populate("book");
+  res.json({ myLibraries: myLibraries, statusCode: 200 });
 };
