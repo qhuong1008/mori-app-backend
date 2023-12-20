@@ -11,7 +11,10 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const books = await book.find({}).populate("chapters");
+  const books = await book
+    .find({})
+    .populate("chapters")
+    .sort({ createdAt: -1 });
   res.json({ books: books, statusCode: 200 });
 };
 
