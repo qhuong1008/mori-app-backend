@@ -56,21 +56,21 @@ exports.registerAccount = async (req, res) => {
                 <br>Đội ngũ hỗ trợ Mori</br></p>`,
     };
 
-    // try {
-    //   await transporter.sendMail(mailOptions);
+    try {
+      await transporter.sendMail(mailOptions);
       return res.json({
         username,
         message: "Account created successfully",
-        // tokenVerify: token,
+        tokenVerify: token,
       });
-    // } catch (err) {
-    //   console.error("Failed to send verify email:", err);
-    //   return res.status(500).json({ error: "Failed to send verify email" });
-    // }
+    } catch (err) {
+      console.error("Failed to send verify email:", err);
+      return res.status(500).json({ error: "Failed to send verify email" });
+    }
   } else if (createUser === 2) {
     return res.json({
       error: "error",
-      message: "Username hoặc email đã tồn tại",
+      message: "Username or email has already existed!",
     });
   }
   return res.status(400).json({
