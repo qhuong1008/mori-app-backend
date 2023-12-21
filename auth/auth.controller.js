@@ -10,13 +10,13 @@ const jwtVariable = {
   refreshTokenSize: 16, // Kích thước refresh token mong muốn
 };
 
-// const transporter = nodemailer.createTransport({
-//   service: process.env.EMAIL_SERVICE,
-//   auth: {
-//     user: process.env.EMAIL_USER,
-//     pass: process.env.EMAIL_PASS,
-//   },
-// });
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE,
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 // tạo account
 exports.registerAccount = async (req, res) => {
@@ -40,7 +40,7 @@ exports.registerAccount = async (req, res) => {
   const createUser = await accountController.createByUsername(newUser);
 
   // Generate JWT token
-  // const token = jwt.sign({ email: email }, process.env.JWT_SECRET);
+  const token = jwt.sign({ email: email }, process.env.JWT_SECRET);
 
   // Return the result
   if (createUser === 1) {
