@@ -27,7 +27,7 @@ exports.createByUsername = async (user) => {
     }
     return 0;
   } catch (err) {
-    return err;
+    return 0;
   }
 };
 

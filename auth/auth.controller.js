@@ -44,17 +44,17 @@ exports.registerAccount = async (req, res) => {
 
   // Return the result
   if (createUser === 1) {
-    const verifyEmail = `http://${req.headers.host}/verify?email=${email}&token=${token}`;
-    const mailOptions = {
-      from: process.env.EMAIL_USER,
-      to: email,
-      subject: "Xác thực mail tạo tài khoản - Ứng dụng đọc sách online Mori",
-      html: `<p>Chúng tôi nhận được yêu cầu tạo tài khoản của bạn.
-                <br>Vui lòng nhấp vào liên kết dưới đây để xác thực email tạo tài khoản: <a href="${verifyEmail}"> Xác thực mail</a></br>
-                <br>Nếu bạn không thực hiện yêu cầu này, hãy bỏ qua email này.</br></p>
-                <p>Trân trọng,
-                <br>Đội ngũ hỗ trợ Mori</br></p>`,
-    };
+    // const verifyEmail = `http://${req.headers.host}/verify?email=${email}&token=${token}`;
+    // const mailOptions = {
+    //   from: process.env.EMAIL_USER,
+    //   to: email,
+    //   subject: "Xác thực mail tạo tài khoản - Ứng dụng đọc sách online Mori",
+    //   html: `<p>Chúng tôi nhận được yêu cầu tạo tài khoản của bạn.
+    //             <br>Vui lòng nhấp vào liên kết dưới đây để xác thực email tạo tài khoản: <a href="${verifyEmail}"> Xác thực mail</a></br>
+    //             <br>Nếu bạn không thực hiện yêu cầu này, hãy bỏ qua email này.</br></p>
+    //             <p>Trân trọng,
+    //             <br>Đội ngũ hỗ trợ Mori</br></p>`,
+    // };
 
     // try {
     //   await transporter.sendMail(mailOptions);
@@ -75,7 +75,7 @@ exports.registerAccount = async (req, res) => {
   }
   return res.status(400).json({
     error: "error",
-    message: createUser.message,
+    message: "There was an error in validate the account, please try again.",
   });
   // } else {
   //   return res

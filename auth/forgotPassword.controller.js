@@ -19,7 +19,7 @@ exports.forgotPassword = async (req, res) => {
   });
 
   if (!account) {
-    return res.status(404).json({ error: "Account not found" });
+    return res.status(404).json({ error: "error", message: "Account not found" });
   }
   // Generate a password reset token and set its expiration date
   const token = jwt.sign({ id: account._id }, process.env.JWT_SECRET, {
