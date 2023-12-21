@@ -14,7 +14,7 @@ exports.findAll = async (req, res) => {
   const books = await book
     .find({})
     .populate("chapters")
-    .sort({ createdAt: -1 });
+    .sort({ _id: -1 });
   res.json({ books: books, statusCode: 200 });
 };
 
