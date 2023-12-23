@@ -57,7 +57,7 @@ exports.reviewBook = async (req, res) => {
       content: content,
     });
 
-    // Kiểm tra xem người dùng đã nhập đầy đủ nội dung comment hay chưa
+    // Kiểm tra xem người dùng đã nhập đầy đủ nội dung Review hay chưa
     if (!content) {
       return res.status(400).json({ error: "Please enter comment content." });
     } else {
@@ -90,7 +90,8 @@ exports.getRatingsByBook = async (req, res) => {
     console.log(totalRating);
 
     // Tính rating trung bình
-    const averageRating = totalRating.length > 0 ? totalRating[0].totalRating / totalReviews : 0;
+    const averageRating =
+      totalRating.length > 0 ? totalRating[0].totalRating / totalReviews : 0;
 
     res.status(200).json({
       totalReviews: totalReviews,
@@ -127,7 +128,9 @@ exports.updateReview = async (req, res) => {
     const content = req.body.content;
 
     // Kiểm tra xem comment tồn tại hay không
-    const existingReview = await Review.findOne({ _id: review_id, user_id });
+    const existingReview = await Review.findOne({
+      _id: review_id,
+    });
 
     if (!existingReview) {
       return res.status(404).json({ error: "Comment not found." });
@@ -143,7 +146,7 @@ exports.updateReview = async (req, res) => {
 
     await existingReview.save();
 
-    return res.status(200).json("Comment updated successfully!");
+    return res.status(200).json({ message: "Comment updated successfully!" });
   } catch (err) {
     console.log({ err });
     return res.status(500).json({ error: "Something went wrong!" });
@@ -153,14 +156,14 @@ exports.updateReview = async (req, res) => {
 exports.deleteReview = async (req, res) => {
   try {
     const id = req.params.id;
-    let deletedComment = await Review.findByIdAndRemove({ id: id });
+    let deletedComment = await Review.findByIdAndDelete(id);
     if (deletedComment) {
-      res.json({ message: "Comment deleted successfully.", statusCode: 200 });
+      res.json({ message: "Review deleted successfully.", statusCode: 200 });
     } else {
-      res.json({ message: "Comment not found.", statusCode: 404 });
+      res.json({ message: "Review not found.", statusCode: 404 });
     }
   } catch (err) {
-    console.error("Error delete comment: ", err);
+    console.error("Error delete Review: ", err);
     return res.status(400).json({ error: "Something went wrong!" });
   }
 };

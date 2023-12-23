@@ -122,12 +122,12 @@ exports.login = async (req, res) => {
 
   const user = await accountController.findByUsername(username);
   if (!user) {
-    return res.status(401).json("Username does not exist!");
+    return res.status(401).json({ error: "Username does not exist!" });
   }
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);
   if (!isPasswordValid) {
-    return res.status(401).json("Incorrect password!");
+    return res.status(401).json({ error: "Incorrect password!" });
   }
 
   const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
@@ -142,7 +142,7 @@ exports.login = async (req, res) => {
     accessTokenLife
   );
   if (!accessToken) {
-    return res.status(401).json("Login failed, please try again.");
+    return res.status(401).json({ error: "Login failed, please try again." });
   }
 
   let refreshToken = randToken.generate(jwtVariable.refreshTokenSize); // tạo 1 refresh token ngẫu nhiên
@@ -155,7 +155,7 @@ exports.login = async (req, res) => {
   }
 
   return res.json({
-    msg: "Login success",
+    message: "Login success",
     accessToken,
     refreshToken,
     user,
@@ -167,13 +167,13 @@ exports.refreshToken = async (req, res) => {
   // Lấy access token từ header
   const accessTokenFromHeader = req.headers.x_authorization;
   if (!accessTokenFromHeader) {
-    return res.status(400).send("Không tìm thấy access token.");
+    return res.status(400).send({ error: "Không tìm thấy access token." });
   }
 
   // Lấy refresh token từ body
   const refreshTokenFromBody = req.body.refreshToken;
   if (!refreshTokenFromBody) {
-    return res.status(400).send("Không tìm thấy refresh token.");
+    return res.status(400).send({ error: "Không tìm thấy refresh token." });
   }
 
   const accessTokenSecret =
@@ -187,18 +187,18 @@ exports.refreshToken = async (req, res) => {
     accessTokenSecret
   );
   if (!decoded) {
-    return res.status(400).send("Access token không hợp lệ.");
+    return res.status(400).send({ error: "Access token không hợp lệ." });
   }
 
   const username = decoded.payload.username; // Lấy username từ payload
 
   const user = await accountController.findByUsername(username);
   if (!user) {
-    return res.status(401).send("User không tồn tại.");
+    return res.status(401).send({ error: "User không tồn tại." });
   }
 
   if (refreshTokenFromBody !== user.refreshToken) {
-    return res.status(400).send("Refresh token không hợp lệ.");
+    return res.status(400).send({ error: "Refresh token không hợp lệ." });
   }
 
   // Tạo access token mới
@@ -214,7 +214,7 @@ exports.refreshToken = async (req, res) => {
   if (!accessToken) {
     return res
       .status(400)
-      .send("Tạo access token không thành công, vui lòng thử lại.");
+      .send({ error: "Tạo access token không thành công, vui lòng thử lại." });
   }
   return res.json({
     accessToken,
