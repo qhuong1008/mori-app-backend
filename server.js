@@ -29,6 +29,7 @@ const azureStorageRouter = require("./azure/azure-storage.routes");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 
 const app = express();
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -86,7 +87,7 @@ app.use("/api/account", uploadImg);
 
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
-app.use("/auth", authRouter);
+app.use("/api/auth", authRouter);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {

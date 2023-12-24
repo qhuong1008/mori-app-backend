@@ -32,7 +32,6 @@ const account = new Schema({
     unique: true,
     validate: {
       validator: function (v) {
-        // Sử dụng một biểu thức chính quy để kiểm tra định dạng email
         return /\S+@\S+\.\S+/.test(v);
       },
       message: (props) => `${props.value} is not a valid email address!`,
@@ -41,13 +40,6 @@ const account = new Schema({
   displayName: { type: String, required: true, minlength: 3, maxlength: 30 },
   phoneNumber: {
     type: String,
-    // validate: {
-    //   validator: function (value) {
-    //     // Sử dụng validator để kiểm tra số điện thoại ở Việt Nam
-    //     return validator.isMobilePhone(value, "vi-VN");
-    //   },
-    //   message: "Invalid phone number.",
-    // },
   },
   avatar: {
     type: String,
@@ -55,11 +47,7 @@ const account = new Schema({
   },
   role: {
     type: Number,
-    default: 0,
-    validate: {
-      validator: Number.isInteger, // Kiểm tra xem giá trị có phải là số nguyên không
-      message: "{VALUE} is not an integer value!",
-    },
+    default: 0
   },
   is_member: { type: Boolean, default: false },
   is_blocked: { type: Boolean, default: false },

@@ -70,13 +70,13 @@ exports.uploadChapter = async (req, res) => {
         }
 
         // Kiểm tra trong db có chapter nào tên giống chapter này k, có thì trả về lỗi
-        const existingChapter = await Chapter.findOne({ name: fileAudioName });
-        if (existingChapter) {
-          return res.status(400).json({
-            error: "error",
-            message: `Chapter ${fileAudioName} with this name already exists.`,
-          });
-        }
+        // const existingChapter = await Chapter.findOne({ name: fileAudioName });
+        // if (existingChapter) {
+        //   return res.status(400).json({
+        //     error: "error",
+        //     message: `Chapter ${fileAudioName} with this name already exists.`,
+        //   });
+        // }
 
         // Thêm chapter vào db
         const newChapter = new Chapter({
