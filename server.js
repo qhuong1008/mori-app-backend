@@ -36,7 +36,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(
   cors({
-    origin: "*",
+    origin: process.env.DOMAIN,
   })
 );
 app.use(cookieParser());
