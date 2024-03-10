@@ -6,7 +6,7 @@ const multer = require("multer");
 
 const book = require("../controller/book.controller");
 
-router.get("/get-book", cors(), book.findAll);
+router.get("/get-book", book.findAll);
 router.get("/get-book/ebook", cors(), book.findAllEBooks);
 router.get("/get-book/audio-book", cors(), book.findAllAudioBooks);
 router.patch("/:id", cors(), book.update);
