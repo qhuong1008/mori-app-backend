@@ -30,8 +30,11 @@ exports.forgotPassword = async (req, res) => {
   account.passwordResetExpires = Date.now() + time; // 30min
   await account.save();
 
+  const protocol = req.protocol;
+  const host = req.get('host');
+
   // Send the password reset email
-  const resetUrl = `http://localhost:3000/reset-password?token=${token}`;
+  const resetUrl = `${protocol}://${host}/reset-password?token=${token}`;
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: account.email,
