@@ -25,6 +25,7 @@ const bookRankingRouter = require("./route/bookRanking.route");
 const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const azureStorageRouter = require("./azure/azure-storage.routes");
+const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 
@@ -42,6 +43,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json({ extended: false }));
 app.set("trust proxy", 1);
+app.use(authenticateAllowedOrigins);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));

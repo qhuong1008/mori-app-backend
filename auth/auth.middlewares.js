@@ -29,3 +29,17 @@ exports.isAuth = async (req, res, next) => {
 
   return next();
 };
+
+exports.authenticateAllowedOrigins = (req, res, next) => {
+  // Perform origin/referrer validation here
+  const origin = req.headers["origin"] || req.headers["referer"];
+  const allowedOrigins = [process.env.FRONTEND_URL];
+  if (!allowedOrigins.includes(origin)) {
+    console.log("Forbidden origin ",origin)
+    return res.sendStatus(403); // Forbidden
+  }
+  else {
+    console.log("Allowed origin",origin)
+    next()
+  }
+};
