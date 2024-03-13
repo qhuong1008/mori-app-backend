@@ -1,6 +1,6 @@
 const accountController = require("../controller/account.controller");
-
 const authMethod = require("./auth.methods");
+const bcrypt = require("bcrypt");
 
 // một middleware trung gian để xác thực có đúng client đã đăng nhập không
 exports.isAuth = async (req, res, next) => {
@@ -33,13 +33,23 @@ exports.isAuth = async (req, res, next) => {
 exports.authenticateAllowedOrigins = (req, res, next) => {
   // Perform origin/referrer validation here
   const origin = req.headers["origin"] || req.headers["referer"];
-  const allowedOrigins = [process.env.FRONTEND_URL];
-  if (!allowedOrigins.includes(origin)) {
-    console.log("Forbidden origin ",origin)
-    return res.sendStatus(403); // Forbidden
-  }
-  else {
-    console.log("Allowed origin",origin)
-    next()
+  const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
+  const plainToken = process.env.ALLOW_ORIGIN_TOKEN;
+  const hashedToken = req.headers["authorization"].split(" ")[1];
+  const isCorrectToken = bcrypt.compareSync(plainToken, hashedToken);
+  console.log("hashedToken", hashedToken);
+  console.log("isCorrectToken", isCorrectToken);
+  if (hashedToken) {
+    if (!allowedOrigins.includes(origin)) {
+      console.log("Forbidden origin ", origin);
+      return res.sendStatus(403); // Forbidden
+    }
+    if (!isCorrectToken) {
+      return res.sendStatus(403);
+    } else {
+      next();
+    }
+  } else {
+    return res.sendStatus(403);
   }
 };
