@@ -43,7 +43,6 @@ app.use(
 app.use(cookieParser());
 app.use(express.json({ extended: false }));
 app.set("trust proxy", 1);
-app.use(authenticateAllowedOrigins);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -55,6 +54,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 

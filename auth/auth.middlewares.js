@@ -1,6 +1,6 @@
 const accountController = require("../controller/account.controller");
 const authMethod = require("./auth.methods");
-const base64 = require('base64-js');
+const crypto = require("crypto");
 
 // một middleware trung gian để xác thực có đúng client đã đăng nhập không
 exports.isAuth = async (req, res, next) => {
@@ -36,15 +36,16 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
   const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
   const plainToken = process.env.ALLOW_ORIGIN_TOKEN;
   const hashedToken = req.headers["authorization"].split(" ")[1];
-  const decodedToken =  base64.fromByteArray(base64.toByteArray(hashedToken))
+  // const decodedToken = Buffer.from(hashedToken, "base64").toString("utf-8");
+  const decodedToken = hashedToken;
 
-  console.log("decodedToken",decodedToken)
+  console.log("decodedToken", decodedToken);
   if (hashedToken) {
     if (!allowedOrigins.includes(origin)) {
       console.log("Forbidden origin ", origin);
       return res.sendStatus(403); // Forbidden
     }
-    if (plainToken!==decodedToken) {
+    if (plainToken !== decodedToken) {
       return res.sendStatus(403);
     } else {
       next();
