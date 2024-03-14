@@ -28,18 +28,19 @@ const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 
 const uploadImg = require("./controller/upload-file/upload-image.controller");
-
+const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
 const app = express();
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+
 app.use(cookieParser());
 app.use(express.json({ extended: false }));
 app.set("trust proxy", 1);

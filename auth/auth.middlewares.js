@@ -1,6 +1,6 @@
 const accountController = require("../controller/account.controller");
 const authMethod = require("./auth.methods");
-const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 // một middleware trung gian để xác thực có đúng client đã đăng nhập không
 exports.isAuth = async (req, res, next) => {
@@ -37,8 +37,9 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
   const plainToken = process.env.ALLOW_ORIGIN_TOKEN;
   const hashedToken = req.headers["authorization"].split(" ")[1];
   // const decodedToken = Buffer.from(hashedToken, "base64").toString("utf-8");
-  const decodedToken = hashedToken;
+  const decodedToken = jwt.verify(hashedToken, process.env.JWT_SECRET);
 
+  console.log("hashedToken", hashedToken);
   console.log("decodedToken", decodedToken);
   if (hashedToken) {
     if (!allowedOrigins.includes(origin)) {
