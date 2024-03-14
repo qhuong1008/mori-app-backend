@@ -1,3 +1,4 @@
+
 const accountController = require("../controller/account.controller");
 const authMethod = require("./auth.methods");
 const jwt = require("jsonwebtoken");

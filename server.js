@@ -28,7 +28,7 @@ const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 
 const uploadImg = require("./controller/upload-file/upload-image.controller");
-const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
+const allowedOrigins = ["http://103.130.211.150:10047","http://103.130.211.150:10047/"];
 const app = express();
 app.use(
   cors({
