@@ -36,7 +36,7 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
   const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
   const plainToken = process.env.ALLOW_ORIGIN_TOKEN;
   const hashedToken = req.headers["authorization"].split(" ")[1];
-  const decodedToken = atob(hashedToken);
+  const decodedToken = customDecode(hashedToken);
   // const decodedToken = jwt.verify(
   //   hashedToken,
   //   process.env.JWT_SECRET_ALLOW_ORIGIN
@@ -58,3 +58,36 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
     return res.status(403).json({ err: "Forbidden origin" });
   }
 };
+
+function customDecode(encodedStr) {
+  let decodedString = "";
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+  for (let i = 0; i < encodedStr.length; i += 4) {
+    const encodedChar1 = characters.indexOf(encodedStr.charAt(i));
+    const encodedChar2 = characters.indexOf(encodedStr.charAt(i + 1));
+    const encodedChar3 = characters.indexOf(encodedStr.charAt(i + 2));
+    const encodedChar4 = characters.indexOf(encodedStr.charAt(i + 3));
+
+    const triplet =
+      (encodedChar1 << 18) |
+      (encodedChar2 << 12) |
+      (encodedChar3 << 6) |
+      encodedChar4;
+
+    const char1 = (triplet >> 16) & 255;
+    const char2 = (triplet >> 8) & 255;
+    const char3 = triplet & 255;
+
+    if (encodedStr.charAt(i + 2) === "=") {
+      decodedString += String.fromCharCode(char1);
+    } else if (encodedStr.charAt(i + 3) === "=") {
+      decodedString += String.fromCharCode(char1, char2);
+    } else {
+      decodedString += String.fromCharCode(char1, char2, char3);
+    }
+  }
+
+  return decodedString;
+}
