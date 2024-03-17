@@ -1,6 +1,7 @@
 const accountController = require("../controller/account.controller");
 const authMethod = require("./auth.methods");
 const jwt = require("jsonwebtoken");
+const { encode, decode } = require("base64-js");
 
 // một middleware trung gian để xác thực có đúng client đã đăng nhập không
 exports.isAuth = async (req, res, next) => {
@@ -36,7 +37,7 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
   const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
   const plainToken = process.env.ALLOW_ORIGIN_TOKEN;
   const hashedToken = req.headers["authorization"].split(" ")[1];
-  const decodedToken = customDecode(hashedToken);
+  const decodedToken = atob(hashedToken);
   // const decodedToken = jwt.verify(
   //   hashedToken,
   //   process.env.JWT_SECRET_ALLOW_ORIGIN
