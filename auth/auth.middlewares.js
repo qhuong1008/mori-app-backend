@@ -1,4 +1,3 @@
-
 const accountController = require("../controller/account.controller");
 const authMethod = require("./auth.methods");
 const jwt = require("jsonwebtoken");
@@ -37,22 +36,25 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
   const allowedOrigins = [process.env.FRONTEND_URL, process.env.ADMIN_URL];
   const plainToken = process.env.ALLOW_ORIGIN_TOKEN;
   const hashedToken = req.headers["authorization"].split(" ")[1];
-  // const decodedToken = Buffer.from(hashedToken, "base64").toString("utf-8");
-  const decodedToken = jwt.verify(hashedToken, process.env.JWT_SECRET);
+  const decodedToken = atob(hashedToken);
+  // const decodedToken = jwt.verify(
+  //   hashedToken,
+  //   process.env.JWT_SECRET_ALLOW_ORIGIN
+  // );
 
   console.log("hashedToken", hashedToken);
   console.log("decodedToken", decodedToken);
   if (hashedToken) {
     if (!allowedOrigins.includes(origin)) {
       console.log("Forbidden origin ", origin);
-      return res.sendStatus(403); // Forbidden
+      return res.status(403).json({ err: "Forbidden origin" });
     }
     if (plainToken !== decodedToken) {
-      return res.sendStatus(403);
+      return res.status(403).json({ err: "Forbidden origin" });
     } else {
       next();
     }
   } else {
-    return res.sendStatus(403);
+    return res.status(403).json({ err: "Forbidden origin" });
   }
 };
