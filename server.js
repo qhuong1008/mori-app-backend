@@ -26,19 +26,18 @@ const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
-
 const uploadImg = require("./controller/upload-file/upload-image.controller");
+
 const allowedOrigins = [
   "http://103.130.211.150:10047",
   "http://103.130.211.150:10047/",
   "http://localhost:3000",
+  "http://localhost:3000/",
+  "http://localhost:3001",
+  "http://localhost:3001/",
 ];
 const app = express();
-app.use(
-  cors({
-    origin: allowedOrigins,
-  })
-);
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
