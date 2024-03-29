@@ -47,12 +47,12 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
       "http://localhost:3001/",
     ];
 
-    if (!allowedOrigins.includes(origin)) {
-      console.log("Forbidden origin ", origin);
-      return res.status(403).json({ err: "Forbidden origin" });
+    const isAllowedOrigin = allowedOrigins.some(
+      (allowedOrigin) => origin && origin.startsWith(allowedOrigin)
+    );
+    if (isAllowedOrigin == true) {
+      next();
     }
-
-    next();
   } catch (err) {
     console.log("err", err);
   }
