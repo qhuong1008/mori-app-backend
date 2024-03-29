@@ -21,20 +21,16 @@ const transporter = nodemailer.createTransport({
 // tạo account
 exports.registerAccount = async (req, res) => {
   const username = req.body.username;
-  // const username = req.body.username.trim().toLowerCase();
   const password = req.body.password;
   const displayName = req.body.displayName;
   const email = req.body.email;
 
-  // Check if all required fields are provided
-  // if (username && email && password && displayName) {
   const newUser = {
     username: username,
     password: password,
     displayName: displayName,
     email: email,
   };
-  console.log("username", username);
 
   // Create new user and check validation
   const createUser = await accountController.createByUsername(newUser);
