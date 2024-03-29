@@ -37,6 +37,8 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
     const origin = req.headers["origin"] || req.headers["referer"];
     console.log("origin", origin);
     const allowedOrigins = [
+      "https://ebook.workon.space/",
+      "https://ebook.workon.space",
       "http://103.130.211.150:10047",
       "http://103.130.211.150:10047/",
       "http://localhost:3000",
