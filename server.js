@@ -25,18 +25,19 @@ const bookRankingRouter = require("./route/bookRanking.route");
 const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const azureStorageRouter = require("./azure/azure-storage.routes");
-
+const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors({
-  origin: process.env.DOMAIN
-}));
+app.use(bodyParser.json());
+
 app.use(cookieParser());
+app.use(express.json({ extended: false }));
 app.set("trust proxy", 1);
 
 // view engine setup
@@ -45,8 +46,11 @@ app.set("view engine", "hbs");
 
 // app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(logger("dev"));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 
