@@ -25,7 +25,6 @@ const bookRankingRouter = require("./route/bookRanking.route");
 const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const azureStorageRouter = require("./azure/azure-storage.routes");
-const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 
 const allowedOrigins = [
@@ -37,7 +36,11 @@ const allowedOrigins = [
   "http://localhost:3001/",
 ];
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: allowedOrigins,
+  })
+);
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -58,7 +61,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 
@@ -88,9 +90,7 @@ app.use("/api/reply", replyRouter);
 app.use("/api/tag", tagRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/chapter", chapterRouter);
-
 app.use("/api/account", uploadImg);
-
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/auth", authRouter);
