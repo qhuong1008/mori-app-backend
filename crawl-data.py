@@ -21,7 +21,7 @@ def download_playlist(playlist_url, output_path):
             print(f"Error downloading {video.title}: {str(e)}")
 
 if __name__ == "__main__":
-    playlist_url = "" #thay url playlist
+    playlist_url = "https://www.youtube.com/playlist?list=PLX_Y9QOrbzKECA4glzYhs0RbtxNsi6N6i" #thay url playlist
     output_path = "C:/Users/bichl/Downloads"
 
     download_playlist(playlist_url, output_path)

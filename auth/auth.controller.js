@@ -21,20 +21,16 @@ const transporter = nodemailer.createTransport({
 // tạo account
 exports.registerAccount = async (req, res) => {
   const username = req.body.username;
-  // const username = req.body.username.trim().toLowerCase();
   const password = req.body.password;
   const displayName = req.body.displayName;
   const email = req.body.email;
 
-  // Check if all required fields are provided
-  // if (username && email && password && displayName) {
   const newUser = {
     username: username,
     password: password,
     displayName: displayName,
     email: email,
   };
-  console.log("username", username);
 
   // Create new user and check validation
   const createUser = await accountController.createByUsername(newUser);
@@ -42,9 +38,12 @@ exports.registerAccount = async (req, res) => {
   // Generate JWT token
   const token = jwt.sign({ email: email }, process.env.JWT_SECRET);
 
+  const protocol = req.protocol;
+  const host = req.get('host');
+
   // Return the result
   if (createUser === 1) {
-    const verifyEmail = `http://${req.headers.host}/verify?email=${email}&token=${token}`;
+    const verifyEmail = `${protocol}://${host}/verify?email=${email}&token=${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -77,11 +76,7 @@ exports.registerAccount = async (req, res) => {
     error: "error",
     message: createUser.message,
   });
-  // } else {
-  //   return res
-  //     .status(400)
-  //     .json({ error: "error", message: "Fill in missing user information" });
-  // }
+
 };
 
 // Xác nhận email

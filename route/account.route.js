@@ -1,16 +1,18 @@
 const express = require("express");
 const router = express.Router();
-var cors = require("cors");
+const cors = require("cors");
 const account = require("../controller/account.controller");
 
-router.get("/get-account", cors(), account.findAll);
-router.patch("/:id", cors(), account.update);
-router.get("/get-account/:id", cors(), account.findById);
-router.post("/add-account", cors(), account.create);
-router.post("/find-account", cors(), account.findOne);
-router.post("/change-password", cors(), account.changePassword);
+const whitelist = [process.env.DOMAIN]; // Thêm domain bạn muốn cho phép truy cập vào whitelist
 
-// route cho các api cần xác thực đăng nhập bằng username, password
+router.get("/get-account", account.findAll);
+router.patch("/:id",  account.update);
+router.get("/get-account/:id",  account.findById);
+router.post("/add-account",  account.create);
+router.post("/find-account",  account.findOne);
+router.post("/change-password",  account.changePassword);
+
+// Route cho các API cần xác thực đăng nhập bằng username, password
 const authMiddleware = require("../auth/auth.middlewares");
 const isAuth = authMiddleware.isAuth;
 router.get("/profile", isAuth, async (req, res) => {
