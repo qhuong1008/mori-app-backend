@@ -50,7 +50,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(authenticateAllowedOrigins);
+// app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 
@@ -97,11 +97,11 @@ const updateLink = async () => {
 
     // Lặp qua từng sách
     for (const account of accounts) {
-      const newDomain = "http://103.130.211.150:10047";
+      const newDomain = "http://103.130.211.150:10047/api";
       if (account.avatar) {
         // Thay đổi đường dẫn avatar
         account.avatar = account.avatar.replace(
-          "https://moristorage123.blob.core.windows.net",
+          "http://103.130.211.150:10047",
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -115,6 +115,8 @@ const updateLink = async () => {
   }
 };
 
+updateLink();
+
 const Book = require("./model/book.model");
 const updateLinkBook = async () => {
   try {
@@ -124,11 +126,11 @@ const updateLinkBook = async () => {
 
     // Lặp qua từng sách
     for (const book of books) {
-      const newDomain = "http://103.130.211.150:10047";
-      if (book.epub) {
+      const newDomain = "http://103.130.211.150:10047/api";
+      if (book.image) {
         // Thay đổi đường dẫn avatar
-        book.epub = book.epub.replace(
-          "https://moristorage123.blob.core.windows.net",
+        book.image = book.image.replace(
+          "http://103.130.211.150:10047",
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -153,11 +155,11 @@ const updateLinkChapter = async () => {
 
     // Lặp qua từng sách
     for (const book of books) {
-      const newDomain = "http://103.130.211.150:10047";
+      const newDomain = "http://103.130.211.150:10047/api";
       if (book.audio) {
         // Thay đổi đường dẫn avatar
         book.audio = book.audio.replace(
-          "http://103.130.211.150:10047/api",
+          "http://103.130.211.150:10047",
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -173,9 +175,9 @@ const updateLinkChapter = async () => {
 
 // updateLinkChapter();
 
-app.get(`/accountimg/:imgName`, (req, res) => {
+app.get(`/api/accountimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
-  const imagePath = path.join(__dirname, "data","accountimg", imgName);
+  const imagePath = path.join(__dirname, "data", "accountimg", imgName);
   res.sendFile(imagePath);
 });
 app.get(`/api/bookimg/:imgName`, (req, res) => {
