@@ -50,7 +50,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(authenticateAllowedOrigins);
+// app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 
@@ -86,6 +86,113 @@ app.use("/api/account", uploadImg);
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/auth", authRouter);
+
+//////////////////
+const Account = require("./model/account.model");
+const updateLink = async () => {
+  try {
+    // Lấy danh sách tất cả các sách
+    const accounts = await Account.find({});
+    console.log(accounts);
+
+    // Lặp qua từng sách
+    for (const account of accounts) {
+      const newDomain = "http://103.130.211.150:10047";
+      if (account.avatar) {
+        // Thay đổi đường dẫn avatar
+        account.avatar = account.avatar.replace(
+          "https://moristorage123.blob.core.windows.net",
+          newDomain
+        );
+        // Lưu lại các thay đổi vào cơ sở dữ liệu
+        await account.save();
+      }
+    }
+
+    console.log("All LINK updated successfully");
+  } catch (error) {
+    console.error(`Error updating all LINK: ${error.message}`);
+  }
+};
+
+const Book = require("./model/book.model");
+const updateLinkBook = async () => {
+  try {
+    // Lấy danh sách tất cả các sách
+    const books = await Book.find({});
+    console.log(books);
+
+    // Lặp qua từng sách
+    for (const book of books) {
+      const newDomain = "http://103.130.211.150:10047";
+      if (book.epub) {
+        // Thay đổi đường dẫn avatar
+        book.epub = book.epub.replace(
+          "https://moristorage123.blob.core.windows.net",
+          newDomain
+        );
+        // Lưu lại các thay đổi vào cơ sở dữ liệu
+        await book.save();
+      }
+    }
+
+    console.log("All LINK updated successfully");
+  } catch (error) {
+    console.error(`Error updating all LINK: ${error.message}`);
+  }
+};
+
+// updateLinkBook();
+
+const Chapter = require("./model/chapter.model");
+const updateLinkChapter = async () => {
+  try {
+    // Lấy danh sách tất cả các sách
+    const books = await Chapter.find({});
+    console.log(books);
+
+    // Lặp qua từng sách
+    for (const book of books) {
+      const newDomain = "http://103.130.211.150:10047";
+      if (book.audio) {
+        // Thay đổi đường dẫn avatar
+        book.audio = book.audio.replace(
+          "http://103.130.211.150:10047/api",
+          newDomain
+        );
+        // Lưu lại các thay đổi vào cơ sở dữ liệu
+        await book.save();
+      }
+    }
+
+    console.log("All LINK updated successfully");
+  } catch (error) {
+    console.error(`Error updating all LINK: ${error.message}`);
+  }
+};
+
+// updateLinkChapter();
+
+app.get(`/accountimg/:imgName`, (req, res) => {
+  const imgName = req.params.imgName;
+  const imagePath = path.join(__dirname, "data","accountimg", imgName);
+  res.sendFile(imagePath);
+});
+app.get(`/api/bookimg/:imgName`, (req, res) => {
+  const imgName = req.params.imgName;
+  const imagePath = path.join(__dirname, "data", "bookimg", imgName);
+  res.sendFile(imagePath);
+});
+app.get(`/api/bookepub/:imgName`, (req, res) => {
+  const imgName = req.params.imgName;
+  const imagePath = path.join(__dirname, "data", "bookepub", imgName);
+  res.sendFile(imagePath);
+});
+app.get(`/api/bookaudio/:imgName`, (req, res) => {
+  const imgName = req.params.imgName;
+  const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
+  res.sendFile(imagePath);
+});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
