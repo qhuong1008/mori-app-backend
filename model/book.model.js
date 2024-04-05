@@ -18,7 +18,7 @@ const book = new Schema({
   access_level: { type: Number, default: 0 },
   is_active: { type: Boolean },
   chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter", default: [] }],
-  price: { type: BigInt, default: 0 },
+  price: { type: Number, default: 0 },
 });
 
 module.exports = model("Book", book);

@@ -28,6 +28,8 @@ const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 
+const cart = require("./route/cartItem.route");
+
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
@@ -80,12 +82,12 @@ app.use("/api/reply", replyRouter);
 app.use("/api/tag", tagRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/chapter", chapterRouter);
-
 app.use("/api/account", uploadImg);
-
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/auth", authRouter);
+
+app.use("/api/cart", cart);
 
 //////////////////
 const Account = require("./model/account.model");
@@ -115,7 +117,7 @@ const updateLink = async () => {
   }
 };
 
-updateLink();
+// updateLink();
 
 const Book = require("./model/book.model");
 const updateLinkBook = async () => {
