@@ -63,7 +63,7 @@ exports.createPost = async (req, res) => {
     const newPost = new post({ title, content, account, tag });
     await newPost.save();
 
-    res.json({ message: "New post created successfully!" });
+    res.json({ message: "Bài viết được tạo thành công!" });
   } catch (error) {
     console.error("Error creating post:", error);
     res.status(500).json({ error: error });
