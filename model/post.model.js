@@ -3,11 +3,9 @@ const { Schema, model } = require("mongoose");
 const post = new Schema({
   title: {
     type: String,
-    required: true,
   },
   content: {
     type: String,
-    required: true,
   },
   created_at: {
     type: Date,
@@ -20,12 +18,14 @@ const post = new Schema({
   account: {
     type: Schema.Types.ObjectId,
     ref: "Account",
-    required: true,
   },
-  tag: {
-    type: Schema.Types.ObjectId,
-    ref: "Tag",
-  },
+  tag: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Tag",
+      default: [],
+    },
+  ],
   book: {
     type: Schema.Types.ObjectId,
     ref: "Book",

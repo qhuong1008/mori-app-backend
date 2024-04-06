@@ -24,6 +24,7 @@ const replyRouter = require("./route/reply.route");
 const bookRankingRouter = require("./route/bookRanking.route");
 const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
+const postRouter = require("./route/post.route");
 const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
@@ -31,7 +32,7 @@ const uploadImg = require("./controller/upload-file/upload-image.controller");
 const cart = require("./route/cartItem.route");
 
 const app = express();
-// app.use(cors());
+app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -83,7 +84,7 @@ app.use("/api/account", uploadImg);
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/auth", authRouter);
-
+app.use("/api/post", postRouter);
 app.use("/api/cart", cart);
 
 //////////////////

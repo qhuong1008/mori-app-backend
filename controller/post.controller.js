@@ -1,10 +1,17 @@
-const axios = require("axios");
 const post = require("../model/post.model");
 const Tag = require("../model/tag.model");
 const { createTag } = require("./tag.controller");
 exports.findAll = async (req, res) => {
   try {
-    const posts = await post.find({});
+    const posts = await post
+      .find()
+      .populate({
+        path: "account",
+        select:
+          "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
+      })
+      .populate("tag");
+
     res.json({ posts: posts, statusCode: 200 });
   } catch (err) {
     res.status(500).json({ err: NativeError });
@@ -41,22 +48,24 @@ exports.deletePost = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
-  const { postRequest } = req.body;
-  console.log("post", postRequest);
+  const title = req.body.title;
+  const content = req.body.content;
+  const account = req.body.account;
+  const tag = req.body.tag;
   try {
-    if (!postRequest.title || !postRequest.content || !postRequest.tag) {
+    if (!title || !content) {
       return res
         .status(400)
         .json({ message: "Vui lòng nhập đủ thông tin bài viết!" });
     }
 
     // Tạo mới post
-    const newPost = new post({ postRequest });
+    const newPost = new post({ title, content, account, tag });
     await newPost.save();
 
     res.json({ message: "New post created successfully!" });
   } catch (error) {
-    console.error("Error creating tag:", error);
+    console.error("Error creating post:", error);
     res.status(500).json({ error: error });
   }
 };
