@@ -29,13 +29,12 @@ const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 
 const app = express();
-app.use(cors());
+// app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 app.use(cookieParser());
 app.use(express.json({ extended: false }));
 app.set("trust proxy", 1);
@@ -43,8 +42,6 @@ app.set("trust proxy", 1);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
-
-// app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -80,9 +77,7 @@ app.use("/api/reply", replyRouter);
 app.use("/api/tag", tagRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/chapter", chapterRouter);
-
 app.use("/api/account", uploadImg);
-
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/auth", authRouter);
@@ -93,7 +88,6 @@ const updateLink = async () => {
   try {
     // Lấy danh sách tất cả các sách
     const accounts = await Account.find({});
-    console.log(accounts);
 
     // Lặp qua từng sách
     for (const account of accounts) {
