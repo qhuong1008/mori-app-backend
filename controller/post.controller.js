@@ -21,7 +21,14 @@ exports.findAll = async (req, res) => {
 exports.findById = async (req, res) => {
   try {
     const postId = req.params.id;
-    const postResult = await post.findById(postId);
+    const postResult = await post
+      .findById(postId)
+      .populate({
+        path: "account",
+        select:
+          "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
+      })
+      .populate("tag");
     res.json({ post: postResult, statusCode: 200 });
   } catch (err) {
     console.error("err", err);
@@ -56,7 +63,7 @@ exports.createPost = async (req, res) => {
     if (!title || !content) {
       return res
         .status(400)
-        .json({ message: "Vui lòng nhập đủ thông tin bài viết!" });
+        .json({ error: "Vui lòng nhập đủ thông tin bài viết!" });
     }
 
     // Tạo mới post
