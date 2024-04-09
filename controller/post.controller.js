@@ -1,6 +1,7 @@
 const post = require("../model/post.model");
 const Tag = require("../model/tag.model");
 const { createTag } = require("./tag.controller");
+const mongoose = require("mongoose");
 exports.findAll = async (req, res) => {
   try {
     const posts = await post
@@ -30,6 +31,24 @@ exports.findById = async (req, res) => {
       })
       .populate("tag");
     res.json({ post: postResult, statusCode: 200 });
+  } catch (err) {
+    console.error("err", err);
+    res.status(500).json({ err: err });
+  }
+};
+
+exports.findByUserId = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const postResult = await post
+      .find({ account: userId })
+      .populate({
+        path: "account",
+        select:
+          "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
+      })
+      .populate("tag");
+    res.json({ data: postResult, statusCode: 200 });
   } catch (err) {
     console.error("err", err);
     res.status(500).json({ err: err });

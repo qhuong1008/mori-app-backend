@@ -96,11 +96,11 @@ const updateLink = async () => {
 
     // Lặp qua từng sách
     for (const account of accounts) {
-      const newDomain = "http://103.130.211.150:10047/api";
+      const newDomain = `${process.env.BACKEND_URL}/api`;
       if (account.avatar) {
         // Thay đổi đường dẫn avatar
         account.avatar = account.avatar.replace(
-          "http://103.130.211.150:10047",
+          `${process.env.BACKEND_URL}`,
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -125,11 +125,11 @@ const updateLinkBook = async () => {
 
     // Lặp qua từng sách
     for (const book of books) {
-      const newDomain = "http://103.130.211.150:10047/api";
+      const newDomain = `${process.env.BACKEND_URL}/api`;
       if (book.image) {
         // Thay đổi đường dẫn avatar
         book.image = book.image.replace(
-          "http://103.130.211.150:10047",
+          `${process.env.BACKEND_URL}`,
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -154,11 +154,11 @@ const updateLinkChapter = async () => {
 
     // Lặp qua từng sách
     for (const book of books) {
-      const newDomain = "http://103.130.211.150:10047/api";
+      const newDomain = `${process.env.BACKEND_URL}/api`;
       if (book.audio) {
         // Thay đổi đường dẫn avatar
         book.audio = book.audio.replace(
-          "http://103.130.211.150:10047",
+          `${process.env.BACKEND_URL}`,
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -174,22 +174,22 @@ const updateLinkChapter = async () => {
 
 // updateLinkChapter();
 
-app.get(`/api/accountimg/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/accountimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "accountimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookimg/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/bookimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookepub/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/bookepub/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookepub", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookaudio/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/bookaudio/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
   res.sendFile(imagePath);
