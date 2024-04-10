@@ -50,7 +50,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-// app.use(authenticateAllowedOrigins);
+app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 
@@ -174,22 +174,22 @@ const updateLinkChapter = async () => {
 
 // updateLinkChapter();
 
-app.get(`https://ebook.workon.space/api/accountimg/:imgName`, (req, res) => {
+app.get(`/api/accountimg/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "accountimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`https://ebook.workon.space/api/bookimg/:imgName`, (req, res) => {
+app.get(`/api/bookimg/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`https://ebook.workon.space/api/bookepub/:imgName`, (req, res) => {
+app.get(`/api/bookepub/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookepub", imgName);
   res.sendFile(imagePath);
 });
-app.get(`https://ebook.workon.space/api/bookaudio/:imgName`, (req, res) => {
+app.get(`/api/bookaudio/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
   res.sendFile(imagePath);
