@@ -24,6 +24,7 @@ const replyRouter = require("./route/reply.route");
 const bookRankingRouter = require("./route/bookRanking.route");
 const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
+const postRouter = require("./route/post.route");
 const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
@@ -37,7 +38,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
 app.use(cookieParser());
 app.use(express.json({ extended: false }));
 app.set("trust proxy", 1);
@@ -45,8 +45,6 @@ app.set("trust proxy", 1);
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "hbs");
-
-// app.use(favicon(path.join(__dirname, "public", "favicon.ico")));
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -86,7 +84,7 @@ app.use("/api/account", uploadImg);
 app.use("/api/azure", azureStorageRouter);
 app.use("/api/bookRanking", bookRankingRouter);
 app.use("/api/auth", authRouter);
-
+app.use("/api/post", postRouter);
 app.use("/api/cart", cart);
 
 //////////////////
@@ -95,15 +93,14 @@ const updateLink = async () => {
   try {
     // Lấy danh sách tất cả các sách
     const accounts = await Account.find({});
-    console.log(accounts);
 
     // Lặp qua từng sách
     for (const account of accounts) {
-      const newDomain = "http://103.130.211.150:10047/api";
+      const newDomain = `${process.env.BACKEND_URL}/api`;
       if (account.avatar) {
         // Thay đổi đường dẫn avatar
         account.avatar = account.avatar.replace(
-          "http://103.130.211.150:10047",
+          `${process.env.BACKEND_URL}`,
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -128,11 +125,11 @@ const updateLinkBook = async () => {
 
     // Lặp qua từng sách
     for (const book of books) {
-      const newDomain = "http://103.130.211.150:10047/api";
+      const newDomain = `${process.env.BACKEND_URL}/api`;
       if (book.image) {
         // Thay đổi đường dẫn avatar
         book.image = book.image.replace(
-          "http://103.130.211.150:10047",
+          `${process.env.BACKEND_URL}`,
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -157,11 +154,11 @@ const updateLinkChapter = async () => {
 
     // Lặp qua từng sách
     for (const book of books) {
-      const newDomain = "http://103.130.211.150:10047/api";
+      const newDomain = `${process.env.BACKEND_URL}/api`;
       if (book.audio) {
         // Thay đổi đường dẫn avatar
         book.audio = book.audio.replace(
-          "http://103.130.211.150:10047",
+          `${process.env.BACKEND_URL}`,
           newDomain
         );
         // Lưu lại các thay đổi vào cơ sở dữ liệu
@@ -177,22 +174,22 @@ const updateLinkChapter = async () => {
 
 // updateLinkChapter();
 
-app.get(`/api/accountimg/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/accountimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "accountimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookimg/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/bookimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookepub/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/bookepub/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookepub", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookaudio/:imgName`, (req, res) => {
+app.get(`https://ebook.workon.space/api/bookaudio/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
   res.sendFile(imagePath);

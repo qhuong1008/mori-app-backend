@@ -47,17 +47,27 @@ exports.updateRefreshToken = async (username, refreshToken) => {
 
 // tạo user khi dùng tài khoản gg
 exports.create = async (req, res) => {
-  const isExist = await Account.findOne(req.body);
-  if (!isExist) {
-    var accountDetail = new Account(req.body);
-    await accountDetail
-      .save()
-      .then(() => {
-        res.json(0);
-      })
-      .catch((err) => res.json(err));
-  } else {
-    res.json(1);
+  try {
+    const isExist = await Account.findOne({ email: req.body.email });
+    console.log("isExist", isExist);
+    if (!isExist) {
+      var accountDetail = new Account({
+        email: req.body.email,
+        displayName: req.body.displayName,
+        avatar: req.body.avatar,
+        is_member: false,
+        is_blocked: false,
+        is_active: true,
+        is_verify_email: false,
+      });
+      await accountDetail.save();
+      return res.status(200).json({ data: accountDetail });
+    } else {
+      return res.status(200).json({ data: "User already registered!" });
+    }
+  } catch (err) {
+    console.log("login error: ", err);
+    return res.status(400).json({ err: err });
   }
 };
 
@@ -111,7 +121,6 @@ exports.changePassword = async (req, res) => {
         .status(401)
         .json({ error: "error", message: "Tài khoản không tồn tại" });
     }
-
 
     // Kiểm tra xem mật khẩu cũ có khớp không
     const isPasswordValid = await bcrypt.compare(
