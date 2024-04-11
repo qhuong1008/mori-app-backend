@@ -95,3 +95,19 @@ exports.createPost = async (req, res) => {
     res.status(500).json({ error: error });
   }
 };
+
+exports.uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    return res.status(200).json({
+      message: "File uploaded successfully!",
+      filename: req.file.filename,
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(400).json({ err: err });
+  }
+};
