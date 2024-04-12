@@ -6,6 +6,7 @@ const cartItemController = require("../controller/cartItem.controller");
 
 router.post("/add-cartitem", cors(), cartItemController.addBooktoCart);
 router.get("/get-cartitem/:id", cors(), cartItemController.cartOfCustomer);
+router.get("/selected-items", cors(), cartItemController.getSelectedItems);
 router.patch(
   "/update-quantity",
   cors(),

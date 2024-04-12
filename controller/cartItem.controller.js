@@ -1,5 +1,19 @@
 const CartItem = require("../model/cartItem.model");
 
+exports.getSelectedItems = async (req, res) => {
+  try {
+    const selectedItems = req.body.selectedItems;
+    const itemsCheckout = await CartItem.find({ _id: { $in: selectedItems }}).populate(
+      "book_id",
+      "name image price"
+    );
+    res.json({ itemsCheckout: itemsCheckout, statusCode: 200 });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+    console.log(error);
+  }
+};
+
 exports.addBooktoCart = async (req, res) => {
   const { account_id, book_id, quantity } = req.body;
   try {
