@@ -61,7 +61,6 @@ exports.getBookRanking = async (req, res) => {
 
     switch (interval) {
       case "daily":
-        console.log("call ranking daily");
         startDate = new Date();
         startDate.setHours(0, 0, 0, 0);
         endDate = new Date();
@@ -69,7 +68,6 @@ exports.getBookRanking = async (req, res) => {
         break;
 
       case "weekly":
-        console.log("call ranking weekly");
         endDate = new Date(); // Ngày hiện tại
         endDate.setHours(23, 59, 59, 999);
 
@@ -80,7 +78,6 @@ exports.getBookRanking = async (req, res) => {
         break;
 
       case "monthly":
-        console.log("call ranking monthly");
         startDate = new Date();
         startDate.setMonth(startDate.getMonth() - 1); //set về ngày này tháng trước
         startDate.setHours(0, 0, 0, 0);
@@ -150,13 +147,11 @@ exports.getBookRankingPreviousOfBook = async (req, res) => {
   const bookId = req.params.book_id;
   const previous = req.params.previous;
 
-  console.log(bookId);
 
   try {
     const previousDate = new Date();
     previousDate.setDate(previousDate.getDate() - previous);
-    console.log(previousDate);
-    console.log(new Date());
+
 
     // Tìm sách trong cơ sở dữ liệu
     const bookRankings = await BookRanking.find({
@@ -225,7 +220,6 @@ const updateAllTotalRead = async () => {
       await updateTotalRead(book._id);
     }
 
-    console.log("All totalRead updated successfully");
   } catch (error) {
     console.error(`Error updating all totalRead: ${error.message}`);
   }
@@ -239,14 +233,12 @@ const updateTotalRead = async (bookId) => {
       { $match: { book_id: bookId } },
       { $group: { _id: null, totalRead: { $sum: "$totalRead" } } },
     ]);
-    // console.log("rankingData", rankingData);
 
     const totalRead = rankingData.length > 0 ? rankingData[0].totalRead : 0;
 
     // Cập nhật giá trị Book.totalRead
     await Book.updateOne({ _id: bookId }, { totalRead: totalRead });
 
-    // console.log(`Updated totalRead for Book with ID ${bookId}: ${totalRead}`);
   } catch (error) {
     console.error(`Error updating totalRead: ${error.message}`);
   }
