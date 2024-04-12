@@ -31,6 +31,7 @@ const uploadImg = require("./controller/upload-file/upload-image.controller");
 
 const cart = require("./route/cartItem.route");
 const order = require("./route/order.route");
+const payment = require("./route/payment.route");
 
 const app = express();
 app.use(cors());
@@ -88,6 +89,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/post", postRouter);
 app.use("/api/cart", cart);
 app.use("/api/order", order);
+app.use("/api/order", payment);
 
 //////////////////
 const Account = require("./model/account.model");

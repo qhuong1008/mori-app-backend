@@ -4,6 +4,7 @@ var cors = require("cors");
 
 const orderController = require("../controller/order.controller");
 
-router.post("/", cors(), orderController.order);
+router.post("/create", cors(), orderController.order);
+
 
 module.exports = router;
