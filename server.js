@@ -26,7 +26,7 @@ const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const postRouter = require("./route/post.route");
 const azureStorageRouter = require("./azure/azure-storage.routes");
-// const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
+const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 
 const cart = require("./route/cartItem.route");
@@ -52,7 +52,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-// app.use(authenticateAllowedOrigins);
+app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 

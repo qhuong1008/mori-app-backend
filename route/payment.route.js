@@ -82,7 +82,8 @@ router.post("/create_payment_url", cors(), function (req, res, next) {
   vnp_Params["vnp_SecureHash"] = signed;
   vnpUrl += "?" + querystring.stringify(vnp_Params, { encode: false });
 
-  res.redirect(vnpUrl);
+//   res.redirect(vnpUrl);
+    res.json({ paymentUrl: vnpUrl });
 });
 
 router.get("/vnpay_return", cors(), function (req, res, next) {
@@ -103,7 +104,7 @@ router.get("/vnpay_return", cors(), function (req, res, next) {
   let signData = querystring.stringify(vnp_Params, { encode: false });
   let crypto = require("crypto");
   let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+  var signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
   if (secureHash === signed) {
     //Kiem tra xem du lieu trong db co hop le hay khong va thong bao ket qua
@@ -117,6 +118,7 @@ router.get("/vnpay_return", cors(), function (req, res, next) {
 router.get("/vnpay_ipn", cors(), function (req, res, next) {
   let vnp_Params = req.query;
   let secureHash = vnp_Params["vnp_SecureHash"];
+  console.log("tớ có được gọi nè");
 
   let orderId = vnp_Params["vnp_TxnRef"];
   let rspCode = vnp_Params["vnp_ResponseCode"];
@@ -131,7 +133,7 @@ router.get("/vnpay_ipn", cors(), function (req, res, next) {
   let signData = querystring.stringify(vnp_Params, { encode: false });
   let crypto = require("crypto");
   let hmac = crypto.createHmac("sha512", secretKey);
-  let signed = hmac.update(new Buffer(signData, "utf-8")).digest("hex");
+  var signed = hmac.update(Buffer.from(signData, "utf-8")).digest("hex");
 
   let paymentStatus = "0"; // Giả sử '0' là trạng thái khởi tạo giao dịch, chưa có IPN. Trạng thái này được lưu khi yêu cầu thanh toán chuyển hướng sang Cổng thanh toán VNPAY tại đầu khởi tạo đơn hàng.
   //let paymentStatus = '1'; // Giả sử '1' là trạng thái thành công bạn cập nhật sau IPN được gọi và trả kết quả về nó
@@ -157,12 +159,10 @@ router.get("/vnpay_ipn", cors(), function (req, res, next) {
             res.status(200).json({ RspCode: "00", Message: "Success" });
           }
         } else {
-          res
-            .status(200)
-            .json({
-              RspCode: "02",
-              Message: "This order has been updated to the payment status",
-            });
+          res.status(200).json({
+            RspCode: "02",
+            Message: "This order has been updated to the payment status",
+          });
         }
       } else {
         res.status(200).json({ RspCode: "04", Message: "Amount invalid" });
@@ -223,7 +223,7 @@ router.post("/querydr", cors(), function (req, res, next) {
     vnp_OrderInfo;
 
   let hmac = crypto.createHmac("sha512", secretKey);
-  let vnp_SecureHash = hmac.update(new Buffer(data, "utf-8")).digest("hex");
+  let vnp_SecureHash = hmac.update(new Buffer.from(data, "utf-8")).digest("hex");
 
   let dataObj = {
     vnp_RequestId: vnp_RequestId,
@@ -312,7 +312,7 @@ router.post("/refund", cors(), function (req, res, next) {
     "|" +
     vnp_OrderInfo;
   let hmac = crypto.createHmac("sha512", secretKey);
-  let vnp_SecureHash = hmac.update(new Buffer(data, "utf-8")).digest("hex");
+  let vnp_SecureHash = hmac.update(new Buffer.from(data, "utf-8")).digest("hex");
 
   let dataObj = {
     vnp_RequestId: vnp_RequestId,
