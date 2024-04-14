@@ -44,12 +44,36 @@ exports.updateRefreshToken = async (username, refreshToken) => {
     return false;
   }
 };
-
+exports.isGoogleAccountExist = async (email) => {
+  const isExist = await Account.findOne({ email: email });
+  return isExist;
+};
+exports.getGoogleAccount = async (email) => {
+  const account = await Account.findOne({ email: email });
+  return account;
+};
+exports.createNewAccount = async (newAccount) => {
+  try {
+    var accountDetail = new Account({
+      email: newAccount.email,
+      displayName: newAccount.displayName,
+      avatar: newAccount.avatar,
+      is_member: false,
+      is_blocked: false,
+      is_active: true,
+      is_verify_email: false,
+    });
+    await accountDetail.save();
+    return accountDetail;
+  } catch (err) {
+    return err;
+  }
+};
 // tạo user khi dùng tài khoản gg
 exports.create = async (req, res) => {
   try {
     const isExist = await Account.findOne({ email: req.body.email });
-    console.log("isExist", isExist);
+
     if (!isExist) {
       var accountDetail = new Account({
         email: req.body.email,

@@ -21,26 +21,15 @@ const postImgStorage = multer.diskStorage({
   },
 });
 
-const uploadPostImg = multer({ storage: postImgStorage });
+const uploadPostImg = multer({
+  storage: postImgStorage,
+});
+
 router.post(
   "/upload-image",
   uploadPostImg.single("image"),
   cors(),
-  async (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: "No file uploaded" });
-      }
-
-      return res.status(200).json({
-        message: "File uploaded successfully!",
-        filename: req.file.filename,
-      });
-    } catch (err) {
-      console.log("err", err);
-      return res.status(400).json({ err: err });
-    }
-  }
+  postController.uploadImage
 );
 
 module.exports = router;

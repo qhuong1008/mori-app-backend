@@ -196,6 +196,11 @@ app.get(`/api/bookaudio/:imgName`, cors(), (req, res) => {
   const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
   res.sendFile(imagePath);
 });
+app.get(`/api/postimg/:imgName`, cors(), (req, res) => {
+  const imgName = req.params.imgName;
+  const imagePath = path.join(__dirname, "data", "postimg", imgName);
+  res.sendFile(imagePath);
+});
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
