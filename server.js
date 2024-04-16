@@ -26,11 +26,11 @@ const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const postRouter = require("./route/post.route");
 const azureStorageRouter = require("./azure/azure-storage.routes");
-const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
+// const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
-
 const cart = require("./route/cartItem.route");
 const order = require("./route/order.route");
+const commentRouter = require("./route/comment.route");
 
 const app = express();
 app.use(cors());
@@ -51,7 +51,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(authenticateAllowedOrigins);
+// app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 
@@ -88,6 +88,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/post", postRouter);
 app.use("/api/cart", cart);
 app.use("/api/order", order);
+app.use("/api/comment", commentRouter);
 
 //////////////////
 const Account = require("./model/account.model");
@@ -194,6 +195,11 @@ app.get(`/api/bookepub/:imgName`, cors(), (req, res) => {
 app.get(`/api/bookaudio/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
+  res.sendFile(imagePath);
+});
+app.get(`/api/postimg/:imgName`, cors(), (req, res) => {
+  const imgName = req.params.imgName;
+  const imagePath = path.join(__dirname, "data", "postimg", imgName);
   res.sendFile(imagePath);
 });
 

@@ -86,14 +86,14 @@ exports.uploadBookPdf = async (req, res) => {
   blobService
     .uploadStream(stream, streamLength)
     .then(() => {
-      // console.log("res:", res.json());
+    
       res.json({
         blobUrl: blobService.url,
         message: "File uploaded to Azure Blob storage.",
       });
     })
     .catch((err) => {
-      // console.log("err:", err);
+  
 
       res.json({ err: err.message });
     });
@@ -165,14 +165,14 @@ exports.uploadBookAudio = async (req, res) => {
   blobService
     .uploadStream(stream, streamLength)
     .then(() => {
-      // console.log("res:", res.json());
+
       res.json({
         blobUrl: blobService.url,
         message: "File uploaded to Azure Blob storage.",
       });
     })
     .catch((err) => {
-      // console.log("err:", err);
+
 
       res.json({ err: err.message });
     });

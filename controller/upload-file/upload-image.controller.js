@@ -21,8 +21,12 @@ const upload = multer({
 });
 
 // Kết nối tới Azure Storage
-const blobServiceClient = BlobServiceClient.fromConnectionString(process.env.AZURE_STORAGE_CONNECTION_STRING);
-const containerClient = blobServiceClient.getContainerClient(process.env.AZURE_STORAGE_CONTAINER_NAME);
+const blobServiceClient = BlobServiceClient.fromConnectionString(
+  process.env.AZURE_STORAGE_CONNECTION_STRING
+);
+const containerClient = blobServiceClient.getContainerClient(
+  process.env.AZURE_STORAGE_CONTAINER_NAME
+);
 
 checkAzureStorageConnection();
 
@@ -92,5 +96,15 @@ async function checkAzureStorageConnection() {
     console.error("Error checking Azure Storage connection:", error);
   }
 }
+
+// Multer Configuration
+const postImgStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "data/postimg/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
 
 module.exports = router;

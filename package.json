@@ -27,7 +27,8 @@
   "scripts": {
     "start": "nodemon server.js -e ejs,js,css,html,jpg,png,scss",
     "prod": "node server.js",
-    "test": "jest"
+    "test": "jest",
+    "nodemon": "nodemon --signal SIGKILL"
   },
   "devDependencies": {
     "jest": "^29.7.0",
