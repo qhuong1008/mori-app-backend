@@ -80,3 +80,33 @@ exports.getAllCommentsByUserId = async (req, res) => {
     return res.status(500).json({ error: "Something wrong occured!" });
   }
 };
+exports.likeComment = async (req, res) => {
+  try {
+    const commentId = req.params.id;
+    const { accountId } = req.body;
+
+    // Find the comment
+    const comment = await Comment.findById(commentId);
+
+    // Check if the account has already liked the comment
+    const isLiked = comment.likes.includes(accountId);
+
+    if (isLiked) {
+      // Remove the account ID from the likes array
+      comment.likes = comment.likes.filter(
+        (like) => like.toString() !== accountId
+      );
+    } else {
+      // Add the account ID to the likes array
+      comment.likes.push(accountId);
+    }
+
+    await comment.save();
+    if (isLiked) {
+      return res.status(200).json({ message: "Unhearted!" });
+    }
+    return res.status(200).json({ message: "Hearted!" });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

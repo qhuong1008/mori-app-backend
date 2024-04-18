@@ -1,9 +1,11 @@
 const post = require("../model/post.model");
+const comment = require("../model/comment.model");
 const Tag = require("../model/tag.model");
 const { createTag } = require("./tag.controller");
 const mongoose = require("mongoose");
 const imageController = require("../controller/image.controller");
 const ObjectId = mongoose.Types.ObjectId;
+
 exports.findAll = async (req, res) => {
   try {
     const posts = await post

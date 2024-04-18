@@ -7,5 +7,6 @@ const commentController = require("../controller/comment.controller");
 router.post("/", cors(), commentController.createComment);
 router.post("/user", cors(), commentController.getAllCommentsByUserId);
 router.post("/reply", cors(), commentController.createReplyComment);
+router.post("/:id/like", cors(), commentController.likeComment);
 
 module.exports = router;

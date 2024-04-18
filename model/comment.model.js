@@ -24,6 +24,13 @@ const commentSchema = new Schema({
     ref: "Post",
     required: true,
   },
+  likes: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Account",
+      default: [],
+    },
+  ],
   parent_comment: {
     type: Schema.Types.ObjectId,
     ref: "Comment",
