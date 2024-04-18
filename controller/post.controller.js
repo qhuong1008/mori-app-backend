@@ -129,3 +129,51 @@ exports.uploadImage = async (req, res) => {
     return res.status(400).json({ err: err });
   }
 };
+exports.likePost = async (req, res) => {
+  try {
+    const postData = await post.findById(req.params.id);
+    if (!postData) {
+      return res.status(404).json({ error: "Không tìm thấy bài viết." });
+    }
+
+    const accountId = req.body.accountId;
+    const isLiked = postData.likes.includes(accountId);
+
+    if (isLiked) {
+      // Remove the account ID from the likes array
+      postData.likes = postData.likes.filter(
+        (like) => like.toString() !== accountId
+      );
+    } else {
+      // Add the account ID to the likes array
+      postData.likes.push(accountId);
+    }
+
+    await postData.save();
+    if (isLiked) {
+      return res.status(200).json({ message: "Unhearted!" });
+    }
+    return res.status(200).json({ message: "Hearted!" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.sharePost = async (req, res) => {
+  try {
+    const postData = await post.findById(req.params.id);
+    if (!postData) {
+      return res.status(404).json({ error: "Không tìm thấy bài viết." });
+    }
+
+    const accountId = req.body.accountId;
+
+    postData.shares.push(accountId);
+
+    await postData.save();
+
+    return res.status(200).json({ message: "Post shared!" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};

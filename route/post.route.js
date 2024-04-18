@@ -32,4 +32,7 @@ router.post(
   postController.uploadImage
 );
 
+router.post("/:id/like", cors(), postController.likePost);
+router.post("/:id/share", cors(), postController.sharePost);
+
 module.exports = router;
