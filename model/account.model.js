@@ -5,39 +5,39 @@ const validator = require("validator");
 const account = new Schema({
   username: {
     type: String,
-    unique: true,
-    validate: {
-      validator: function (value) {
-        // Kiểm tra xem username có đúng định dạng hay không (ví dụ: không có ký tự đặc biệt)
-        return /^[a-zA-Z0-9]+$/.test(value);
-      },
-      message: "Username is not valid.",
-    },
+    // unique: true,
+    // validate: {
+    //   validator: function (value) {
+    //     // Kiểm tra xem username có đúng định dạng hay không (ví dụ: không có ký tự đặc biệt)
+    //     return /^[a-zA-Z0-9]+$/.test(value);
+    //   },
+    //   message: "Username is not valid.",
+    // },
   },
   password: {
     type: String,
     minlength: 6,
-    validate: {
-      validator: function (value) {
-        // Sử dụng validator để kiểm tra yêu cầu về mật khẩu mạnh
-        return validator.isStrongPassword(value);
-      },
-      message:
-        "Password must contain at least 8 characters, including uppercase letters, lowercase letters, numbers and special characters.",
-    },
+    // validate: {
+    //   validator: function (value) {
+    //     // Sử dụng validator để kiểm tra yêu cầu về mật khẩu mạnh
+    //     return validator.isStrongPassword(value);
+    //   },
+    //   message:
+    //     "Password must contain at least 8 characters, including uppercase letters, lowercase letters, numbers and special characters.",
+    // },
   },
   email: {
     type: String,
-    required: true,
-    unique: true,
-    validate: {
-      validator: function (v) {
-        return /\S+@\S+\.\S+/.test(v);
-      },
-      message: (props) => `${props.value} is not a valid email address!`,
-    },
+    // required: true,
+    // unique: true,
+    // validate: {
+    //   validator: function (v) {
+    //     return /\S+@\S+\.\S+/.test(v);
+    //   },
+    //   message: (props) => `${props.value} is not a valid email address!`,
+    // },
   },
-  displayName: { type: String, required: true, minlength: 3, maxlength: 30 },
+  displayName: { type: String, minlength: 3, maxlength: 30 },
   phoneNumber: {
     type: String,
   },
@@ -47,7 +47,7 @@ const account = new Schema({
   },
   role: {
     type: Number,
-    default: 0
+    default: 0,
   },
   is_member: { type: Boolean, default: false },
   is_blocked: { type: Boolean, default: false },

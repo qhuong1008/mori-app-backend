@@ -181,7 +181,9 @@ exports.login = async (req, res) => {
           avatar: req.body.googleAccount.picture,
         };
         console.log("create new account using google account");
-        let newAccountResp = accountController.createNewAccount(newAccount);
+        let newAccountResp = await accountController.createNewAccount(
+          newAccount
+        );
         console.log("newAccountResp", newAccountResp);
         user = newAccountResp;
       }
@@ -206,6 +208,7 @@ exports.login = async (req, res) => {
         user = (await manualUserResp).user;
       }
     }
+    // console.log("user", user);
     // check if get user success
     if (user) {
       if (user.is_blocked) {
