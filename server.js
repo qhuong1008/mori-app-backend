@@ -28,10 +28,10 @@ const postRouter = require("./route/post.route");
 const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
-
 const cart = require("./route/cartItem.route");
 const order = require("./route/order.route");
 const payment = require("./route/payment.route");
+const commentRouter = require("./route/comment.route");
 
 const app = express();
 app.use(cors());
@@ -90,6 +90,7 @@ app.use("/api/post", postRouter);
 app.use("/api/cart", cart);
 app.use("/api/order", order);
 app.use("/api/order", payment);
+app.use("/api/comment", commentRouter);
 
 //////////////////
 const Account = require("./model/account.model");
@@ -196,6 +197,11 @@ app.get(`/api/bookepub/:imgName`, cors(), (req, res) => {
 app.get(`/api/bookaudio/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
+  res.sendFile(imagePath);
+});
+app.get(`/api/postimg/:imgName`, cors(), (req, res) => {
+  const imgName = req.params.imgName;
+  const imagePath = path.join(__dirname, "data", "postimg", imgName);
   res.sendFile(imagePath);
 });
 

@@ -51,6 +51,10 @@ const post = new Schema({
       default: [],
     },
   ],
+  image: {
+    type: String,
+    default: "",
+  },
 });
 
 module.exports = model("Post", post);

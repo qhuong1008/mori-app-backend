@@ -39,7 +39,7 @@ exports.registerAccount = async (req, res) => {
   const token = jwt.sign({ email: email }, process.env.JWT_SECRET);
 
   const protocol = req.protocol;
-  const host = req.get('host');
+  const host = req.get("host");
 
   // Return the result
   if (createUser === 1) {
@@ -76,7 +76,6 @@ exports.registerAccount = async (req, res) => {
     error: "error",
     message: createUser.message,
   });
-
 };
 
 // Xác nhận email
@@ -111,18 +110,18 @@ exports.verifyEmail = async (req, res) => {
 };
 
 // login
-exports.login = async (req, res) => {
-  const username = req.body.username.toLowerCase();
-  const password = req.body.password;
+exports.manualLogin = async (usernameReq, passwordReq) => {
+  const username = usernameReq.toLowerCase();
+  const password = passwordReq;
 
   const user = await accountController.findByUsername(username);
   if (!user) {
-    return res.status(401).json({ error: "Username does not exist!" });
+    return { error: "Thông tin đăng nhập không đúng!" };
   }
 
   const isPasswordValid = bcrypt.compareSync(password, user.password);
   if (!isPasswordValid) {
-    return res.status(401).json({ error: "Incorrect password!" });
+    return { error: "Thông tin đăng nhập không đúng!" };
   }
 
   const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
@@ -137,7 +136,7 @@ exports.login = async (req, res) => {
     accessTokenLife
   );
   if (!accessToken) {
-    return res.status(401).json({ error: "Login failed, please try again." });
+    return { error: "Đăng nhập thất bại! Vui lòng thử lại" };
   }
 
   let refreshToken = randToken.generate(jwtVariable.refreshTokenSize); // tạo 1 refresh token ngẫu nhiên
@@ -149,12 +148,93 @@ exports.login = async (req, res) => {
     refreshToken = user.refreshToken;
   }
 
-  return res.json({
-    message: "Login success",
+  return {
     accessToken,
     refreshToken,
     user,
-  });
+  };
+};
+
+exports.login = async (req, res) => {
+  try {
+    var user = null;
+    // check if is google account
+    const isGoogleAccount = req.body.googleAccount;
+    // handle for google account
+    if (isGoogleAccount) {
+      // check if this user exists in db
+      const isGoogleAccountExists =
+        await accountController.isGoogleAccountExist(
+          req.body.googleAccount.email
+        );
+      if (isGoogleAccountExists) {
+        user = await accountController.getGoogleAccount(
+          req.body.googleAccount.email
+        );
+      }
+      // if account not exist then create new user
+      else {
+        console.log("create new user");
+        let newAccount = {
+          email: req.body.googleAccount.email,
+          displayName: req.body.googleAccount.name,
+          avatar: req.body.googleAccount.picture,
+        };
+        console.log("create new account using google account");
+        let newAccountResp = accountController.createNewAccount(newAccount);
+        console.log("newAccountResp", newAccountResp);
+        user = newAccountResp;
+      }
+    }
+    // handle for manual account
+    else {
+      console.log("handle for manual account");
+      // check for input before handle login
+      if (req.body.username === "" || req.body.password === "") {
+        return res
+          .status(200)
+          .json({ error: "Vui lòng nhập đủ thông tin đăng nhập!" });
+      }
+      // handle manual login
+      const manualUserResp = this.manualLogin(
+        req.body.username,
+        req.body.password
+      );
+      if (manualUserResp.error) {
+        return res.status(400).json({ error: manualUserResp.error });
+      } else {
+        user = (await manualUserResp).user;
+      }
+    }
+    // check if get user success
+    if (user) {
+      if (user.is_blocked) {
+        return res
+          .status(200)
+          .json({ error: "Đăng nhập thất bại! Vui lòng thử lại" });
+      }
+      return res.status(200).json({
+        user: {
+          avatar: user.avatar,
+          displayName: user.displayName,
+          email: user.email,
+          is_active: user.is_active,
+          username: user.username,
+          _id: user._id,
+        },
+        message: "Đăng nhập thành công!",
+      });
+    } else {
+      return res
+        .status(200)
+        .json({ error: "Đăng nhập thất bại! Vui lòng thử lại" });
+    }
+  } catch (err) {
+    console.log("err", err);
+    return res
+      .status(200)
+      .json({ error: "Đăng nhập thất bại! Vui lòng thử lại" });
+  }
 };
 
 // Phát sinh một access token khi cái cũ hết hạn

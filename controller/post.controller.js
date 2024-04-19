@@ -1,21 +1,26 @@
 const post = require("../model/post.model");
+const comment = require("../model/comment.model");
 const Tag = require("../model/tag.model");
 const { createTag } = require("./tag.controller");
 const mongoose = require("mongoose");
+const imageController = require("../controller/image.controller");
+const ObjectId = mongoose.Types.ObjectId;
+
 exports.findAll = async (req, res) => {
   try {
     const posts = await post
-      .find()
+      .find({})
+      .populate("tag")
       .populate({
         path: "account",
         select:
           "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
       })
-      .populate("tag");
+      .populate("account");
 
     res.json({ posts: posts, statusCode: 200 });
   } catch (err) {
-    res.status(500).json({ err: NativeError });
+    res.status(500).json({ err: err });
   }
 };
 
@@ -74,10 +79,12 @@ exports.deletePost = async (req, res) => {
 };
 
 exports.createPost = async (req, res) => {
+  console.log("create post handle");
   const title = req.body.title;
   const content = req.body.content;
   const account = req.body.account;
   const tag = req.body.tag;
+  const image = req.body.image;
   try {
     if (!title || !content) {
       return res
@@ -86,13 +93,20 @@ exports.createPost = async (req, res) => {
     }
 
     // Tạo mới post
-    const newPost = new post({ title, content, account, tag });
+
+    const newPost = new post({
+      title,
+      content,
+      account,
+      tag,
+      image,
+    });
     await newPost.save();
 
     res.json({ message: "Bài viết được tạo thành công!" });
   } catch (error) {
     console.error("Error creating post:", error);
-    res.status(500).json({ error: error });
+    res.status(500).json({ error: "Tạo bài viết thất bại! Vui lòng thử lại!" });
   }
 };
 
@@ -101,7 +115,13 @@ exports.uploadImage = async (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
     }
-
+    console.log(
+      "!imageController.isValidImageFormat(req.file)",
+      !imageController.isValidImageFormat(req.file)
+    );
+    if (!imageController.isValidImageFormat(req.file)) {
+      return res.status(400).json({ error: "Invalid image format!" });
+    }
     return res.status(200).json({
       message: "File uploaded successfully!",
       filename: req.file.filename,
@@ -109,5 +129,53 @@ exports.uploadImage = async (req, res) => {
   } catch (err) {
     console.log("err", err);
     return res.status(400).json({ err: err });
+  }
+};
+exports.likePost = async (req, res) => {
+  try {
+    const postData = await post.findById(req.params.id);
+    if (!postData) {
+      return res.status(404).json({ error: "Không tìm thấy bài viết." });
+    }
+
+    const accountId = req.body.accountId;
+    const isLiked = postData.likes.includes(accountId);
+
+    if (isLiked) {
+      // Remove the account ID from the likes array
+      postData.likes = postData.likes.filter(
+        (like) => like.toString() !== accountId
+      );
+    } else {
+      // Add the account ID to the likes array
+      postData.likes.push(accountId);
+    }
+
+    await postData.save();
+    if (isLiked) {
+      return res.status(200).json({ message: "Unhearted!" });
+    }
+    return res.status(200).json({ message: "Hearted!" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+exports.sharePost = async (req, res) => {
+  try {
+    const postData = await post.findById(req.params.id);
+    if (!postData) {
+      return res.status(404).json({ error: "Không tìm thấy bài viết." });
+    }
+
+    const accountId = req.body.accountId;
+
+    postData.shares.push(accountId);
+
+    await postData.save();
+
+    return res.status(200).json({ message: "Post shared!" });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
   }
 };
