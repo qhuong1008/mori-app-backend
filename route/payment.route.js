@@ -1,31 +1,9 @@
-/**
- * Created by CTT VNPAY
- */
-
 let express = require("express");
 let router = express.Router();
 let $ = require("jquery");
 const request = require("request");
 const moment = require("moment");
 var cors = require("cors");
-
-router.get("/", function (req, res, next) {
-  res.render("orderlist", { title: "Danh sách đơn hàng" });
-});
-
-router.get("/create_payment_url", function (req, res, next) {
-  res.render("order", { title: "Tạo mới đơn hàng", amount: 10000 });
-});
-
-router.get("/querydr", function (req, res, next) {
-  let desc = "truy van ket qua thanh toan";
-  res.render("querydr", { title: "Truy vấn kết quả thanh toán" });
-});
-
-router.get("/refund", function (req, res, next) {
-  let desc = "Hoan tien GD thanh toan";
-  res.render("refund", { title: "Hoàn tiền giao dịch thanh toán" });
-});
 
 router.post("/create_payment_url", cors(), function (req, res, next) {
   process.env.TZ = "Asia/Ho_Chi_Minh";
