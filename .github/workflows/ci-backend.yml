@@ -1,8 +1,8 @@
 name: CI - Backend
 on:
-  pull_request:
-    paths:
-      - "**/*"
+  push:
+    branches:
+      - lien
 jobs:
   ci-backend:
     runs-on: ubuntu-latest
