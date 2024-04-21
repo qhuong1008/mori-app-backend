@@ -10,6 +10,7 @@ variables:
   REMOTE_SERVER: "hcmute@103.130.211.150"
   REMOTE_PORT: 10038
   SSH_SERVER_IP: "103.130.211.150"
+  MORI_SSH_PRIVATE_KEY: $MORI_SSH_PRIVATE_KEY
 
 stages:
   - access-remote-server
@@ -27,6 +28,8 @@ build:
 access-remote-server:
   stage: access-remote-server
   script:
+    - mkdir -p ~/.ssh
+    - echo "$MORI_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - eval $(ssh-agent -s)
     - ssh-add ~/.ssh/id_rsa
     - ssh hcmute@103.130.211.150 -p 10038
