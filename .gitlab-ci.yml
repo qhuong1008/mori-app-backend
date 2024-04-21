@@ -27,13 +27,12 @@ build:
 access-remote-server:
   stage: access-remote-server
   script:
-    - mkdir -p ~/.ssh
-    - echo "$MORI_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
-    - chmod 600 ~/.ssh/id_rsa
-    - ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
     - eval $(ssh-agent -s)
-    - ssh-add ~/.ssh/id_rsa
-    - ssh-keyscan -H $SSH_SERVER_IP >> ~/.ssh/id_rsa
+    - echo "$MORI_SSH_PRIVATE_KEY" | tr -d  "\r" | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700  ~/.ssh
+    - ssh-key-scan $SSH_SERVER_IP >> ~/.ssh/known-hosts
+    - chmod 644 ~/.ssh/known_hosts 
 
 deploy:
   stage: deploy
