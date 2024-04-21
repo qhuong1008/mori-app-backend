@@ -37,12 +37,15 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
     const origin = req.headers["origin"] || req.headers["referer"];
     const allowedOrigins = [
       "https://ebook.workon.space/",
+      "https://ebook.workon.space",
       "http://103.130.211.150:10047",
+      "http://103.130.211.150:10047/",
       "http://localhost:3000",
+      "http://localhost:3000/",
       "http://localhost:8080",
-      "http://localhost:8888/",
+      "http://localhost:8080/",
+      "http://localhost:3001",
       "http://localhost:3001/",
-      "https://sandbox.vnpayment.vn/",
     ];
 
     const isAllowedOrigin = allowedOrigins.some(
