@@ -12,10 +12,19 @@ variables:
   SSH_SERVER_IP: "103.130.211.150"
   MORI_SSH_PRIVATE_KEY: $MORI_SSH_PRIVATE_KEY
   ID_RSA: "~/.ssh/id_rsa"
+  PATH_TO_PROJECT: "project/MoriApp_20110141_20110335/mori-app-deploy"
 
 stages:
   - build
   - deploy
+
+build:
+  stage: build
+  script:
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker build -t backend .
+    - docker tag backend "$DOCKER_IMAGE"
+    - docker push "$DOCKER_IMAGE"
 
 deploy:
   stage: deploy
@@ -40,18 +49,11 @@ deploy:
     # Thực hiện SSH vào server, login vào Registry, chuyển tới folder project
     # Down project, pull image về, up project và xoá đi image cũ
     - ssh $REMOTE_SERVER -p $REMOTE_PORT
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker build -t backend .
-    - docker tag backend "$DOCKER_IMAGE"
-    - docker push "$DOCKER_IMAGE"
 
-build:
-  stage: build
-  script:
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker build -t backend .
-    - docker tag backend "$DOCKER_IMAGE"
-    - docker push "$DOCKER_IMAGE"
+    - cd $PATH_TO_PROJECT
+    - docker-compose down
+    - docker-compose pull
+    - docker-compose up -d
 
   only:
     - main
