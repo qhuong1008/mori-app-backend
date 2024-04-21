@@ -9,6 +9,7 @@ variables:
   DOCKER_PASSWORD: "Huong560045@"
   REMOTE_SERVER: "hcmute@103.130.211.150"
   REMOTE_PORT: 10038
+  SSH_SERVER_IP: "103.130.211.150"
 
 stages:
   - access-remote-server
@@ -32,7 +33,7 @@ access-remote-server:
     - ssh-keygen -y -f ~/.ssh/id_rsa > ~/.ssh/id_rsa.pub
     - eval $(ssh-agent -s)
     - ssh-add ~/.ssh/id_rsa
-    - ssh hcmute@103.130.211.150 -p 10038
+    - ssh-keyscan -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
 
 deploy:
   stage: deploy
