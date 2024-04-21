@@ -27,7 +27,7 @@ deploy:
   environment: production
   script:
     - echo "$MORI_SSH_PRIVATE_KEY"
-    - echo "$PRIVATE_KEY" > ~/.ssh/id_rsa
+    - echo "$MORI_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - chmod 600 ~/.ssh/id_rsa
     - cd project/MoriApp_20110141_20110335/mori-app-deploy/
     - docker-compose down
