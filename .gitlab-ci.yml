@@ -15,11 +15,10 @@ variables:
 
 stages:
   - build
-  - access-remote-server
   - deploy
 
-access-remote-server:
-  stage: access-remote-server
+deploy:
+  stage: deploy
   before_script:
     - apk update && apk add openssh-client bash
   script:
@@ -41,6 +40,10 @@ access-remote-server:
     # Thực hiện SSH vào server, login vào Registry, chuyển tới folder project
     # Down project, pull image về, up project và xoá đi image cũ
     - ssh $REMOTE_SERVER -p $REMOTE_PORT
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker build -t backend .
+    - docker tag backend "$DOCKER_IMAGE"
+    - docker push "$DOCKER_IMAGE"
 
 build:
   stage: build
@@ -49,15 +52,6 @@ build:
     - docker build -t backend .
     - docker tag backend "$DOCKER_IMAGE"
     - docker push "$DOCKER_IMAGE"
-
-deploy:
-  stage: deploy
-  script:
-    - cd project/MoriApp_20110141_20110335/mori-app-deploy
-    - docker-compose down
-    - docker-compose pull
-    - docker-compose up -d
-
 
   only:
     - main
