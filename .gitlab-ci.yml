@@ -15,8 +15,8 @@ variables:
 
 stages:
   - access-remote-server
-  - deploy
   - build
+  - deploy
 
 access-remote-server:
   stage: access-remote-server
@@ -33,14 +33,14 @@ access-remote-server:
     
     # Scan lấy SSH Host key cho địa chỉ IP server
     # Được kết quả bao nhiêu thì thêm vào file known_hosts
-    - ssh-keyscan -p 10038 -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
+    - ssh-keyscan -p $REMOTE_PORT -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
     
     # Sửa lại quyền của file known_hosts
     - chmod 644 ~/.ssh/known_hosts
     
     # Thực hiện SSH vào server, login vào Registry, chuyển tới folder project
     # Down project, pull image về, up project và xoá đi image cũ
-    - ssh hcmute@103.130.211.150 -p 10038
+    - ssh $REMOTE_SERVER -p $REMOTE_PORT
 
 build:
   stage: build
@@ -51,6 +51,13 @@ build:
     - docker tag backend "$DOCKER_IMAGE"
     - docker push "$DOCKER_IMAGE"
 
+deploy:
+  stage: deploy
+  script:
+    - cd project/MoriApp_20110141_20110335/mori-app-deploy
+    - docker-compose down
+    - docker-compose pull
+    - docker-compose up -d
 
 
   only:
