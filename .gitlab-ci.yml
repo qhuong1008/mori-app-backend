@@ -11,6 +11,7 @@ variables:
   REMOTE_PORT: 10038
 
 stages:
+  - access-remote-server
   - deploy
   - build
 
