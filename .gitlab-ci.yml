@@ -15,8 +15,8 @@ variables:
   PATH_TO_PROJECT: "project/MoriApp_20110141_20110335/mori-app-deploy"
 
 stages:
-  - build
   - deploy
+  - build
 
 build:
   stage: build
@@ -49,7 +49,7 @@ deploy:
     # Thực hiện SSH vào server, login vào Registry, chuyển tới folder project
     # Down project, pull image về, up project và xoá đi image cũ
     - ssh $REMOTE_SERVER -p $REMOTE_PORT
-
+    - ls
     - cd $PATH_TO_PROJECT
     - docker-compose down
     - docker-compose pull
