@@ -28,10 +28,11 @@ build:
 access-remote-server:
   stage: access-remote-server
   script:
-    - mkdir -p ~/.ssh
-    - echo "$MORI_SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
     - eval $(ssh-agent -s)
-    - ssh hcmute@103.130.211.150 -p 10038
+    - ssh-add <(echo "$MORI_SSH_PRIVATE_KEY")
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
+    - echo "$MORI_SSH_PRIVATE_KEY" > /.id_rsa
 
 deploy:
   stage: deploy
