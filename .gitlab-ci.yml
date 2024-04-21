@@ -20,6 +20,8 @@ stages:
 
 access-remote-server:
   stage: access-remote-server
+  before_script:
+    - apk update && apk add openssh-client bash
   script:
     - eval $(ssh-agent -s)
 
