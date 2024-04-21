@@ -51,11 +51,16 @@ deploy:
     # Thực hiện SSH vào server, login vào Registry, chuyển tới folder project
     # Down project, pull image về, up project và xoá đi image cũ
     - ssh $REMOTE_SERVER -p $REMOTE_PORT
-    - ls
+    - cat << EOF > deploy.sh
     - cd $PATH_TO_PROJECT
     - docker-compose down
     - docker-compose pull
     - docker-compose up -d
+    - EOF
+    # Make the script executable
+    - chmod +x deploy.sh
+    - ssh $REMOTE_SERVER -p $REMOTE_PORT < deploy.sh
+
 
   only:
     - main
