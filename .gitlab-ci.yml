@@ -14,8 +14,8 @@ variables:
   ID_RSA: "~/.ssh/id_rsa"
 
 stages:
-  - access-remote-server
   - build
+  - access-remote-server
   - deploy
 
 access-remote-server:
