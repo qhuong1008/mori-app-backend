@@ -1,0 +1,39 @@
+image: docker:20.10.14
+
+services:
+  - docker:20.10.14-dind
+
+variables:
+  DOCKER_IMAGE: "qhuong1008/mori-backend"
+  DOCKER_USER: "qhuong1008"
+  DOCKER_PASSWORD: "Huong560045@"
+  REMOTE_SERVER: "hcmute@103.130.211.150"
+  REMOTE_PORT: 10038
+
+stages:
+  - deploy
+
+build:
+  stage: build
+  script:
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker build -t backend .
+    - docker tag backend "$DOCKER_IMAGE"
+    - docker push "$DOCKER_IMAGE"
+
+deploy:
+  stage: deploy
+  environment: production
+  script:
+    - eval $(ssh-agent -s)
+    - bash -c 'ssh-add <(echo "$MORI_SSH_PRIVATE_KEY")'
+    - mkdir -p ~/.ssh
+    - ssh-keyscan -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
+    - echo "$MORI_SSH_PRIVATE_KEY" > /.id_rsa
+    - cd project/MoriApp_20110141_20110335/mori-app-deploy/
+    - docker-compose down
+    - docker-compose pull
+    - docker-compose up -d
+
+  only:
+    - main
