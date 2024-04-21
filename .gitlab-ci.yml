@@ -15,7 +15,7 @@ variables:
   PATH_TO_PROJECT: "project/MoriApp_20110141_20110335/mori-app-deploy"
 
 stages:
-  - buils
+  - build
   - deploy
 
 build:
