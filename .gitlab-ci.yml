@@ -46,7 +46,6 @@ build:
   stage: build
   script:
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - npm i
     - docker build -t backend .
     - docker tag backend "$DOCKER_IMAGE"
     - docker push "$DOCKER_IMAGE"
