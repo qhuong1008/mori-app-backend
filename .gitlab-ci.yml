@@ -18,17 +18,8 @@ stages:
   - deploy
   - build
 
-build:
-  stage: build
-  script:
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - npm i
-    - docker build -t backend .
-    - docker tag backend "$DOCKER_IMAGE"
-    - docker push "$DOCKER_IMAGE"
-
-deploy:
-  stage: deploy
+access-remote-server:
+  stage: access-remote-server
   script:
     - eval $(ssh-agent -s)
 
@@ -48,6 +39,16 @@ deploy:
     # Thực hiện SSH vào server, login vào Registry, chuyển tới folder project
     # Down project, pull image về, up project và xoá đi image cũ
     - ssh hcmute@103.130.211.150 -p 10038
+
+build:
+  stage: build
+  script:
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - npm i
+    - docker build -t backend .
+    - docker tag backend "$DOCKER_IMAGE"
+    - docker push "$DOCKER_IMAGE"
+
 
 
   only:
