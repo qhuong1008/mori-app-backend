@@ -31,7 +31,6 @@ access-remote-server:
     - eval $(ssh-agent -s)
     - ssh-add <(echo "$MORI_SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
-    - ssh-keyscan -H $SSH_SERVER_IP >> ~/.ssh/known_hosts
     - ssh hcmute@103.130.211.150 -p 10038
 
 deploy:
