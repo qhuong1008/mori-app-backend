@@ -11,6 +11,7 @@ variables:
   REMOTE_PORT: 10038
   SSH_SERVER_IP: "103.130.211.150"
   MORI_SSH_PRIVATE_KEY: $MORI_SSH_PRIVATE_KEY
+  ID_RSA: "~/.ssh/id_rsa"
 
 stages:
   - access-remote-server
@@ -31,9 +32,9 @@ access-remote-server:
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n      SendEnv CI_*  \n" > ~/.ssh/config
     - echo -n  $MORI_SSH_PRIVATE_KEY  > ~/.ssh/id_rsa
-    - chmod 700 ~/.ssh
-    - chmod 600 ~/.ssh/id_rsa
-    - ssh hcmute@103.130.211.150 -p 10038
+    - chmod og= $ID_RSA
+    - apk update && apk add openssh-client
+    - ssh -i $ID_RSA -o StrictHostKeyChecking=no -p 10038 hcmute@103.130.211.150
 
 deploy:
   stage: deploy
