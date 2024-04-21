@@ -28,9 +28,11 @@ build:
 access-remote-server:
   stage: access-remote-server
   script:
-    - eval $(ssh-agent -s)
-    - ssh-add <(echo "$MORI_SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
+    - echo -e "Host *\n\tStrictHostKeyChecking no\n      SendEnv CI_*  \n" > ~/.ssh/config
+    - echo -n  $MORI_SSH_PRIVATE_KEY  > ~/.ssh/id_rsa
+    - chmod 700 ~/.ssh
+    - chmod 600 ~/.ssh/id_rsa
     - ssh hcmute@103.130.211.150 -p 10038
 
 deploy:
