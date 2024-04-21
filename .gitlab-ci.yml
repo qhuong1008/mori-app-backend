@@ -31,10 +31,10 @@ access-remote-server:
   script:
     - mkdir -p ~/.ssh
     - echo -e "Host *\n\tStrictHostKeyChecking no\n      SendEnv CI_*  \n" > ~/.ssh/config
-    - echo -n  $MORI_SSH_PRIVATE_KEY  > ~/.ssh/id_rsa
-    - chmod og= $ID_RSA
+    - echo -n  "$MORI_SSH_PRIVATE_KEY"  > ~/.ssh/id_rsa
+    - chmod og= "$ID_RSA"
     - apk update && apk add openssh-client
-    - ssh -i $ID_RSA -o StrictHostKeyChecking=no -p 10038 hcmute@103.130.211.150
+    - ssh -i "$ID_RSA" -o StrictHostKeyChecking=no -p 10038 hcmute@103.130.211.150
 
 deploy:
   stage: deploy
