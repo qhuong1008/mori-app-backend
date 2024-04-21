@@ -12,6 +12,7 @@ variables:
 
 stages:
   - deploy
+  - build
 
 build:
   stage: build
