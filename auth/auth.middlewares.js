@@ -43,6 +43,7 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
       "http://localhost:8888/",
       "http://localhost:3001/",
       "https://sandbox.vnpayment.vn/",
+      "http://localhost:3001",
     ];
 
     const isAllowedOrigin = allowedOrigins.some(
