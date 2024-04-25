@@ -151,7 +151,7 @@ const updateLinkBook = async () => {
 // updateLinkBook();
 
 const Chapter = require("./model/chapter.model");
-const updateLinkChapter = async () => {
+const updateLinkChapterAudio = async () => {
   try {
     // Lấy danh sách tất cả các sách
     const books = await Chapter.find({});
@@ -179,6 +179,31 @@ const updateLinkChapter = async () => {
 
 // updateLinkChapter();
 
+const updateLinkChapter = async () => {
+  try {
+    // Lấy danh sách tất cả các sách
+    const chapters = await Chapter.find({});
+
+    // Lặp qua từng sách
+    for (const chapter of chapters) {
+      if (chapter.audio && chapter.audio.startsWith("Atomic Habits - Quy luật 2 [Làm cho nó thỏa mãn] ")) {
+        // Thay đổi đường dẫn
+        // const parts = chapter.audio.split("/");
+        chapter.audio = chapter.audio.replace(
+          "Atomic Habits - Quy luật 2 [Làm cho nó thỏa mãn] ",
+          ""
+        );
+        // Lưu lại các thay đổi vào cơ sở dữ liệu
+        await chapter.save();
+      }
+    }
+    console.log("All LINK Chapter updated successfully");
+  } catch (error) {
+    console.error(`Error updating all LINK: ${error.message}`);
+  }
+};
+// updateLinkChapter();
+
 app.get(`/api/accountimg/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "accountimg", imgName);
@@ -194,9 +219,18 @@ app.get(`/api/bookepub/:imgName`, cors(), (req, res) => {
   const imagePath = path.join(__dirname, "data", "bookepub", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookaudio/:imgName`, cors(), (req, res) => {
+app.get("/api/bookaudio/:book/:chapter/:imgName", (req, res) => {
+  const book = req.params.book;
+  const chapter = req.params.chapter;
   const imgName = req.params.imgName;
-  const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
+  const imagePath = path.join(
+    __dirname,
+    "data",
+    "bookaudio",
+    book,
+    chapter,
+    imgName
+  );
   res.sendFile(imagePath);
 });
 app.get(`/api/postimg/:imgName`, cors(), (req, res) => {
