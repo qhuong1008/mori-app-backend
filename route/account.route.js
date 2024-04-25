@@ -6,11 +6,12 @@ const account = require("../controller/account.controller");
 const whitelist = [process.env.DOMAIN]; // Thêm domain bạn muốn cho phép truy cập vào whitelist
 
 router.get("/get-account", account.findAll);
-router.patch("/:id",  account.update);
-router.get("/get-account/:id",  account.findById);
-router.post("/add-account",  account.create);
-router.post("/find-account",  account.findOne);
-router.post("/change-password",  account.changePassword);
+router.patch("/:id", account.update);
+router.get("/get-account/:id", account.findById);
+router.post("/add-account", account.createNewAccount);
+router.post("/add-manual-account", account.createManualAccount);
+router.post("/find-account", account.findOne);
+router.post("/change-password", account.changePassword);
 
 // Route cho các API cần xác thực đăng nhập bằng username, password
 const authMiddleware = require("../auth/auth.middlewares");

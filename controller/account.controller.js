@@ -12,15 +12,15 @@ exports.findByUsername = async (username) => {
 };
 
 // tạo user khi dùng username, mật khẩu, mail
-exports.createByUsername = async (user) => {
+exports.createByUsername = async (req, res) => {
   try {
-    const username = user.username;
-    const email = user.email;
+    const username = req.body.username;
+    const email = req.body.email;
     const isExist = await Account.findOne({ $or: [{ username }, { email }] });
     if (!isExist) {
       var accountDetail = new Account(user);
       await accountDetail.save();
-      return 1;
+      return;
     } else if (isExist) {
       console.log("isExist", isExist);
       return 2;
@@ -57,6 +57,7 @@ exports.createNewAccount = async (newAccount) => {
     var accountDetail = new Account({
       email: newAccount.email,
       displayName: newAccount.displayName,
+      username: newAccount.username,
       avatar: newAccount.avatar,
       is_member: false,
       is_blocked: false,
@@ -70,15 +71,23 @@ exports.createNewAccount = async (newAccount) => {
   }
 };
 // tạo user khi dùng tài khoản gg
-exports.create = async (req, res) => {
+exports.createManualAccount = async (req, res) => {
+  console.log("createManualAccount");
   try {
-    const isExist = await Account.findOne({ email: req.body.email });
+    const isExistEmail = await Account.findOne({ email: req.body.email });
+    const isExistUsername = await Account.findOne({ email: req.body.username });
+    // password hashing
+    const passwordInput = req.body.password;
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(passwordInput, saltRounds);
 
-    if (!isExist) {
+    if (!isExistEmail && !isExistUsername) {
       var accountDetail = new Account({
         email: req.body.email,
+        username: req.body.username,
+        password: hashedPassword,
         displayName: req.body.displayName,
-        avatar: req.body.avatar,
+        avatar: "https://moristorage123.blob.core.windows.net/bookimg/avt.jpg",
         is_member: false,
         is_blocked: false,
         is_active: true,
@@ -87,7 +96,9 @@ exports.create = async (req, res) => {
       await accountDetail.save();
       return res.status(200).json({ data: accountDetail });
     } else {
-      return res.status(200).json({ data: "User already registered!" });
+      return res
+        .status(200)
+        .json({ err: "Tài khoản với username hoặc email đã tồn tại!" });
     }
   } catch (err) {
     console.log("login error: ", err);
@@ -95,6 +106,7 @@ exports.create = async (req, res) => {
   }
 };
 
+exports.manualLogin = async (req, res) => {};
 exports.findAll = async (req, res) => {
   const accounts = await Account.find({});
   res.json({ accounts: accounts, statusCode: 200 });

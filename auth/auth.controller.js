@@ -111,48 +111,57 @@ exports.verifyEmail = async (req, res) => {
 
 // login
 exports.manualLogin = async (usernameReq, passwordReq) => {
-  const username = usernameReq.toLowerCase();
-  const password = passwordReq;
+  try {
+    console.log("manualLogin");
+    const username = usernameReq.toLowerCase();
+    const password = passwordReq;
+    console.log("username", username);
+    console.log("password", password);
+    const user = await accountController.findByUsername(username);
+    console.log("user", user);
+    if (!user) {
+      return { error: "Thông tin đăng nhập không đúng!" };
+    }
 
-  const user = await accountController.findByUsername(username);
-  if (!user) {
-    return { error: "Thông tin đăng nhập không đúng!" };
+    const isPasswordValid = bcrypt.compare(password, user.password);
+    console.log("isPasswordValid", isPasswordValid);
+    if (isPasswordValid == false) {
+      return { error: "Thông tin đăng nhập không đúng!" };
+    }
+
+    // const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
+    // const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+
+    // const dataForAccessToken = {
+    //   username: user.username,
+    // };
+    // const accessToken = await authMethod.generateToken(
+    //   dataForAccessToken,
+    //   accessTokenSecret,
+    //   accessTokenLife
+    // );
+    // if (!accessToken) {
+    //   return { error: "Đăng nhập thất bại! Vui lòng thử lại" };
+    // }
+
+    // let refreshToken = randToken.generate(jwtVariable.refreshTokenSize); // tạo 1 refresh token ngẫu nhiên
+    // if (!user.refreshToken) {
+    //   // Nếu user này chưa có refresh token thì lưu refresh token đó vào database
+    //   await accountController.updateRefreshToken(user.username, refreshToken);
+    // } else {
+    //   // Nếu user này đã có refresh token thì lấy refresh token đó từ database
+    //   refreshToken = user.refreshToken;
+    // }
+
+    return {
+      // accessToken,
+      // refreshToken,
+      user,
+    };
+  } catch (err) {
+    console.log("err for manualCreateAccount: ", err);
+    return { error: err };
   }
-
-  const isPasswordValid = bcrypt.compareSync(password, user.password);
-  if (!isPasswordValid) {
-    return { error: "Thông tin đăng nhập không đúng!" };
-  }
-
-  const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-
-  const dataForAccessToken = {
-    username: user.username,
-  };
-  const accessToken = await authMethod.generateToken(
-    dataForAccessToken,
-    accessTokenSecret,
-    accessTokenLife
-  );
-  if (!accessToken) {
-    return { error: "Đăng nhập thất bại! Vui lòng thử lại" };
-  }
-
-  let refreshToken = randToken.generate(jwtVariable.refreshTokenSize); // tạo 1 refresh token ngẫu nhiên
-  if (!user.refreshToken) {
-    // Nếu user này chưa có refresh token thì lưu refresh token đó vào database
-    await accountController.updateRefreshToken(user.username, refreshToken);
-  } else {
-    // Nếu user này đã có refresh token thì lấy refresh token đó từ database
-    refreshToken = user.refreshToken;
-  }
-
-  return {
-    accessToken,
-    refreshToken,
-    user,
-  };
 };
 
 exports.login = async (req, res) => {
@@ -186,6 +195,7 @@ exports.login = async (req, res) => {
         );
         console.log("newAccountResp", newAccountResp);
         user = newAccountResp;
+        console.log("login google");
       }
     }
     // handle for manual account
