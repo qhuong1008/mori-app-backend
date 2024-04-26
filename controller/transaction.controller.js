@@ -30,7 +30,7 @@ exports.getUserTrans = async (req, res) => {
     return res.status(400).json({ error: "Missing account or type parameter" });
   }
   try {
-    const transactions = await Transaction.find({ account, type });
+    const transactions = await Transaction.find({ account: account, productType: type }).populate('product');;
     res.json({ transactions: transactions, statusCode: 200 });
   } catch (err) {
     console.error(err);
