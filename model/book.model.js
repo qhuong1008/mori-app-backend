@@ -19,6 +19,7 @@ const book = new Schema({
   is_active: { type: Boolean },
   chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter", default: [] }],
   price: { type: Number, default: 0 },
+  discountPercent: {type: Number, default: 0 }
 });
 
 module.exports = model("Book", book);

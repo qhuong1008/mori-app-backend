@@ -1,18 +1,41 @@
-const transaction = require("../model/transaction.model");
+const Transaction = require("../model/transaction.model");
 
 exports.create = async (req, res) => {
-  var transactionDetail = new book(req.body);
-  await transactionDetail
-    .save()
-    .then(() => {
-      res.json("transaction added successfully!");
-    })
-    .catch((err) => console.log(err));
+  var transactionData = new Transaction(req.body);
+  // Tìm kiếm giao dịch đã tồn tại dựa trên tài khoản và sản phẩm
+  const existingTransaction = await Transaction.findOne({
+    account: transactionData.account,
+    product: transactionData.product,
+  });
+
+  if (existingTransaction) {
+    return res
+      .status(400)
+      .json({ message: "Sản phẩm này đã được mua trước đó" });
+  }
+  const newTransaction = new Transaction(transactionData);
+  try {
+    const savedTransaction = await newTransaction.save();
+    res.status(200).json({ transaction: savedTransaction, statusCode: 200 });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
-exports.findAll = async (req, res) => {
-  const transactions = await transaction.find({});
-  res.json({ transactions: transactions, statusCode: 200 });
+exports.getUserTrans = async (req, res) => {
+  const { account, type } = req.query;
+  // Kiểm tra xem account và type đã được cung cấp hay chưa
+  if (!account || !type) {
+    return res.status(400).json({ error: "Missing account or type parameter" });
+  }
+  try {
+    const transactions = await Transaction.find({ account, type });
+    res.json({ transactions: transactions, statusCode: 200 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ err: "Server error" });
+  }
 };
 
 exports.findOne = (req, res) => {};
