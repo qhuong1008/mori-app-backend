@@ -29,7 +29,7 @@ exports.addChapter = async (req, res) => {
     await existingBook.save();
 
     // Trả về thông tin chapter vừa thêm
-    res.status(201).json(savedChapter);
+    res.json({ chapter: savedChapter, statusCode: 200 });
   } catch (error) {
     console.error(error.message);
     res.status(500).json({ message: "Internal Server Error" });
@@ -43,7 +43,7 @@ exports.getAllChapters = async (req, res) => {
     res.status(200).json(chapters);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -54,13 +54,13 @@ exports.getChapterById = async (req, res) => {
   try {
     const chapter = await Chapter.findById(chapterId);
     if (!chapter) {
-      return res.status(404).json({ error: 'Chapter not found' });
+      return res.status(404).json({ error: "Chapter not found" });
     }
 
     res.status(200).json(chapter);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
@@ -73,7 +73,7 @@ exports.updateChapter = async (req, res) => {
     // Kiểm tra xem chapter có tồn tại không
     const existingChapter = await Chapter.findById(chapterId);
     if (!existingChapter) {
-      return res.status(404).json({ error: 'Chapter not found' });
+      return res.status(404).json({ error: "Chapter not found" });
     }
 
     // Cập nhật thông tin chapter
@@ -86,27 +86,27 @@ exports.updateChapter = async (req, res) => {
     res.status(200).json(updatedChapter);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
 // Xóa một chapter
-exports.deleteChapter = async (req, res) => { 
+exports.deleteChapter = async (req, res) => {
   const { chapterId } = req.params;
 
   try {
     // Kiểm tra xem chapter có tồn tại không
     const existingChapter = await Chapter.findById(chapterId);
     if (!existingChapter) {
-      return res.status(404).json({ error: 'Chapter not found' });
+      return res.status(404).json({ error: "Chapter not found" });
     }
 
     // Xóa chapter khỏi cơ sở dữ liệu
     await existingChapter.remove();
 
-    res.status(204).json({ message: 'Chapter deleted successfully' });
+    res.status(204).json({ message: "Chapter deleted successfully" });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
