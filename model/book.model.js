@@ -15,7 +15,7 @@ const book = new Schema({
   totalHearted: { type: Number, default: 0 },
   rating: { type: Number, default: 5 },
   tags: { type: [String] },
-  access_level: { type: Number, default: 0 },
+  access_level: { type: Number, default: 0 }, // 0-free, 1-hội viên, 2-sách bán lẻ
   is_active: { type: Boolean },
   chapters: [{ type: Schema.Types.ObjectId, ref: "Chapter", default: [] }],
   price: { type: Number, default: 0 },

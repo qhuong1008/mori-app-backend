@@ -31,10 +31,10 @@ exports.forgotPassword = async (req, res) => {
   await account.save();
 
   const protocol = req.protocol;
-  const host = req.get('host');
+  const host = req.get("host");
 
   // Send the password reset email
-  const resetUrl = `${protocol}://${host}/reset-password?token=${token}`;
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: account.email,
@@ -65,11 +65,38 @@ exports.forgotPassword = async (req, res) => {
 };
 
 //////
+exports.checkToken = async (req, res) => {
+  try {
+    // Validate the password reset token
+    const tokenEmail = req.body.token;
+    const decodedToken = jwt.verify(tokenEmail, process.env.JWT_SECRET);
+    console.log(decodedToken);
+
+    // Find the user by their ID and token, and check if the token is still valid
+    const account = await Account.findOne({
+      _id: decodedToken.id,
+      passwordResetToken: tokenEmail,
+      passwordResetExpires: { $gt: Date.now() },
+    });
+
+  } catch (error) {
+    const accountToken = await Account.findOne({
+      passwordResetToken: req.body.token,
+    });
+    if (accountToken) {
+      res.status(401).json({ error: "Token expires" });
+    } else {
+      console.error("Error validating password reset token:", error);
+      res.status(401).json({ error: "Token invalid" });
+    }
+  }
+};
 exports.resetPassword = async (req, res) => {
   try {
     // Validate the password reset token
     const tokenEmail = req.body.token;
     const decodedToken = jwt.verify(tokenEmail, process.env.JWT_SECRET);
+    console.log(decodedToken);
 
     // Find the user by their ID and token, and check if the token is still valid
     const account = await Account.findOne({
@@ -117,9 +144,14 @@ exports.resetPassword = async (req, res) => {
         .json({ error: "Failed to send password reset confirmation email" });
     }
   } catch (error) {
-    console.error("Error validating password reset token:", error);
-    res
-      .status(401)
-      .json({ error: "Invalid token or error validating password reset" });
+    const accountToken = await Account.findOne({
+      passwordResetToken: req.body.token,
+    });
+    if (accountToken) {
+      res.status(401).json({ error: "Token expires" });
+    } else {
+      console.error("Error validating password reset token:", error);
+      res.status(401).json({ error: "Token invalid" });
+    }
   }
 };

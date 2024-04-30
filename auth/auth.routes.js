@@ -13,6 +13,7 @@ router.get("/verify-email", cors(), authController.verifyEmail);
 
 // forgot password
 router.post("/forgot-password", cors(), fogotController.forgotPassword);
+router.post("/check-token", cors(), fogotController.checkToken);
 router.post("/reset-password", cors(), fogotController.resetPassword);
 
 module.exports = router;

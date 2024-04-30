@@ -43,7 +43,7 @@ const account = new Schema({
   },
   avatar: {
     type: String,
-    default: "https://moristorage123.blob.core.windows.net/bookimg/avt.jpg",
+    default: "avt.jpg",
   },
   role: {
     type: Number,
