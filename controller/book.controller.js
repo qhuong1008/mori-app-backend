@@ -1,4 +1,5 @@
 const book = require("../model/book.model");
+const imageController = require("../controller/image.controller");
 
 exports.create = async (req, res) => {
   var bookDetail = new book(req.body);
@@ -11,10 +12,7 @@ exports.create = async (req, res) => {
 };
 
 exports.findAll = async (req, res) => {
-  const books = await book
-    .find({})
-    .populate("chapters")
-    .sort({ _id: -1 });
+  const books = await book.find({}).populate("chapters").sort({ _id: -1 });
   res.json({ books: books, statusCode: 200 });
 };
 
@@ -158,5 +156,42 @@ exports.delete = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ err: "Server error" });
+  }
+};
+
+exports.uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+    if (!imageController.isValidImageFormat(req.file)) {
+      return res.status(400).json({ error: "Invalid image format!" });
+    }
+    return res.status(200).json({
+      message: "File uploaded successfully!",
+      filename: req.file.filename,
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(400).json({ err: err });
+  }
+};
+
+exports.uploadEpub = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    if (!imageController.isValidEpubFormat(req.file)) {
+      return res.status(400).json({ error: "Invalid epub format!" });
+    }
+    return res.status(200).json({
+      message: "File uploaded successfully!",
+      filename: req.file.filename,
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(400).json({ err: err });
   }
 };

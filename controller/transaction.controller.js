@@ -38,8 +38,10 @@ exports.getUserTrans = async (req, res) => {
   }
 };
 
-exports.findOne = (req, res) => {};
+exports.getAllTransactions = async (req, res) => {
+  const transactions = await Transaction.find({})
+    .populate("account")
+    .populate("productType");
 
-exports.update = (req, res) => {};
-
-exports.delete = (req, res) => {};
+  res.json({ data: transactions, statusCode: 200 });
+};
