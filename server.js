@@ -33,6 +33,7 @@ const order = require("./route/order.route");
 const payment = require("./route/payment.route");
 const commentRouter = require("./route/comment.route");
 const notificationRouter = require("./route/notification.route");
+const followRouter = require("./route/follow.route");
 
 const app = express();
 app.use(cors());
@@ -93,6 +94,7 @@ app.use("/api/order", order);
 app.use("/api/order", payment);
 app.use("/api/comment", commentRouter);
 app.use("/api/notification", notificationRouter);
+app.use("/api/follow", followRouter);
 
 //////////////////
 const Account = require("./model/account.model");
