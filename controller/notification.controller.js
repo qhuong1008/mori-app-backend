@@ -1,17 +1,32 @@
 const mongoose = require("mongoose");
 const notificationModel = require("../model/notification.model");
+const postModel = require("../model/post.model");
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.create = async (req, res) => {
   try {
-    var notification = new notificationModel(req.body);
-    await notification
-      .save()
-      .then(() => {
-        res.json({ message: "Tạo thông báo mới thành công!" });
-      })
-      .catch((err) => console.log(err));
+    const post = await postModel.findById(req.body.post).populate("account");
+
+    if (!post) {
+      return res.status(400).json({ err: "Post not found." });
+    }
+
+    if (post.account._id.toString() !== req.body.account) {
+      var notification = new notificationModel(req.body);
+      await notification
+        .save()
+        .then(() => {
+          res.json({ message: "Tạo thông báo mới thành công!" });
+        })
+        .catch((err) => console.log(err));
+    }
+    return res
+      .status(200)
+      .json({
+        message: "Không thể tự tạo thông báo cho bài viết của chính mình.",
+      });
   } catch (err) {
+    console.log("err", err);
     return res.status(400).json({ err: err });
   }
 };
