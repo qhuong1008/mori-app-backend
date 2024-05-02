@@ -32,6 +32,8 @@ const cart = require("./route/cartItem.route");
 const order = require("./route/order.route");
 const payment = require("./route/payment.route");
 const commentRouter = require("./route/comment.route");
+const notificationRouter = require("./route/notification.route");
+const followRouter = require("./route/follow.route");
 
 const app = express();
 app.use(cors());
@@ -91,6 +93,8 @@ app.use("/api/cart", cart);
 app.use("/api/order", order);
 app.use("/api/order", payment);
 app.use("/api/comment", commentRouter);
+app.use("/api/notification", notificationRouter);
+app.use("/api/follow", followRouter);
 
 //////////////////
 const Account = require("./model/account.model");
@@ -186,7 +190,12 @@ const updateLinkChapter = async () => {
 
     // Lặp qua từng sách
     for (const chapter of chapters) {
-      if (chapter.audio && chapter.audio.startsWith("Atomic Habits - Quy luật 2 [Làm cho nó thỏa mãn] ")) {
+      if (
+        chapter.audio &&
+        chapter.audio.startsWith(
+          "Atomic Habits - Quy luật 2 [Làm cho nó thỏa mãn] "
+        )
+      ) {
         // Thay đổi đường dẫn
         // const parts = chapter.audio.split("/");
         chapter.audio = chapter.audio.replace(
