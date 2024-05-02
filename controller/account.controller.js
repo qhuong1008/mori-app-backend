@@ -12,11 +12,31 @@ exports.findByUsername = async (username) => {
 };
 
 // tạo user khi dùng username, mật khẩu, mail
+exports.checkCreateByUsername = async (user) => {
+  try {
+    const username = user.username;
+    const email = user.email;
+    const isExist = await Account.findOne({ $or: [{ username }, { email }] });
+    if (!isExist) {
+      var accountDetail = new Account(user);
+      await accountDetail.save();
+      return 1;
+    } else if (isExist) {
+      console.log("isExist", isExist);
+      return 2;
+    }
+    return 0;
+  } catch (err) {
+    return err;
+  }
+};
 exports.createByUsername = async (req, res) => {
   try {
     const username = req.body.username;
     const email = req.body.email;
+    console.log("createByUsername", username, email);
     const isExist = await Account.findOne({ $or: [{ username }, { email }] });
+    console.log("isExist", isExist);
     if (!isExist) {
       var accountDetail = new Account(user);
       await accountDetail.save();

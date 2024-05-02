@@ -9,7 +9,7 @@ router.post("/register", cors(), authController.registerAccount);
 router.post("/login", cors(), authController.login);
 
 // verify email
-router.get("/verify-email", cors(), authController.verifyEmail);
+router.get("/verify", cors(), authController.verifyEmail);
 
 // forgot password
 router.post("/forgot-password", cors(), fogotController.forgotPassword);

@@ -33,7 +33,7 @@ exports.registerAccount = async (req, res) => {
   };
 
   // Create new user and check validation
-  const createUser = await accountController.createByUsername(newUser);
+  const createUser = await accountController.checkCreateByUsername(newUser);
 
   // Generate JWT token
   const token = jwt.sign({ email: email }, process.env.JWT_SECRET);
@@ -43,7 +43,7 @@ exports.registerAccount = async (req, res) => {
 
   // Return the result
   if (createUser === 1) {
-    const verifyEmail = `${protocol}://${host}/verify?email=${email}&token=${token}`;
+    const verifyEmail = `${protocol}://${host}/api/auth/verify?email=${email}&token=${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -80,10 +80,13 @@ exports.registerAccount = async (req, res) => {
 
 // Xác nhận email
 exports.verifyEmail = async (req, res) => {
-  const tokenVerify = req.query.tokenVerify;
+  const tokenVerify = req.query.token;
   console.log(tokenVerify);
   if (!tokenVerify) {
-    return res.status(400).json({ message: "Missing tokenVerify parameter" });
+    // return res.status(400).json({ error: "Missing tokenVerify parameter" });
+    res.redirect(
+      `${process.env.FRONTEND_URL}/login?error=missingtokenverifyparameter`
+    );
   }
 
   try {
@@ -97,15 +100,16 @@ exports.verifyEmail = async (req, res) => {
     );
 
     if (user) {
-      return res.status(200).json({ message: "Verify email success" });
+      // return res.status(200).json({ message: "Verify email success" });
+      res.redirect(`${process.env.FRONTEND_URL}/login?success=true`);
     } else {
-      return res
-        .status(404)
-        .json({ message: "User not found or Invalid token" });
+      // return res.status(404).json({ error: "User not found or Invalid token" });
+      res.redirect(`${process.env.FRONTEND_URL}/login?error=usernotfound`);
     }
   } catch (error) {
     console.error("JWT Verification Error:", error);
-    return res.status(400).json({ message: "Invalid token" });
+    // return res.status(400).json({ error: "Invalid token" });
+    res.redirect(`${process.env.FRONTEND_URL}/login?error=invalidtoken`);
   }
 };
 
@@ -121,6 +125,13 @@ exports.manualLogin = async (usernameReq, passwordReq) => {
     console.log("user", user);
     if (!user) {
       return { error: "Thông tin đăng nhập không đúng!" };
+    } else if (user.is_verify_email == false) {
+      console.log("aaaaaaaaaaaaaaaaaaa");
+      return {
+        error:
+          "Bạn chưa xác thực mail tạo tài khoản, vui lòng kiểm tra mail " +
+          user.email,
+      };
     }
 
     const isPasswordValid = bcrypt.compare(password, user.password);
@@ -208,14 +219,14 @@ exports.login = async (req, res) => {
           .json({ error: "Vui lòng nhập đủ thông tin đăng nhập!" });
       }
       // handle manual login
-      const manualUserResp = this.manualLogin(
+      const manualUserResp = await this.manualLogin(
         req.body.username,
         req.body.password
       );
       if (manualUserResp.error) {
         return res.status(400).json({ error: manualUserResp.error });
       } else {
-        user = (await manualUserResp).user;
+        user = manualUserResp.user;
       }
     }
     // console.log("user", user);
