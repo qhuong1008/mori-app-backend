@@ -11,23 +11,17 @@ exports.create = async (req, res) => {
       return res.status(400).json({ err: "Post not found." });
     }
 
-    if (post.account._id.toString() !== req.body.account) {
-      var notification = new notificationModel(req.body);
-      await notification
-        .save()
-        .then(() => {
-          res.json({ message: "Tạo thông báo mới thành công!" });
-        })
-        .catch((err) => console.log(err));
+    if (post.account._id.toString() !== req.body.performedBy) {
+      const notification = new notificationModel(req.body);
+      await notification.save();
+      return res.status(200).json({ message: "Tạo thông báo mới thành công!" });
     }
-    return res
-      .status(200)
-      .json({
-        message: "Không thể tự tạo thông báo cho bài viết của chính mình.",
-      });
+    
+    console.log("Không thể tự tạo thông báo cho bài viết của chính mình.");
+    return res.status(200).json({ message: "Không thể tự tạo thông báo cho bài viết của chính mình." });
   } catch (err) {
-    console.log("err", err);
-    return res.status(400).json({ err: err });
+    console.error("Lỗi:", err);
+    return res.status(400).json({ err: err.message });
   }
 };
 
