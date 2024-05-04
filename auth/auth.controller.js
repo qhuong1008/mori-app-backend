@@ -116,17 +116,13 @@ exports.verifyEmail = async (req, res) => {
 // login
 exports.manualLogin = async (usernameReq, passwordReq) => {
   try {
-    console.log("manualLogin");
     const username = usernameReq.toLowerCase();
     const password = passwordReq;
-    console.log("username", username);
-    console.log("password", password);
     const user = await accountController.findByUsername(username);
     console.log("user", user);
     if (!user) {
       return { error: "Thông tin đăng nhập không đúng!" };
     } else if (user.is_verify_email == false) {
-      console.log("aaaaaaaaaaaaaaaaaaa");
       return {
         error:
           "Bạn chưa xác thực mail tạo tài khoản, vui lòng kiểm tra mail " +
@@ -245,6 +241,7 @@ exports.login = async (req, res) => {
           is_active: user.is_active,
           username: user.username,
           _id: user._id,
+          role: user.role,
         },
         message: "Đăng nhập thành công!",
       });
