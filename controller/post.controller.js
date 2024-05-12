@@ -34,6 +34,7 @@ exports.findById = async (req, res) => {
         select:
           "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
       })
+      .populate("book")
       .populate("tag");
     res.json({ post: postResult, statusCode: 200 });
   } catch (err) {
@@ -85,6 +86,7 @@ exports.createPost = async (req, res) => {
   const account = req.body.account;
   const tag = req.body.tag;
   const image = req.body.image;
+  const book = req.body.book;
   try {
     if (!title || !content) {
       return res
@@ -100,6 +102,7 @@ exports.createPost = async (req, res) => {
       account,
       tag,
       image,
+      book,
     });
     await newPost.save();
 
@@ -107,6 +110,36 @@ exports.createPost = async (req, res) => {
   } catch (error) {
     console.error("Error creating post:", error);
     res.status(500).json({ error: "Tạo bài viết thất bại! Vui lòng thử lại!" });
+  }
+};
+
+exports.editPost = async (req, res) => {
+  console.log("edit post handle");
+  const postId = req.params.id; // Get post ID from URL parameter
+  const { title, content, tag, image, book } = req.body; // Destructure updated content
+
+  try {
+    // Find the post to edit
+    const updatedPost = await post.findById(postId);
+    if (!updatedPost) {
+      return res.status(404).json({ error: "Bài viết không tìm thấy!" });
+    }
+
+    // Update the updatedPost with new data (if provided)
+    if (title) updatedPost.title = title;
+    if (content) updatedPost.content = content;
+    if (tag) updatedPost.tag = tag;
+    if (image) updatedPost.image = image; // Assuming image updates are allowed
+    if (book) updatedPost.book = book; // Assuming book updates are allowed
+
+    await updatedPost.save();
+
+    res.status(200).json({ message: "Bài viết được cập nhật thành công!" });
+  } catch (error) {
+    console.error("Error editing post:", error);
+    res
+      .status(500)
+      .json({ error: "Cập nhật bài viết thất bại! Vui lòng thử lại!" });
   }
 };
 
