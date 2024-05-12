@@ -25,6 +25,7 @@
     "rand-token": "^1.0.1",
     "readable-stream": "^4.4.2",
     "request": "^2.88.2",
+    "unidecode": "^1.0.1",
     "validator": "^13.11.0"
   },
   "scripts": {
