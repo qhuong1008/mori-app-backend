@@ -40,7 +40,7 @@ exports.createByUsername = async (req, res) => {
     if (!isExist) {
       var accountDetail = new Account(user);
       await accountDetail.save();
-      return;
+      return 1;
     } else if (isExist) {
       console.log("isExist", isExist);
       return 2;
