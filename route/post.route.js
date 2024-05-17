@@ -7,6 +7,7 @@ const path = require("path");
 
 // Routes for replies
 router.post("/", cors(), postController.createPost);
+router.put("/:id", cors(), postController.editPost);
 router.get("/", cors(), postController.findAll);
 router.get("/:id", cors(), postController.findById);
 router.get("/user/:id", cors(), postController.findByUserId);

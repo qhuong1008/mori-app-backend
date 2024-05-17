@@ -133,6 +133,23 @@ exports.findAll = async (req, res) => {
   const accounts = await Account.find({});
   res.json({ accounts: accounts, statusCode: 200 });
 };
+exports.findByEmail = async (req, res) => {
+  try {
+    const email = req.body.email;
+    const account = await Account.find({ email: email });
+    res.status(200).json({
+      data: {
+        _id: account[0]._id,
+        email: account[0].email,
+        displayName: account[0].displayName,
+        avatar: account[0].avatar,
+      },
+      statusCode: 200,
+    });
+  } catch (err) {
+    res.status(400).json({ err: err });
+  }
+};
 exports.findById = async (req, res) => {
   const acctId = req.params.id;
   try {

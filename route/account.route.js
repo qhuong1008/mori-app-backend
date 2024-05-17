@@ -6,6 +6,7 @@ const account = require("../controller/account.controller");
 const whitelist = [process.env.DOMAIN]; // Thêm domain bạn muốn cho phép truy cập vào whitelist
 
 router.get("/get-account", account.findAll);
+router.get("/email", account.findByEmail);
 router.patch("/:id", account.update);
 router.get("/get-account/:id", account.findById);
 router.post("/add-account", account.createNewAccount);

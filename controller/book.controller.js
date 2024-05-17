@@ -32,6 +32,22 @@ exports.findAllAudioBooks = async (req, res) => {
     .populate("chapters");
   res.json({ books: books, statusCode: 200 });
 };
+exports.searchBookByName = async (req, res) => {
+  const searchTerm = req.query.term?.toLowerCase() || "";
+  const normalizedTerm = searchTerm;
+  try {
+    const filteredBooks = await book.find(
+      {
+        name: { $regex: normalizedTerm, $options: "i" },
+      },
+      "_id name"
+    );
+    res.status(200).json(filteredBooks);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 exports.findById = async (req, res) => {
   const bookId = req.params.id;
   try {
