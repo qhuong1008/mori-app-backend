@@ -96,123 +96,6 @@ app.use("/api/comment", commentRouter);
 app.use("/api/notification", notificationRouter);
 app.use("/api/follow", followRouter);
 
-//////////////////
-const Account = require("./model/account.model");
-const updateLink = async () => {
-  try {
-    // Lấy danh sách tất cả các sách
-    const accounts = await Account.find({});
-
-    // Lặp qua từng sách
-    for (const account of accounts) {
-      const newDomain = `${process.env.BACKEND_URL}/api`;
-      if (account.avatar) {
-        // Thay đổi đường dẫn avatar
-        account.avatar = account.avatar.replace(
-          `${process.env.BACKEND_URL}`,
-          newDomain
-        );
-        // Lưu lại các thay đổi vào cơ sở dữ liệu
-        await account.save();
-      }
-    }
-
-    console.log("All LINK updated successfully");
-  } catch (error) {
-    console.error(`Error updating all LINK: ${error.message}`);
-  }
-};
-
-// updateLink();
-
-const Book = require("./model/book.model");
-const updateLinkBook = async () => {
-  try {
-    // Lấy danh sách tất cả các sách
-    const books = await Book.find({});
-    console.log(books);
-
-    // Lặp qua từng sách
-    for (const book of books) {
-      const newDomain = `${process.env.BACKEND_URL}/api`;
-      if (book.image) {
-        // Thay đổi đường dẫn avatar
-        book.image = book.image.replace(
-          `${process.env.BACKEND_URL}`,
-          newDomain
-        );
-        // Lưu lại các thay đổi vào cơ sở dữ liệu
-        await book.save();
-      }
-    }
-
-    console.log("All LINK updated successfully");
-  } catch (error) {
-    console.error(`Error updating all LINK: ${error.message}`);
-  }
-};
-
-// updateLinkBook();
-
-const Chapter = require("./model/chapter.model");
-const updateLinkChapterAudio = async () => {
-  try {
-    // Lấy danh sách tất cả các sách
-    const books = await Chapter.find({});
-    console.log(books);
-
-    // Lặp qua từng sách
-    for (const book of books) {
-      const newDomain = `${process.env.BACKEND_URL}/api`;
-      if (book.audio) {
-        // Thay đổi đường dẫn avatar
-        book.audio = book.audio.replace(
-          `${process.env.BACKEND_URL}`,
-          newDomain
-        );
-        // Lưu lại các thay đổi vào cơ sở dữ liệu
-        await book.save();
-      }
-    }
-
-    console.log("All LINK updated successfully");
-  } catch (error) {
-    console.error(`Error updating all LINK: ${error.message}`);
-  }
-};
-
-// updateLinkChapter();
-
-const updateLinkChapter = async () => {
-  try {
-    // Lấy danh sách tất cả các sách
-    const chapters = await Chapter.find({});
-
-    // Lặp qua từng sách
-    for (const chapter of chapters) {
-      if (
-        chapter.audio &&
-        chapter.audio.startsWith(
-          "Atomic Habits - Quy luật 2 [Làm cho nó thỏa mãn] "
-        )
-      ) {
-        // Thay đổi đường dẫn
-        // const parts = chapter.audio.split("/");
-        chapter.audio = chapter.audio.replace(
-          "Atomic Habits - Quy luật 2 [Làm cho nó thỏa mãn] ",
-          ""
-        );
-        // Lưu lại các thay đổi vào cơ sở dữ liệu
-        await chapter.save();
-      }
-    }
-    console.log("All LINK Chapter updated successfully");
-  } catch (error) {
-    console.error(`Error updating all LINK: ${error.message}`);
-  }
-};
-// updateLinkChapter();
-
 app.get(`/api/accountimg/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "accountimg", imgName);
@@ -252,3 +135,5 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server started on port ...${PORT}`);
 });
+
+module.exports = app;

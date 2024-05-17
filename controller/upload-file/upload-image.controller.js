@@ -28,7 +28,7 @@ const containerClient = blobServiceClient.getContainerClient(
   process.env.AZURE_STORAGE_CONTAINER_NAME
 );
 
-checkAzureStorageConnection();
+// checkAzureStorageConnection();
 
 // Hàm để thay đổi ảnh cho tài khoản
 router.post("/update-avatar", upload.single("avatar"), async (req, res) => {
