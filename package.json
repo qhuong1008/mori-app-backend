@@ -31,7 +31,7 @@
     "scripts": {
         "start": "nodemon server.js -e ejs,js,css,html,jpg,png,scss",
         "prod": "node server.js",
-        "test": "jest--runInBand--force - exit ",
+        "test": "jest",
         "nodemon": "nodemon --signal SIGKILL"
     },
     "devDependencies": {
