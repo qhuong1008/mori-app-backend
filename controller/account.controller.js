@@ -25,7 +25,6 @@ exports.checkCreateByUsername = async (user) => {
       console.log("isExist", isExist);
       return 2;
     }
-    return 0;
   } catch (err) {
     return err;
   }
@@ -72,6 +71,8 @@ exports.getGoogleAccount = async (email) => {
   const account = await Account.findOne({ email: email });
   return account;
 };
+
+// không sử dụng nữa
 exports.createNewAccount = async (newAccount) => {
   try {
     var accountDetail = new Account({
@@ -90,7 +91,7 @@ exports.createNewAccount = async (newAccount) => {
     return err;
   }
 };
-// tạo user khi dùng tài khoản gg
+// tạo tài khoản thường - không sử dụng nữa
 exports.createManualAccount = async (req, res) => {
   console.log("createManualAccount");
   try {
@@ -107,13 +108,14 @@ exports.createManualAccount = async (req, res) => {
         username: req.body.username,
         password: hashedPassword,
         displayName: req.body.displayName,
-        avatar: "https://moristorage123.blob.core.windows.net/bookimg/avt.jpg",
+        avatar: "avt.jpg",
         is_member: false,
         is_blocked: false,
         is_active: true,
         is_verify_email: false,
       });
       await accountDetail.save();
+      console.log("accountDetailllllllllllllllllllllll", accountDetail);
       return res.status(200).json({ data: accountDetail });
     } else {
       return res
@@ -172,7 +174,7 @@ exports.changePassword = async (req, res) => {
 
     // Tìm tài khoản bằng tên người dùng
     const user = await Account.findOne({ username });
-    if (!user.password) {
+    if (!user || !user.password) {
       return res
         .status(401)
         .json({ error: "error", message: "Tài khoản không tồn tại" });
