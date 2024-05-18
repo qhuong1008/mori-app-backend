@@ -6,12 +6,12 @@ exports.createComment = async (req, res) => {
   try {
     const newComment = new Comment(req.body);
     // Lưu note vào cơ sở dữ liệu
-    await newComment.save();
+    const savedComment = await newComment.save();
 
     res.status(200).json({
       message: "Thêm bình luận thành công!",
       statusCode: 200,
-      data: newComment,
+      data: savedComment,
     });
   } catch (error) {
     console.error("Error saving note:", error);
@@ -31,7 +31,7 @@ exports.createReplyComment = async (req, res) => {
     });
 
     // Save the comment
-    await newComment.save();
+    const savedComment = await newComment.save();
 
     // If the comment has a parent comment, add it to the replies array
     if (parent_comment) {
@@ -45,7 +45,7 @@ exports.createReplyComment = async (req, res) => {
     );
     res.status(201).json({
       message: "Trả lời bình luận thành công!",
-      data: newComment,
+      data: savedComment,
     });
   } catch (err) {
     res.status(400).json({ message: err.message });
@@ -73,7 +73,7 @@ exports.getAllCommentsByUserId = async (req, res) => {
             "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
         },
       })
-      .populate("parent_comment");
+      .populate("parent_comment").exec();
     return res.status(200).json({ data: comments });
   } catch (error) {
     console.error("Error getting all comments:", error);
