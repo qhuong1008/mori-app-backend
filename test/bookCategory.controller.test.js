@@ -52,13 +52,6 @@ describe("Book Category Controller", () => {
         params: { id: "12345" },
         body: { tag: "new-fantasy", name: "New Fantasy Books" },
       };
-      res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-    });
-    afterEach(() => {
-      jest.clearAllMocks();
     });
 
     it("should update a book category", async () => {
@@ -109,14 +102,6 @@ describe("Book Category Controller", () => {
       req = {
         params: { id: "12345" },
       };
-      res = {
-        status: jest.fn().mockReturnThis(),
-        json: jest.fn(),
-      };
-    });
-
-    afterEach(() => {
-      jest.clearAllMocks();
     });
 
     it("should delete a book category by id", async () => {
