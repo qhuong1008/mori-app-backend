@@ -1,4 +1,4 @@
-const followModel = require("../model/follow.model"); // Assuming you have the Follow model defined
+const followModel = require("../model/follow.model");
 
 exports.getAllFollows = async (req, res) => {
   try {
@@ -14,11 +14,13 @@ exports.getAllFollows = async (req, res) => {
 exports.getFollowers = async (req, res) => {
   try {
     const userId = req.params.id;
-    const followers = await followModel.find({ following: userId }).populate({
-      path: "follower",
-      select:
-        "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken -password",
-    });
+    const followers = await followModel
+      .find({ following: userId })
+      .populate({
+        path: "follower",
+        select:
+          "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken -password",
+      }).exec();
     const data = followers.map((follower) => follower.follower);
     return res.status(200).json({ data: data });
   } catch (error) {
@@ -30,11 +32,14 @@ exports.getFollowers = async (req, res) => {
 exports.getFollowings = async (req, res) => {
   try {
     const userId = req.params.id;
-    const followings = await followModel.find({ follower: userId }).populate({
-      path: "following",
-      select:
-        "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken -password",
-    });
+    const followings = await followModel
+      .find({ follower: userId })
+      .populate({
+        path: "following",
+        select:
+          "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken -password",
+      })
+      .exec();
     const data = followings.map((follower) => follower.following);
     return res.status(200).json({ data: data });
   } catch (error) {
