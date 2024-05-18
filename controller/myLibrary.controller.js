@@ -37,11 +37,11 @@ exports.getAllBooksInMyLibrary = async (req, res) => {
   try {
     const libraryResult = await MyLibrary.find({
       user: userId,
-    }).populate("book");
+    }).populate("book").exec();
     return res.json({ myLibrary: libraryResult });
   } catch (err) {
     console.log(err);
-    return res.json({ message: err }).status(500);
+    return res.status(500).json({ message: err });
   }
 };
 
@@ -60,8 +60,13 @@ exports.deleteBookFromMyLibrary = async (req, res) => {
   }
 };
 
+exports.findAll = async (req, res) => {
+  const myLibraries = await MyLibrary.find({}).populate("book").exec();
+  res.json({ myLibraries: myLibraries, statusCode: 200 });
+};
+
 exports.findOne = async (req, res) => {
-  const myLibrary = await MyLibrary.findOne(req.body).populate("book");
+  const myLibrary = await MyLibrary.findOne(req.body).populate("book").exec();
   res.json({ myLibrary: myLibrary, statusCode: 200 });
 };
 
@@ -101,8 +106,4 @@ const removeDuplicateMyLibraries = async () => {
   for (const recordToDelete of recordsToDelete) {
     await MyLibrary.findByIdAndDelete(recordToDelete._id);
   }
-};
-exports.findAll = async (req, res) => {
-  const myLibraries = await MyLibrary.find({}).populate("book");
-  res.json({ myLibraries: myLibraries, statusCode: 200 });
 };
