@@ -77,30 +77,21 @@ describe("Follow Controller", () => {
       });
     });
 
-    // it("should handle errors", async () => {
-    //   const req = {
-    //     params: { id: "userId123" },
-    //   };
+    //////////////////////////////////
+    it("should handle errors", async () => {
+      const req = {
+        params: { id: "userId123" },
+      };
 
-    //   const errorMessage = "An error occurred";
-    //   console.error = jest.fn();
-    //   //   const mockExec = jest.fn().mockResolvedValue(new Error(errorMessage));
-    //   //   const mockPopulate = jest.fn().mockReturnThis();
+      const errorMessage = "Test error";
+      const mockPopulate = jest.fn().mockReturnThis();
+      const mockExec = jest.fn().mockRejectedValueOnce(new Error(errorMessage));
+      Follow.find.mockReturnValueOnce({ populate: mockPopulate });
+      mockPopulate.mockReturnValueOnce({ exec: mockExec });
 
-    //   //   Follow.find.mockReturnValue({
-    //   //     populate: mockPopulate,
-    //   //     exec: mockExec,
-    //   //   });
-
-    //   Follow.find.mockRejectedValue(new Error(errorMessage));
-
-    //   await getFollowers(req, res);
-
-    //   expect(console.error).toHaveBeenCalledWith(
-    //     `Error retrieving followers: ${errorMessage}`
-    //   );
-    //   //   await expect(getFollowers(req, res)).rejects.toThrow(errorMessage);
-    // });
+      await expect(getFollowers(req, res)).rejects.toThrow(errorMessage);
+    });
+    ////////////////////////////////////
   });
 
   describe("getFollowings", () => {
@@ -135,19 +126,22 @@ describe("Follow Controller", () => {
       });
     });
 
-    //   it("should handle errors", async () => {
-    //     const req = {
-    //       params: { id: "userId123" },
-    //     };
-    //     const res = {
-    //       status: jest.fn().mockReturnThis(),
-    //     };
 
-    //     const errorMessage = "An error occurred";
-    //     Follow.find.mockRejectedValueOnce(new Error(errorMessage));
+    ///////////////////////////////////////////
+      it("should handle errors", async () => {
+        const req = {
+          params: { id: "userId123" },
+        };
+  
+        const errorMessage = "Test error";
+        const mockPopulate = jest.fn().mockReturnThis();
+        const mockExec = jest.fn().mockRejectedValueOnce(new Error(errorMessage));
+        Follow.find.mockReturnValueOnce({ populate: mockPopulate });
+        mockPopulate.mockReturnValueOnce({ exec: mockExec });
 
-    //     await expect(getFollowings(req, res)).rejects.toThrow(errorMessage);
-    //   });
+        await expect(getFollowings(req, res)).rejects.toThrow(errorMessage);
+      });
+      ///////////////////////////////////
   });
 
   describe("followUser", () => {
