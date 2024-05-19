@@ -11,11 +11,11 @@ exports.createReply = async function (req, res) {
       commentId: commentId,
       content: content,
     });
-    await newReply.save();
+    const replySave = await newReply.save();
     let comment = await Review.findById(commentId);
     comment.replies.push(newReply.id);
     comment.save();
-    return res.status(200).json(newReply);
+    return res.status(200).json(replySave);
   } catch (e) {
     return res.status(400).json({ error: "Something went wrong!" });
   }
