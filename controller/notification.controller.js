@@ -5,7 +5,10 @@ const ObjectId = mongoose.Types.ObjectId;
 
 exports.create = async (req, res) => {
   try {
-    const post = await postModel.findById(req.body.post).populate("account");
+    const post = await postModel
+      .findById(req.body.post)
+      .populate("account")
+      .exec();
 
     if (!post) {
       return res.status(400).json({ err: "Post not found." });
@@ -16,9 +19,11 @@ exports.create = async (req, res) => {
       await notification.save();
       return res.status(200).json({ message: "Tạo thông báo mới thành công!" });
     }
-    
+
     console.log("Không thể tự tạo thông báo cho bài viết của chính mình.");
-    return res.status(200).json({ message: "Không thể tự tạo thông báo cho bài viết của chính mình." });
+    return res.status(200).json({
+      message: "Không thể tự tạo thông báo cho bài viết của chính mình.",
+    });
   } catch (err) {
     console.error("Lỗi:", err);
     return res.status(400).json({ err: err.message });
@@ -31,7 +36,8 @@ exports.findByUserId = async (req, res) => {
     const notification = await notificationModel
       .find({ account: new ObjectId(userId) })
       .populate("post")
-      .populate("performedBy");
+      .populate("performedBy")
+      .exec();
     res.json({ data: notification, statusCode: 200 });
   } catch (err) {
     console.error(err);
@@ -44,7 +50,8 @@ exports.findAll = async (req, res) => {
     const notification = await notificationModel
       .find()
       .populate("post")
-      .populate("performedBy");
+      .populate("performedBy")
+      .exec();
     res.json({ data: notification, statusCode: 200 });
   } catch (err) {
     console.error(err);
