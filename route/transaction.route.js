@@ -5,7 +5,7 @@ var cors = require("cors");
 const transaction = require("../controller/transaction.controller");
 
 router.get("/get-usertrans", cors(), transaction.getUserTrans);
-
 router.post("/add-transaction", cors(), transaction.create);
+router.get("/get-transaction", cors(), transaction.getAllTransactions);
 
 module.exports = router;
