@@ -1,10 +1,5 @@
 const post = require("../model/post.model");
-const comment = require("../model/comment.model");
-const Tag = require("../model/tag.model");
-const { createTag } = require("./tag.controller");
-const mongoose = require("mongoose");
 const imageController = require("../controller/image.controller");
-const ObjectId = mongoose.Types.ObjectId;
 
 exports.findAll = async (req, res) => {
   try {
@@ -16,7 +11,7 @@ exports.findAll = async (req, res) => {
         select:
           "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
       })
-      .populate("account");
+      .exec();
 
     res.json({ posts: posts, statusCode: 200 });
   } catch (err) {
@@ -35,7 +30,8 @@ exports.findById = async (req, res) => {
           "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
       })
       .populate("book")
-      .populate("tag");
+      .populate("tag")
+      .exec();
     res.json({ post: postResult, statusCode: 200 });
   } catch (err) {
     console.error("err", err);
@@ -53,7 +49,8 @@ exports.findByUserId = async (req, res) => {
         select:
           "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
       })
-      .populate("tag");
+      .populate("tag")
+      .exec();
     res.json({ data: postResult, statusCode: 200 });
   } catch (err) {
     console.error("err", err);

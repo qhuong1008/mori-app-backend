@@ -47,8 +47,6 @@ exports.reviewBook = async (req, res) => {
     const rating = req.body.rating;
     const content = req.body.content;
 
-    const user = await Account.findById(user_id);
-
     // tạo mới đánh giá và nhận xét
     const newReview = new Review({
       user: user_id,
@@ -61,10 +59,10 @@ exports.reviewBook = async (req, res) => {
     if (!content) {
       return res.status(400).json({ error: "Please enter comment content." });
     } else {
-      await newReview.save();
+      const reviewSave = await newReview.save();
 
       return res.status(200).json({
-        newReview: newReview,
+        newReview: reviewSave,
         message: "Comment and rating added successfully!",
       });
     }

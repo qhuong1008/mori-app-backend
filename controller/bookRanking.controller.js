@@ -16,8 +16,8 @@ exports.increaseTotalReadDaily = async (req, res) => {
     });
 
     // hàm này cập nhật lại lượt đọc -> lướt xuống dưới cùng để xem
-    updateAllTotalRead();
-    // updateAllTotalRead(book_id);
+    // updateAllTotalRead();
+    updateTotalRead(book_id);
 
     if (bookRanking) {
       // Nếu đã có, cập nhật total_read
@@ -168,7 +168,7 @@ exports.getBookRankingPreviousOfBook = async (req, res) => {
       totalReadCount += bookRanking.totalRead;
     }
 
-    if (bookRankings) {
+    if (bookRankings.length > 0) {
       res.json({ totalReadCount, statusCode: 200 });
     } else {
       res.json({

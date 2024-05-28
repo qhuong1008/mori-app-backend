@@ -30,10 +30,14 @@ exports.getUserTrans = async (req, res) => {
     return res.status(400).json({ error: "Missing account or type parameter" });
   }
   try {
+<<<<<<< lien
+    const transactions = await Transaction.find({ account: account, productType: type }).populate('product').exec();
+=======
     const transactions = await Transaction.find({
       account: account,
       productType: type,
     }).populate("product");
+>>>>>>> main
     res.json({ transactions: transactions, statusCode: 200 });
   } catch (err) {
     console.error(err);
@@ -42,10 +46,16 @@ exports.getUserTrans = async (req, res) => {
 };
 
 exports.getAllTransactions = async (req, res) => {
+<<<<<<< lien
+  const transactions = await Transaction.find({})
+    .populate("account")
+    .populate("productType").exec();
+=======
   try {
     const transactions = await Transaction.find({})
       .populate("account")
       .populate("productType");
+>>>>>>> main
 
     res.json({ data: transactions, statusCode: 200 });
   } catch (err) {

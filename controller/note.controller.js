@@ -1,4 +1,3 @@
-const { request } = require("express");
 const Note = require("../model/note.model");
 
 // Hàm tạo mới note

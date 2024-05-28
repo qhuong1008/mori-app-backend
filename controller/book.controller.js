@@ -1,23 +1,29 @@
-const book = require("../model/book.model");
+const Book = require("../model/book.model");
 const imageController = require("../controller/image.controller");
 
 exports.create = async (req, res) => {
-  var bookDetail = new book(req.body);
+  var bookDetail = new Book(req.body);
   await bookDetail
     .save()
     .then(() => {
       res.json({ message: "Book added successfully!" });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      res.json({ message: "Failed to add book", error: err.message });
+      console.log(err);
+    });
 };
 
 exports.findAll = async (req, res) => {
-  const books = await book.find({}).populate("chapters").sort({ _id: -1 });
+  const books = await Book.find({})
+    .populate("chapters")
+    .sort({ _id: -1 })
+    .exec();
   res.json({ books: books, statusCode: 200 });
 };
 
 exports.findAllEBooks = async (req, res) => {
-  const books = await book.find({
+  const books = await Book.find({
     pdf: {
       $type: "string",
     },
@@ -25,18 +31,18 @@ exports.findAllEBooks = async (req, res) => {
   res.json({ books: books, statusCode: 200 });
 };
 exports.findAllAudioBooks = async (req, res) => {
-  const books = await book
-    .find({
-      chapters: { $exists: true, $ne: [] },
-    })
-    .populate("chapters");
+  const books = await Book.find({
+    chapters: { $exists: true, $ne: [] },
+  })
+    .populate("chapters")
+    .exec();
   res.json({ books: books, statusCode: 200 });
 };
 exports.searchBookByName = async (req, res) => {
   const searchTerm = req.query.term?.toLowerCase() || "";
   const normalizedTerm = searchTerm;
   try {
-    const filteredBooks = await book.find(
+    const filteredBooks = await Book.find(
       {
         name: { $regex: normalizedTerm, $options: "i" },
       },
@@ -51,7 +57,7 @@ exports.searchBookByName = async (req, res) => {
 exports.findById = async (req, res) => {
   const bookId = req.params.id;
   try {
-    const bookResult = await book.findById(bookId).populate("chapters");
+    const bookResult = await Book.findById(bookId).populate("chapters").exec();
     res.json({ book: bookResult, statusCode: 200 });
   } catch (err) {
     console.error(err);
@@ -60,35 +66,35 @@ exports.findById = async (req, res) => {
 };
 
 exports.findBookWithSearchValue = async (req, res) => {
-  const result = await book
-    .find({ $text: { $search: req.body.searchValue } })
-    .populate("chapters");
+  const result = await Book.find({ $text: { $search: req.body.searchValue } })
+    .populate("chapters")
+    .exec();
 
   res.json({ books: result, statusCode: 200 });
 };
 
 exports.findBookByCategory = async (req, res) => {
   const searchValue = req.body.searchValue;
-  const result = await book
-    .find({
-      tags: {
-        $in: [searchValue],
-      },
-    })
-    .populate("chapters");
+  const result = await Book.find({
+    tags: {
+      $in: [searchValue],
+    },
+  })
+    .populate("chapters")
+    .exec();
 
   res.json({ books: result, statusCode: 200 });
 };
 
 exports.findOne = async (req, res) => {
-  const result = await book.findOne(req.body).populate("chapters");
+  const result = await Book.findOne(req.body).populate("chapters").exec();
   res.json({ book: result, statusCode: 200 });
 };
 
 exports.increaseTotalRead = async (req, res) => {
   const bookId = req.params.id;
   try {
-    const bookResult = await book.findById(bookId);
+    const bookResult = await Book.findById(bookId);
     await bookResult.updateOne({
       $inc: {
         totalRead: 1,
@@ -103,7 +109,7 @@ exports.increaseTotalRead = async (req, res) => {
 exports.increaseTotalHearted = async (req, res) => {
   const bookId = req.params.id;
   try {
-    const bookResult = await book.findById(bookId);
+    const bookResult = await Book.findById(bookId);
     await bookResult.updateOne({
       $inc: {
         totalHearted: 1,
@@ -119,8 +125,8 @@ exports.updateTotalSaved = async (req, res) => {
   const bookId = req.params.id;
 
   try {
-    const requestedBook = await book.findById(bookId);
-    const isExist = await book.findOne({
+    const requestedBook = await Book.findById(bookId);
+    const isExist = await Book.findOne({
       _id: bookId,
       totalSaved: {
         $elemMatch: {
@@ -149,15 +155,15 @@ exports.update = async (req, res) => {
   const bookId = req.params.id;
   const updated = req.body.book;
   try {
-    book
-      .findByIdAndUpdate(bookId, updated, { new: true })
-      .then((updatedBook) => {
+    Book.findByIdAndUpdate(bookId, updated, { new: true }).then(
+      (updatedBook) => {
         if (updatedBook) {
           res.json({ updatedBook: updatedBook, updated: updated });
         } else {
           res.json("Book not found!");
         }
-      });
+      }
+    );
   } catch (err) {
     console.log("err:", err);
     res.json({ error: err, statusCode: 500 });
@@ -167,7 +173,7 @@ exports.update = async (req, res) => {
 exports.delete = async (req, res) => {
   const bookId = req.params.id;
   try {
-    await book.findByIdAndDelete(bookId);
+    await Book.findByIdAndDelete(bookId);
     res.json({ message: "Deleted book successfully!", statusCode: 200 });
   } catch (err) {
     console.error(err);

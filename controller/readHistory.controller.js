@@ -41,7 +41,7 @@ exports.createOrUpdateReadHistory = async (req, res) => {
 
 exports.findAll = async (req, res) => {
   // removeDuplicateMyLibraries();
-  const readHistorys = await readHistory.find({}).populate("book");
+  const readHistorys = await readHistory.find({}).populate("book").exec();
   res.json({ readHistorys: readHistorys, statusCode: 200 });
 };
 exports.findAllWithUser = async (req, res) => {
@@ -49,7 +49,7 @@ exports.findAllWithUser = async (req, res) => {
     .find({
       user: req.params.id,
     })
-    .populate("book");
+    .populate("book").exec();
   res.json({ readHistory: result, statusCode: 200 });
 };
 

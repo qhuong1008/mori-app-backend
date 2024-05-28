@@ -1,41 +1,41 @@
 {
-  "dependencies": {
-    "@azure/storage-blob": "^12.17.0",
-    "axios": "^1.6.8",
-    "base64-js": "^1.5.1",
-    "bcrypt": "^5.1.1",
-    "bcryptjs": "^2.4.3",
-    "body-parser": "^1.20.2",
-    "config": "^3.3.11",
-    "cookie-parser": "^1.4.6",
-    "cors": "^2.8.5",
-    "date-only": "^1.0.1",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "image-type": "^5.2.0",
-    "into-stream": "^6.0.0",
-    "jquery": "^3.7.1",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.1",
-    "mongoose-dateonly": "^1.0.6",
-    "morgan": "^1.10.0",
-    "multer": "^1.4.5-lts.1",
-    "nodemailer": "^6.9.7",
-    "nodemon": "^3.0.1",
-    "rand-token": "^1.0.1",
-    "readable-stream": "^4.4.2",
-    "request": "^2.88.2",
-    "unidecode": "^1.0.1",
-    "validator": "^13.11.0"
-  },
-  "scripts": {
-    "start": "nodemon server.js -e ejs,js,css,html,jpg,png,scss",
-    "prod": "node server.js",
-    "test": "jest",
-    "nodemon": "nodemon --signal SIGKILL"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0",
-    "kill-port": "^2.0.1"
-  }
+    "dependencies": {
+        "@azure/storage-blob": "^12.17.0",
+        "axios": "^1.6.8",
+        "base64-js": "^1.5.1",
+        "bcrypt": "^5.1.1",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.20.2",
+        "config": "^3.3.11",
+        "cookie-parser": "^1.4.6",
+        "cors": "^2.8.5",
+        "date-only": "^1.0.1",
+        "dotenv": "^16.3.1",
+        "express": "^4.18.2",
+        "image-type": "^5.2.0",
+        "into-stream": "^6.0.0",
+        "jquery": "^3.7.1",
+        "jsonwebtoken": "^9.0.2",
+        "mongoose": "^8.0.1",
+        "mongoose-dateonly": "^1.0.6",
+        "morgan": "^1.10.0",
+        "multer": "^1.4.5-lts.1",
+        "nodemailer": "^6.9.7",
+        "nodemon": "^3.0.1",
+        "rand-token": "^1.0.1",
+        "readable-stream": "^4.4.2",
+        "request": "^2.88.2",
+        "unidecode": "^1.0.1",
+        "validator": "^13.11.0"
+    },
+    "scripts": {
+        "start": "nodemon server.js -e ejs,js,css,html,jpg,png,scss",
+        "prod": "node server.js",
+        "test": "jest",
+        "nodemon": "nodemon --signal SIGKILL"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0",
+        "kill-port": "^2.0.1"
+    }
 }
