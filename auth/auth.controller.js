@@ -116,11 +116,8 @@ exports.verifyEmail = async (req, res) => {
 // login
 exports.manualLogin = async (usernameReq, passwordReq) => {
   try {
-    console.log("manualLogin");
     const username = usernameReq.toLowerCase();
     const password = passwordReq;
-    console.log("username", username);
-    console.log("password", password);
     const user = await accountController.findByUsername(username);
     console.log("user", user);
     if (!user) {
@@ -217,6 +214,7 @@ exports.login = async (req, res) => {
           is_active: user.is_active,
           username: user.username,
           _id: user._id,
+          role: user.role,
         },
         message: "Đăng nhập thành công!",
       });
