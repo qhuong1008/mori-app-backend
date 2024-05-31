@@ -1,4 +1,30 @@
 const readHistory = require("../model/readHistory.model");
+const Book = require("../model/book.model");
+const Account = require("../model/account.model");
+
+const cleanReadHistory = async () => {
+  try {
+    // Lấy tất cả các readHistory
+    const readHistories = await readHistory.find();
+
+    for (let history of readHistories) {
+      const bookExists = await Book.exists({ _id: history.book });
+      // const userExists = await Account.exists({ _id: history.user }); --này chắc k cần vì tìm user rồi thì hẳn user đã có
+
+      // Nếu book hoặc user không tồn tại, xóa readHistory
+      if (!bookExists) {
+        await readHistory.deleteOne({ _id: history._id });
+        console.log(`Deleted readHistory with id ${history._id}`);
+      }
+    }
+    console.log("Clean up completed");
+  } catch (err) {
+    console.error("Error during clean up:", err);
+  }
+};
+
+// Gọi hàm cleanReadHistory để xóa các readHistory không hợp lệ- Gọi hàm này khi findAllWithUser
+// cleanReadHistory();
 
 let getTime = () => {
   const currentDate = new Date();
@@ -45,11 +71,13 @@ exports.findAll = async (req, res) => {
   res.json({ readHistorys: readHistorys, statusCode: 200 });
 };
 exports.findAllWithUser = async (req, res) => {
+  // await cleanReadHistory();
   const result = await readHistory
     .find({
       user: req.params.id,
     })
-    .populate("book").exec();
+    .populate("book")
+    .exec();
   res.json({ readHistory: result, statusCode: 200 });
 };
 
@@ -64,6 +92,7 @@ exports.findOne = async (req, res) => {
     });
     if (existingHistory) {
       res.json({ position: existingHistory.position, statusCode: 200 });
+      console.log("position", existingHistory.position);
     } else {
       res.json({
         message: "Không có lịch sử đọc trước đó",
@@ -91,8 +120,9 @@ const removeDuplicateMyLibraries = async () => {
 
     if (duplicateRecords.length > 0) {
       // Nếu đã có, tìm bản ghi có thời gian lớn nhất
-      const maxTimeRecord = duplicateRecords.reduce((maxRecord, currentRecord) =>
-        currentRecord.time > maxRecord.time ? currentRecord : maxRecord
+      const maxTimeRecord = duplicateRecords.reduce(
+        (maxRecord, currentRecord) =>
+          currentRecord.time > maxRecord.time ? currentRecord : maxRecord
       );
 
       if (record.time > maxTimeRecord.time) {

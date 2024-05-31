@@ -8,6 +8,9 @@ const book = require("../controller/book.controller");
 
 router.get("/get-book", cors(), book.findAll);
 router.get("/get-book/ebook", cors(), book.findAllEBooks);
+
+router.post("/get-book/textToSpeech", cors(), book.textToSpeech);
+
 router.get("/get-book/audio-book", cors(), book.findAllAudioBooks);
 router.get("/search", cors(), book.searchBookByName);
 router.patch("/:id", cors(), book.update);
