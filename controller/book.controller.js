@@ -1,5 +1,6 @@
 const Book = require("../model/book.model");
 const imageController = require("../controller/image.controller");
+const cleanData = require("../controller/cleanData.controller");
 
 exports.create = async (req, res) => {
   var bookDetail = new Book(req.body);
@@ -174,6 +175,10 @@ exports.delete = async (req, res) => {
   const bookId = req.params.id;
   try {
     await Book.findByIdAndDelete(bookId);
+
+    await cleanData.cleanBookRanking(Book);
+    await cleanData.cleanMyLibrary(Book);
+    await cleanData.cleanReadHistory(Book);
     res.json({ message: "Deleted book successfully!", statusCode: 200 });
   } catch (err) {
     console.error(err);
@@ -215,5 +220,48 @@ exports.uploadEpub = async (req, res) => {
   } catch (err) {
     console.log("err", err);
     return res.status(400).json({ err: err });
+  }
+};
+
+const axios = require("axios");
+
+exports.textToSpeech = async (req, res) => {
+  try {
+    // Kiểm tra các tham số đầu vào
+    const { text, speed, voice } = req.body;
+    if (!text || typeof text !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Text is required and must be a string" });
+    }
+    // if (speed && typeof speed !== 'string') {
+    //   return res.status(400).json({ error: 'Speed must be a string' });
+    // }
+    // if (voice && typeof voice !== 'string') {
+    //   return res.status(400).json({ error: 'Voice must be a string' });
+    // }
+
+    const url = "https://api.fpt.ai/hmi/tts/v5";
+    const headers = {
+      "api-key": process.env.FPT_API_KEY,
+      speed: speed || "1", // Sử dụng speed mặc định nếu không có
+      voice: voice || "banmai", // Sử dụng voice mặc định nếu không có
+    };
+    const data = text.toString();
+
+    // Gọi API FPT AI Text-to-Speech
+    const response = await axios.post(url, data, { headers });
+
+    // Kiểm tra nếu không có dữ liệu audio
+    if (!response.data.async) {
+      return res.status(500).json({ error: "No audio data returned from API" });
+    }
+    console.log("text", data);
+    // Trả về URL của file audio
+    res.json({ audioUrl: response.data.async });
+    console.log(response.data.async);
+  } catch (error) {
+    console.error("Error converting text to speech:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

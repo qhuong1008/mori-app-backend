@@ -16,8 +16,8 @@ exports.increaseTotalReadDaily = async (req, res) => {
     });
 
     // hàm này cập nhật lại lượt đọc -> lướt xuống dưới cùng để xem
-    // updateAllTotalRead();
-    updateTotalRead(book_id);
+    updateAllTotalRead();
+    // updateTotalRead(book_id);
 
     if (bookRanking) {
       // Nếu đã có, cập nhật total_read
