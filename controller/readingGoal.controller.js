@@ -1,4 +1,5 @@
 const readingGoal = require("../model/readingGoal.model");
+const notificationController = require("../controller/notification.controller");
 
 exports.findByUserId = async (req, res) => {
   const { userId } = req.params;
@@ -23,10 +24,28 @@ exports.createReadingGoal = async (req, res) => {
 
   // Basic validation (more can be added)
   if (!user || !goalType || !goalAmount || !timeFrame) {
-    return res.status(400).send("Missing required fields");
+    return res.status(400).send({ error: "Vui lòng chọn đủ thông tin!" });
   }
 
   try {
+    const existingGoal = await readingGoal.findOne({
+      user,
+      timeFrame,
+    });
+
+    if (existingGoal) {
+      return res.status(400).json({
+        error: `Bạn đã có mục tiêu đọc sách cho ${
+          existingGoal.timeFrame == "day"
+            ? "Ngày"
+            : existingGoal.timeFrame == "month"
+            ? "Tháng"
+            : existingGoal.timeFrame == "week"
+            ? "Tuần"
+            : "Năm"
+        } rồi!`,
+      });
+    }
     const newReadingGoal = new readingGoal({
       user,
       goalType,
@@ -36,10 +55,13 @@ exports.createReadingGoal = async (req, res) => {
 
     await newReadingGoal.save();
 
-    res.status(201).send(newReadingGoal);
+    res.status(200).json({
+      message: "Tạo mục tiêu mới thành công!",
+      data: newReadingGoal,
+    });
   } catch (err) {
     console.error("Error creating reading goal:", err);
-    res.status(500).send("Internal server error");
+    res.status(500).send({ error: "Internal server error" });
   }
 };
 
@@ -126,7 +148,7 @@ exports.resetReadingProgress = async (req, res) => {
     await updatedReadingGoal.save();
 
     res.status(200).send({
-      message: "Đã reset lại data cho mục tiêu đọc sách.",
+      message: `Đã reset lại data ${updatedReadingGoal.timeFrame} cho mục tiêu đọc sách.`,
       progress: updatedReadingGoal.booksRead.length, // Assuming booksRead holds references to completed books
       goalAmount: updatedReadingGoal.goalAmount,
     });
@@ -146,6 +168,26 @@ exports.updateReadPages = async (req, res) => {
     );
 
     if (updateResult.modifiedCount > 0) {
+      // check if user already reached the goal then make a congratulations notification
+      const goals = await readingGoal.find({
+        user: userId,
+        goalType: "pages",
+      });
+
+      // Check for any goal reaching completion (pagesRead >= goalAmount - 1)
+      const completedGoals = goals.filter(
+        (goal) => goal.pagesRead == goal.goalAmount
+      );
+      if (completedGoals.length > 0) {
+        completedGoals.forEach((goal) => {
+          notificationController.createReadingGoalReachedNotification(
+            goal.user,
+            goal.goalAmount,
+            goal.goalType,
+            goal.timeFrame
+          );
+        });
+      }
       res.status(200).json({
         message: `${updateResult.modifiedCount} reading goals updated successfully.`,
       });
