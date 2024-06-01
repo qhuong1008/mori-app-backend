@@ -78,3 +78,36 @@ exports.markAsRead = async (req, res) => {
     return res.status(400).json({ err: err });
   }
 };
+// Function to create notification for reaching reading goal
+exports.createReadingGoalReachedNotification = async (
+  userId,
+  goalAmount,
+  goalType,
+  timeFrame
+) => {
+  const message = `Chúc mừng! Bạn đã hoàn thành mục tiêu đọc ${goalAmount} ${
+    goalType == "pages" ? "trang " : "quyển "
+  }sách trong 1 ${
+    timeFrame == "day"
+      ? " ngày!"
+      : timeFrame == "week"
+      ? " tuần!"
+      : timeFrame == "month"
+      ? " tháng!"
+      : " năm!"
+  }.`;
+  const newNotification = new notificationModel({
+    account: userId,
+    message,
+    action: "readingGoal",
+  });
+
+  try {
+    await newNotification.save();
+    console.log(
+      `Notification created for user ${userId} on reading goal completion.`
+    );
+  } catch (error) {
+    console.error("Error creating notification:", error);
+  }
+};

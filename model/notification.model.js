@@ -10,7 +10,6 @@ const notificationSchema = new mongoose.Schema({
   post: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Post",
-    required: true,
   },
   message: {
     type: String,
@@ -26,7 +25,7 @@ const notificationSchema = new mongoose.Schema({
   },
   action: {
     type: String,
-    enum: ["like", "comment", "share"],
+    enum: ["like", "comment", "share", "readingGoal"],
     required: true,
   },
   performedBy: {

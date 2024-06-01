@@ -34,6 +34,7 @@ const payment = require("./route/payment.route");
 const commentRouter = require("./route/comment.route");
 const notificationRouter = require("./route/notification.route");
 const followRouter = require("./route/follow.route");
+const readingGoalRouter = require("./route/readingGoal.route");
 
 const app = express();
 app.use(cors());
@@ -95,6 +96,7 @@ app.use("/api/order", payment);
 app.use("/api/comment", commentRouter);
 app.use("/api/notification", notificationRouter);
 app.use("/api/follow", followRouter);
+app.use("/api/readingGoal", readingGoalRouter);
 
 app.get(`/api/accountimg/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
