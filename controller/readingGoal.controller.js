@@ -23,7 +23,16 @@ exports.createReadingGoal = async (req, res) => {
   const { user, goalType, goalAmount, timeFrame } = req.body;
 
   // Basic validation (more can be added)
-  if (!user || !goalType || !goalAmount || !timeFrame) {
+  if (
+    !user ||
+    !goalType ||
+    !goalAmount ||
+    !timeFrame ||
+    user == "" ||
+    goalType == "" ||
+    goalAmount == "" ||
+    timeFrame == ""
+  ) {
     return res.status(400).send({ error: "Vui lòng chọn đủ thông tin!" });
   }
 

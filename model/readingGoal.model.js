@@ -4,7 +4,6 @@ const readingGoalSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Account",
-    required: true,
   },
   // Những cuốn sách đã đọc
   booksRead: [
@@ -21,16 +20,13 @@ const readingGoalSchema = new mongoose.Schema({
   goalType: {
     type: String,
     enum: ["pages", "books"],
-    required: true,
   },
   goalAmount: {
     type: Number,
-    required: true,
   },
   timeFrame: {
     type: String,
     enum: ["day", "week", "month", "year"],
-    required: true,
   },
   createdAt: {
     type: Date,
