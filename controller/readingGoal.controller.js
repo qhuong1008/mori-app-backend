@@ -173,6 +173,7 @@ exports.updateReadPages = async (req, res) => {
 
     const updateResult = await readingGoal.updateMany(
       { user: userId },
+      { goalType: "pages" },
       { $inc: { pagesRead: 1 } }
     );
 
@@ -219,7 +220,7 @@ exports.updateReadBooks = async (req, res) => {
     // Check if book already exists
     const existingGoal = await readingGoal.findOne({
       user: userId,
-      booksRead: bookId,
+      goalType: "books",
     });
 
     if (!existingGoal) {
@@ -242,10 +243,35 @@ exports.updateReadBooks = async (req, res) => {
       { $push: { booksRead: bookId } }
     );
 
-    res.json({
-      message: "Book ID added to reading goals successfully.",
-      updateResult,
-    });
+    if (updateResult.modifiedCount > 0) {
+      // check if user already reached the goal then make a congratulations notification
+      const goals = await readingGoal.find({
+        user: userId,
+        goalType: "books",
+      });
+
+      // Check for any goal reaching completion (pagesRead >= goalAmount - 1)
+      const completedGoals = goals.filter(
+        (goal) => goal.booksRead.length == goal.goalAmount
+      );
+      if (completedGoals.length > 0) {
+        completedGoals.forEach((goal) => {
+          notificationController.createReadingGoalReachedNotification(
+            goal.user,
+            goal.goalAmount,
+            goal.goalType,
+            goal.timeFrame
+          );
+        });
+      }
+      res.status(200).json({
+        message: `${updateResult.modifiedCount} reading goals updated successfully.`,
+      });
+    } else {
+      res
+        .status(404)
+        .json({ message: "No reading goals found for the provided user." });
+    }
   } catch (error) {
     console.error("Error adding book ID:", error);
     res.status(500).json({ message: "Internal server error." });
