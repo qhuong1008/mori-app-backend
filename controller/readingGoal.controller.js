@@ -172,8 +172,7 @@ exports.updateReadPages = async (req, res) => {
     const userId = req.params.userId;
 
     const updateResult = await readingGoal.updateMany(
-      { user: userId },
-      { goalType: "pages" },
+      { user: userId, goalType: "pages" },
       { $inc: { pagesRead: 1 } }
     );
 
@@ -194,7 +193,8 @@ exports.updateReadPages = async (req, res) => {
             goal.user,
             goal.goalAmount,
             goal.goalType,
-            goal.timeFrame
+            goal.timeFrame,
+            goal._id
           );
         });
       }
@@ -260,7 +260,8 @@ exports.updateReadBooks = async (req, res) => {
             goal.user,
             goal.goalAmount,
             goal.goalType,
-            goal.timeFrame
+            goal.timeFrame,
+            goal._id
           );
         });
       }
@@ -275,5 +276,15 @@ exports.updateReadBooks = async (req, res) => {
   } catch (error) {
     console.error("Error adding book ID:", error);
     res.status(500).json({ message: "Internal server error." });
+  }
+};
+exports.findById = async (req, res) => {
+  try {
+    const readingGoalId = req.params.id;
+    const result = await readingGoal.findById(readingGoalId);
+    res.json({ data: result, statusCode: 200 });
+  } catch (err) {
+    console.error("err", err);
+    res.status(500).json({ err: err });
   }
 };

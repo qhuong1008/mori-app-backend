@@ -11,6 +11,10 @@ const notificationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Post",
   },
+  readingGoal: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "ReadingGoal",
+  },
   message: {
     type: String,
     default: "",

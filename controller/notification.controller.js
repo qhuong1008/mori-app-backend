@@ -83,7 +83,8 @@ exports.createReadingGoalReachedNotification = async (
   userId,
   goalAmount,
   goalType,
-  timeFrame
+  timeFrame,
+  id
 ) => {
   const message = `Chúc mừng! Bạn đã hoàn thành mục tiêu đọc ${goalAmount} ${
     goalType == "pages" ? "trang " : "quyển "
@@ -97,6 +98,7 @@ exports.createReadingGoalReachedNotification = async (
       : " năm!"
   }.`;
   const newNotification = new notificationModel({
+    readingGoal: id,
     account: userId,
     message,
     action: "readingGoal",

@@ -22,5 +22,6 @@ router.put(
   cors(),
   readingGoalController.updateReadBooks
 );
+router.get("/id/:id", cors(), readingGoalController.findById);
 
 module.exports = router;
