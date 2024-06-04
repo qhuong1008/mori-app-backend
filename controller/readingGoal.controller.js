@@ -83,7 +83,24 @@ exports.editReadingGoal = async (req, res) => {
     if (!existingGoal) {
       return res.status(404).send("Reading goal not found");
     }
+    const existingGoalType = await readingGoal.findOne({
+      user,
+      timeFrame,
+    });
 
+    if (existingGoalType) {
+      return res.status(400).json({
+        error: `Bạn đã có mục tiêu đọc sách cho ${
+          existingGoal.timeFrame == "day"
+            ? "Ngày"
+            : existingGoal.timeFrame == "month"
+            ? "Tháng"
+            : existingGoal.timeFrame == "week"
+            ? "Tuần"
+            : "Năm"
+        } rồi!`,
+      });
+    }
     // Update only specified fields (if present in request body)
     await readingGoal.updateOne(
       { _id: goalId },
@@ -95,6 +112,9 @@ exports.editReadingGoal = async (req, res) => {
           goalAmount: req.body.goalAmount
             ? req.body.goalAmount
             : existingGoal.goalAmount,
+          timeFrame: req.body.timeFrame
+            ? req.body.timeFrame
+            : existingGoal.timeFrame,
         },
       }
     );
@@ -105,6 +125,26 @@ exports.editReadingGoal = async (req, res) => {
   } catch (err) {
     console.error("Error editing reading goal:", err);
     res.status(500).send("Internal server error");
+  }
+};
+
+exports.deleteReadingGoal = async (req, res) => {
+  // Get the reading goal ID from the request parameter
+  const { id } = req.params;
+
+  try {
+    // Find the reading goal by ID and remove it
+    const deletedReadingGoal = await readingGoal.findByIdAndDelete(id);
+
+    if (!deletedReadingGoal) {
+      return res.status(404).json({ message: "Mục tiêu không tìm thấy." });
+    }
+
+    // Respond with a success message
+    res.json({ message: "Xóa mục tiêu thành công!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

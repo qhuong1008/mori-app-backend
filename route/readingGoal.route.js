@@ -23,5 +23,6 @@ router.put(
   readingGoalController.updateReadBooks
 );
 router.get("/id/:id", cors(), readingGoalController.findById);
+router.delete("/:id", cors(), readingGoalController.deleteReadingGoal);
 
 module.exports = router;
