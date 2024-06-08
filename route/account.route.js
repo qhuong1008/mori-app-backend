@@ -13,7 +13,8 @@ router.post("/add-manual-account", account.createManualAccount);
 router.post("/find-account", account.findOne);
 router.post("/change-password", account.changePassword);
 
-router.get("/add-user-recommend", recommend.createOrUpdateUserRecommendations);
+router.get("/add-recommendations", recommend.createOrUpdateUserRecommendations);
+router.get("/get-recommendations/:id", recommend.getUserRecommendations);
 
 // Route cho các API cần xác thực đăng nhập bằng username, password
 const authMiddleware = require("../auth/auth.middlewares");

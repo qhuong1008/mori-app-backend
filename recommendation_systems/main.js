@@ -28,6 +28,28 @@ exports.getRecommendationsOfBook = async (req, res) => {
   }
 };
 
+// recommend của user
+exports.getUserRecommendations = async (req, res) => {
+  try {
+    const user_id = req.params.id;
+    const account = await Account.findById(user_id);
+
+    if (!account) {
+      return res.status(404).json({ message: "Account not found" });
+    }
+
+    // Trích xuất chỉ danh sách book_id từ recommendations
+    const bookIds = account.recommendations;
+
+    const recommendedBooks = await Book.find({ _id: { $in: bookIds } });
+
+    res.json({ recommendations: recommendedBooks, statusCode: 200 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 // gọi mỗi khi có quyển sách mới được thêm vào
 exports.createRecommendations = async (req, res) => {
   try {
