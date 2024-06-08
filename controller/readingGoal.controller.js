@@ -83,24 +83,7 @@ exports.editReadingGoal = async (req, res) => {
     if (!existingGoal) {
       return res.status(404).send("Reading goal not found");
     }
-    const existingGoalType = await readingGoal.findOne({
-      user,
-      timeFrame,
-    });
 
-    if (existingGoalType) {
-      return res.status(400).json({
-        error: `Bạn đã có mục tiêu đọc sách cho ${
-          existingGoal.timeFrame == "day"
-            ? "Ngày"
-            : existingGoal.timeFrame == "month"
-            ? "Tháng"
-            : existingGoal.timeFrame == "week"
-            ? "Tuần"
-            : "Năm"
-        } rồi!`,
-      });
-    }
     // Update only specified fields (if present in request body)
     await readingGoal.updateOne(
       { _id: goalId },
