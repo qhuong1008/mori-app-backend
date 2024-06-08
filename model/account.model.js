@@ -3,14 +3,44 @@ const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
 const account = new Schema({
-  username: { type: String },
+  username: {
+    type: String,
+    // unique: true,
+    // validate: {
+    //   validator: function (value) {
+    //     // Kiểm tra xem username có đúng định dạng hay không (ví dụ: không có ký tự đặc biệt)
+    //     return /^[a-zA-Z0-9]+$/.test(value);
+    //   },
+    //   message: "Username is not valid.",
+    // },
+  },
   password: {
     type: String,
     minlength: 6,
+    // validate: {
+    //   validator: function (value) {
+    //     // Sử dụng validator để kiểm tra yêu cầu về mật khẩu mạnh
+    //     return validator.isStrongPassword(value);
+    //   },
+    //   message:
+    //     "Password must contain at least 8 characters, including uppercase letters, lowercase letters, numbers and special characters.",
+    // },
   },
-  email: { type: String },
+  email: {
+    type: String,
+    // required: true,
+    // unique: true,
+    // validate: {
+    //   validator: function (v) {
+    //     return /\S+@\S+\.\S+/.test(v);
+    //   },
+    //   message: (props) => `${props.value} is not a valid email address!`,
+    // },
+  },
   displayName: { type: String, minlength: 3, maxlength: 30 },
-  phoneNumber: { type: String },
+  phoneNumber: {
+    type: String,
+  },
   avatar: {
     type: String,
     default: "avt.jpg",
@@ -25,8 +55,6 @@ const account = new Schema({
   is_verify_email: { type: Boolean, default: false },
   passwordResetToken: { type: String, default: null },
   passwordResetExpires: { type: Date, default: null },
-  recommendations: [{ type: Schema.Types.ObjectId, ref: 'Book' }]
-
 });
 
 // Middleware để băm mật khẩu trước khi lưu vào cơ sở dữ liệu

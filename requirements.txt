@@ -1,4 +1,0 @@
-flask
-numpy
-sentence-transformers
-scikit-learn

@@ -5,18 +5,11 @@ var cors = require("cors");
 const multer = require("multer");
 const path = require("path");
 const book = require("../controller/book.controller");
-const recommend = require("../recommendation_systems/main");
 
 router.get("/get-book", cors(), book.findAll);
 router.get("/get-book/ebook", cors(), book.findAllEBooks);
 
 router.post("/get-book/textToSpeech", cors(), book.textToSpeech);
-router.get(
-  "/get-recommendations/:id",
-  cors(),
-  recommend.getRecommendationsOfBook
-);
-router.get("/add-recommendations", cors(), recommend.createRecommendations);
 
 router.get("/get-book/audio-book", cors(), book.findAllAudioBooks);
 router.get("/search", cors(), book.searchBookByName);
