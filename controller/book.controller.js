@@ -75,16 +75,21 @@ exports.findBookWithSearchValue = async (req, res) => {
 };
 
 exports.findBookByCategory = async (req, res) => {
-  const searchValue = req.body.searchValue;
-  const result = await Book.find({
-    tags: {
-      $in: [searchValue],
-    },
-  })
-    .populate("chapters")
-    .exec();
+  try {
+    const searchValue = req.body.searchValue;
+    const result = await Book.find({
+      tags: {
+        $in: [searchValue],
+      },
+    })
+      .populate("chapters")
+      .exec();
 
-  res.json({ books: result, statusCode: 200 });
+    res.json({ books: result, statusCode: 200 });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Internal server error" });
+  }
 };
 
 exports.findOne = async (req, res) => {
