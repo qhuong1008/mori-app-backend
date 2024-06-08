@@ -77,6 +77,7 @@ exports.findAllWithUser = async (req, res) => {
       user: req.params.id,
     })
     .populate("book")
+    .sort({ time: -1 })
     .exec();
   res.json({ readHistory: result, statusCode: 200 });
 };

@@ -2,8 +2,7 @@ const express = require("express");
 const router = express.Router();
 const cors = require("cors");
 const account = require("../controller/account.controller");
-
-const whitelist = [process.env.DOMAIN]; // Thêm domain bạn muốn cho phép truy cập vào whitelist
+const recommend = require("../recommendation_systems/main");
 
 router.get("/get-account", account.findAll);
 router.get("/email", account.findByEmail);
@@ -13,6 +12,8 @@ router.post("/add-account", account.createNewAccount);
 router.post("/add-manual-account", account.createManualAccount);
 router.post("/find-account", account.findOne);
 router.post("/change-password", account.changePassword);
+
+router.get("/add-user-recommend", recommend.createOrUpdateUserRecommendations);
 
 // Route cho các API cần xác thực đăng nhập bằng username, password
 const authMiddleware = require("../auth/auth.middlewares");
