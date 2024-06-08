@@ -13,14 +13,14 @@ COPY . .
 CMD npm run prod
 
 # Flask service
-FROM python:3.9 AS flask
+# FROM python:3.9 AS flask
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY requirements.txt .
+# COPY requirements.txt .
 
-RUN pip install -r requirements.txt
+# RUN pip install -r requirements.txt
 
-COPY recommendation_systems /app/recommendation_systems
+# COPY recommendation_systems /app/recommendation_systems
 
-CMD python recommendation_systems/recommend_books.py
+# CMD python recommendation_systems/recommend_books.py
