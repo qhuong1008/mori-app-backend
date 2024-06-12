@@ -68,6 +68,30 @@ exports.createReplyComment = async (req, res) => {
     res.status(400).json({ message: err.message });
   }
 };
+exports.getAllComments = async (req, res) => {
+  try {
+    const comments = await Comment.find()
+      .populate({
+        path: "account",
+        select:
+          "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
+      })
+      .populate({
+        path: "replies",
+        populate: {
+          path: "account",
+          select:
+            "-role -is_member -is_blocked -is_active -is_verify_email -passwordResetExpires -passwordResetToken",
+        },
+      })
+      .populate("parent_comment")
+      .exec();
+    return res.status(200).json({ data: comments });
+  } catch (error) {
+    console.error("Error getting all comments:", error);
+    return res.status(500).json({ error: "Something wrong occured!" });
+  }
+};
 exports.getAllCommentsByUserId = async (req, res) => {
   try {
     const userId = req.body.account;
