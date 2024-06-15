@@ -42,6 +42,10 @@ const commentSchema = new Schema({
       default: [],
     },
   ],
+  is_toxic: {
+    type: Schema.Types.Boolean,
+    default: false,
+  },
 });
 
 const Comment = mongoose.model("Comment", commentSchema);
