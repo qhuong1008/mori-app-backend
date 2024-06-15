@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const cors = require("cors");
 const account = require("../controller/account.controller");
-const recommend = require("../recommendation_systems/main");
+const recommend = require("../controller/recommendation.controller");
 
 router.get("/get-account", account.findAll);
 router.get("/email", account.findByEmail);
@@ -13,7 +13,8 @@ router.post("/add-manual-account", account.createManualAccount);
 router.post("/find-account", account.findOne);
 router.post("/change-password", account.changePassword);
 
-router.get("/add-recommendations", recommend.createOrUpdateUserRecommendations);
+router.post("/add-recommendations", recommend.createOrUpdateUserRecommendations);
+router.post("/addAll-recommendations", recommend.createAllUserRecommendations);
 router.get("/get-recommendations/:id", recommend.getUserRecommendations);
 
 // Route cho các API cần xác thực đăng nhập bằng username, password

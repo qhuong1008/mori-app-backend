@@ -23,6 +23,11 @@ exports.findAll = async (req, res) => {
   res.json({ books: books, statusCode: 200 });
 };
 
+exports.findAllNameBook = async (req, res) => {
+  const books = await Book.find({}, 'name')
+  res.json({ books: books, statusCode: 200 });
+};
+
 exports.findAllEBooks = async (req, res) => {
   const books = await Book.find({
     pdf: {
