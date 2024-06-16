@@ -113,3 +113,20 @@ exports.createReadingGoalReachedNotification = async (
     console.error("Error creating notification:", error);
   }
 };
+
+exports.notifyCommentDisapproval = async (comment) => {
+  try {
+    const postValue = await postModel.findById(comment.post);
+    const notification = {
+      account: comment.account,
+      action: "comment_disapproved",
+      post: comment.post,
+      message: `Bình luận của bạn cho bài viết "${postValue.title}" đã bị từ chối`,
+    };
+
+    const newNotification = new notificationModel(notification);
+    await newNotification.save();
+  } catch (error) {
+    console.error("Error creating notification:", error);
+  }
+};
