@@ -8,6 +8,10 @@ const axios = require("axios");
 exports.createComment = async (req, res) => {
   try {
     const newComment = new Comment(req.body);
+    res.status(200).json({
+      message: "Thêm bình luận thành công!",
+      statusCode: 200,
+    });
     // Classify the comment before saving
     const classificationResult = await classifyCommentHandler(
       newComment.content
@@ -16,18 +20,13 @@ exports.createComment = async (req, res) => {
       newComment.is_toxic = true;
     }
     // Lưu comment vào cơ sở dữ liệu
-    const savedComment = await newComment.save();
-
-    res.status(200).json({
-      message: "Thêm bình luận thành công!",
-      statusCode: 200,
-      data: savedComment,
-    });
+    await newComment.save();
   } catch (error) {
-    console.error("Error saving note:", error);
+    console.error("Error creating comment:", error);
     res.status(500).json({ error: "error", message: error.message });
   }
 };
+
 exports.createReplyComment = async (req, res) => {
   try {
     const { content, account, post, parent_comment } = req.body;
@@ -101,6 +100,7 @@ exports.getAllCommentsByUserId = async (req, res) => {
     const comments = await Comment.find({
       account: userId,
       post: postId,
+      is_approved: true,
     })
       .populate({
         path: "account",
@@ -201,7 +201,6 @@ exports.deleteManyComments = async (req, res) => {
     }
     // Delete comments using the $in operator
     const deletedComments = await Comment.find({ _id: { $in: commentIds } });
-    console.log("deletedComments", deletedComments);
     for (const deletedComment of deletedComments) {
       await notiController.notifyCommentDisapproval(deletedComment);
     }
@@ -244,7 +243,13 @@ exports.approveCommentById = async (req, res) => {
       },
       { new: true }
     );
-
+    await notiController.createNewCommentNotification(
+      comment.post,
+      "comment",
+      comment.account,
+      comment.content
+    );
+    await notiController.notifyCommentApproval(comment);
     if (!comment) {
       return res.status(404).send({ err: "Comment not found" });
     }
@@ -270,6 +275,11 @@ exports.approveManyComments = async (req, res) => {
     // Check if any comments were updated
     if (updatedComments.modifiedCount === 0) {
       return res.status(404).send("No comments found with the provided IDs.");
+    } else {
+      const approvedComments = await Comment.find({ _id: { $in: commentIds } });
+      for (const approvedComment of approvedComments) {
+        await notiController.notifyCommentApproval(approvedComment);
+      }
     }
 
     res.json({

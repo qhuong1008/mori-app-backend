@@ -8,5 +8,10 @@ router.get("/:userId", cors(), notificationController.findByUserId);
 router.get("/", cors(), notificationController.findAll);
 router.post("/", cors(), notificationController.create);
 router.post("/mark-as-read/:id", cors(), notificationController.markAsRead);
+router.post(
+  "/mark-all-as-read/:id",
+  cors(),
+  notificationController.markAllAsRead
+);
 
 module.exports = router;
