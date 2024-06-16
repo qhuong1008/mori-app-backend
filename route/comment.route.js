@@ -15,5 +15,7 @@ router.delete(
   commentController.deleteOneCommentById
 );
 router.post("/delete-many", cors(), commentController.deleteManyComments);
+router.post("/:id/approve", cors(), commentController.approveCommentById);
+router.post("/approve-many", cors(), commentController.approveManyComments);
 
 module.exports = router;
