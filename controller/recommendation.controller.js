@@ -53,12 +53,15 @@ exports.getUserRecommendations = async (req, res) => {
 // gọi mỗi khi có quyển sách mới được thêm vào
 exports.createRecommendations = async (req, res) => {
   try {
-    const allBooks = await Book.find();
+    const allBooks = await Book.find({}, "name author intro tags").lean();
 
     // Gọi API Python để lấy gợi ý sách
-    const response = await axios.post("http://127.0.0.1:8000/recommendations", {
-      allBooks: allBooks,
-    });
+    const response = await axios.post(
+      `${process.env.NLP_URL}/nlp/recommendcb/create-recommend`,
+      {
+        allBooks: allBooks,
+      }
+    );
 
     const recommendationsData = response.data.recommendations;
     console.log("recommendationsData: ", recommendationsData);
@@ -82,54 +85,69 @@ exports.createRecommendations = async (req, res) => {
   }
 };
 
+// được gọi mỗi khi người dùng đọc một quyển sách mới
 exports.createOrUpdateUserRecommendations = async (req, res) => {
   try {
     const user_id = req.body.user_id;
+    const book_id = req.body.book_id;
     console.log("user", user_id);
 
-    // Tìm lịch sử đọc của người dùng
-    const userReadHistory = await ReadHistory.find({ user: user_id }).sort({
-      time: -1,
-    });
+    // Truy vấn lịch sử đọc của người dùng, sắp xếp theo thời gian đọc gần nhất và lấy 5 cuốn sách gần nhất
+    const userReadHistory = await ReadHistory.find({ user: user_id })
+      .sort({ time: -1 }) // Giả sử "readAt" là trường lưu thời gian đọc
+      .limit(5) // chỉ lấy 5 cuốn đầu để recommend thôi
+      .select("book")
+      .lean(); // Lấy trường "book" và trả về đối tượng đơn giản
 
-    // Lấy danh sách các cuốn sách đã đọc bởi người dùng
-    const userReadBooks = userReadHistory.map((history) =>
+    // Lấy danh sách ID các cuốn sách từ lịch sử đọc
+    const recentBooks = userReadHistory.map((history) =>
       history.book.toString()
     );
 
-    // Lấy danh sách cuốn sách để thực hiện tìm kiếm recommendations
-    const userHistories = userReadBooks.slice(0, 5); // Chỉ lấy 5 cuốn đầu
+    // Kiểm tra xem cuốn sách hiện tại có nằm trong danh sách 5 cuốn sách gần nhất hay không
+    const isBookInRecentHistory = recentBooks.includes(book_id);
 
-    // In ra dữ liệu gửi đi
-    const requestData = {
-      user_id: user_id,
-      user_history: userHistories,
-      n: 15, // giới hạn gợi ý của 1 người dùng là 15 cuốn
-    };
-    // console.log("Request Data:", requestData);
-
-    const response = await axios.post(
-      `${process.env.BACKEND_URL}/nlp/recommend/history`,
-      requestData
-    );
-
-    // Kiểm tra phản hồi từ FastAPI
-    if (response.status == 200 && response.data) {
-      console.log("response.data", response.data);
-      // lưu lại vào database
-      const user = await Account.findById(user_id);
-      user.recommendations = response.data.recommendations;
-      await user.save();
-
-      console.log(
-        "UserRecommendations created successfully for user " + user._id
-      );
+    if (isBookInRecentHistory) {
       res
         .status(200)
-        .json({ message: "User recommendations updated successfully" });
+        .json({ message: "User recommendations successfully" });
     } else {
-      console.error("Failed to get recommendations from FastAPI");
-      res.status(500).json({ message: "Failed to get recommendations" });
+      // Lấy danh sách các cuốn sách đã đọc bởi người dùng
+      const userHistories = userReadHistory.map((history) =>
+        history.book.toString()
+      );
+
+      // In ra dữ liệu gửi đi
+      const requestData = {
+        user_id: user_id,
+        user_history: userHistories,
+        n: 15, // giới hạn gợi ý của 1 người dùng là 15 cuốn
+      };
+      // console.log("Request Data:", requestData);
+
+      const response = await axios.post(
+        `${process.env.NLP_URL}/nlp/recommend/history`,
+        requestData
+      );
+
+      // Kiểm tra phản hồi từ FastAPI
+      if (response.status == 200 && response.data) {
+        console.log("response.data", response.data);
+        // lưu lại vào database
+        const user = await Account.findById(user_id);
+        user.recommendations = response.data.recommendations;
+        await user.save();
+
+        console.log(
+          "UserRecommendations created successfully for user " + user._id
+        );
+        res
+          .status(200)
+          .json({ message: "User recommendations updated successfully" });
+      } else {
+        console.error("Failed to get recommendations from FastAPI");
+        res.status(500).json({ message: "Failed to get recommendations" });
+      }
     }
   } catch (err) {
     console.error("error create user recommendations", err);
