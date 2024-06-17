@@ -46,6 +46,10 @@ const commentSchema = new Schema({
     type: Schema.Types.Boolean,
     default: false,
   },
+  is_approved: {
+    type: Schema.Types.Boolean,
+    default: false,
+  },
 });
 
 const Comment = mongoose.model("Comment", commentSchema);
