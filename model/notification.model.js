@@ -36,6 +36,7 @@ const notificationSchema = new mongoose.Schema({
       "readingGoal",
       "comment_disapproved",
       "comment_approved",
+      "voucher",
     ],
     required: true,
   },

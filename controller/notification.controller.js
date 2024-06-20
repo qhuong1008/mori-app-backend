@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const notificationModel = require("../model/notification.model");
 const postModel = require("../model/post.model");
+const userVoucherModel = require("../model/userVoucher.model");
 const ObjectId = mongoose.Types.ObjectId;
 
 exports.create = async (req, res) => {
@@ -194,6 +195,28 @@ exports.notifyCommentApproval = async (comment) => {
 
     const newNotification = new notificationModel(notification);
     await newNotification.save();
+  } catch (error) {
+    console.error("Error creating notification:", error);
+  }
+};
+
+exports.createNewVoucherReceivedNotification = async (
+  userId,
+  userVoucherId
+) => {
+  try {
+    const userVoucher = await userVoucherModel
+      .findById(userVoucherId)
+      .populate("voucher");
+
+    const message = `Từ việc mua sách lẻ bạn đã nhận được voucher ${userVoucher.voucher.description}!`;
+    const newNotification = new notificationModel({
+      account: userId,
+      message,
+      action: "voucher",
+    });
+    await newNotification.save();
+    console.log(`Notification created for user ${userId} on voucher received.`);
   } catch (error) {
     console.error("Error creating notification:", error);
   }

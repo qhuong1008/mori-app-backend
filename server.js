@@ -35,6 +35,8 @@ const commentRouter = require("./route/comment.route");
 const notificationRouter = require("./route/notification.route");
 const followRouter = require("./route/follow.route");
 const readingGoalRouter = require("./route/readingGoal.route");
+const userVoucherRouter = require("./route/userVoucher.route");
+const discountVoucherRouter = require("./route/discountVoucher.route");
 
 const app = express();
 app.use(cors());
@@ -55,7 +57,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(authenticateAllowedOrigins);
+// app.use(authenticateAllowedOrigins);
 
 const databaseUrl = process.env.MONGODB_URL;
 
@@ -97,6 +99,8 @@ app.use("/api/comment", commentRouter);
 app.use("/api/notification", notificationRouter);
 app.use("/api/follow", followRouter);
 app.use("/api/readingGoal", readingGoalRouter);
+app.use("/api/userVoucher", userVoucherRouter);
+app.use("/api/discountVoucher", discountVoucherRouter);
 
 app.get(`/api/accountimg/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
