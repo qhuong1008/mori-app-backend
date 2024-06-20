@@ -120,7 +120,36 @@ exports.checkUserLoyaltyThenGiveNewVoucher = async (
       const targetVoucher = await discountVoucher.findOne({
         code: "LOYALTY20",
       });
-      console.log("targetVoucher", targetVoucher);
+      await userVoucherController.createUserVoucherAction(
+        accountId,
+        targetVoucher._id
+      );
+      // gửi thông báo người dùng đã được nhận voucher giảm giá
+      await notiController.createNewVoucherReceivedNotification(
+        accountId,
+        userVoucherId
+      );
+    }
+    if (retailBookTransactions.length === 2) {
+      // Giảm 30% khi mua 2 cuốn sách bán lẻ bất kì
+      const targetVoucher = await discountVoucher.findOne({
+        code: "LOYALTY30",
+      });
+      await userVoucherController.createUserVoucherAction(
+        accountId,
+        targetVoucher._id
+      );
+      // gửi thông báo người dùng đã được nhận voucher giảm giá
+      await notiController.createNewVoucherReceivedNotification(
+        accountId,
+        userVoucherId
+      );
+    }
+    if (retailBookTransactions.length === 4) {
+      // Giảm 70% khi mua 4 cuốn sách bán lẻ bất kì
+      const targetVoucher = await discountVoucher.findOne({
+        code: "LOYALTY70",
+      });
       await userVoucherController.createUserVoucherAction(
         accountId,
         targetVoucher._id
