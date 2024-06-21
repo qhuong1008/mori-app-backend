@@ -41,9 +41,12 @@ exports.getUserRecommendations = async (req, res) => {
     // Trích xuất chỉ danh sách book_id từ recommendations
     const bookIds = account.recommendations;
 
-    const recommendedBooks = await Book.find({ _id: { $in: bookIds } });
-
-    res.json({ recommendations: recommendedBooks, statusCode: 200 });
+    if (bookIds) {
+      const recommendedBooks = await Book.find({ _id: { $in: bookIds } });
+      res.json({ recommendations: recommendedBooks, statusCode: 200 });
+    } else {
+      return res.status(404).json({ message: "Recommendations book is emty" });
+    }
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal server error" });
@@ -105,12 +108,13 @@ exports.createOrUpdateUserRecommendations = async (req, res) => {
     );
 
     // Kiểm tra xem cuốn sách hiện tại có nằm trong danh sách 5 cuốn sách gần nhất hay không
-    const isBookInRecentHistory = recentBooks.includes(book_id);
+    let isBookInRecentHistory;
+    if (recentBooks.length > 5) {
+      isBookInRecentHistory = recentBooks.includes(book_id);
+    }
 
     if (isBookInRecentHistory) {
-      res
-        .status(200)
-        .json({ message: "User recommendations successfully" });
+      res.status(200).json({ message: "User recommendations successfully" });
     } else {
       // Lấy danh sách các cuốn sách đã đọc bởi người dùng
       const userHistories = userReadHistory.map((history) =>
@@ -257,7 +261,7 @@ const createUserRecommendations = async (user_id) => {
     console.log("Request Data:", requestData);
 
     const response = await axios.post(
-      "http://127.0.0.1:8000/nlp/recommend/history",
+      `${process.env.NLP_URL}/nlp/recommend/history`,
       requestData
     );
 

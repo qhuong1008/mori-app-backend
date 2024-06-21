@@ -120,6 +120,7 @@ exports.manualLogin = async (usernameReq, passwordReq) => {
     const password = passwordReq;
     const user = await accountController.findByUsername(username);
     console.log("user", user);
+    console.log("password", password);
     if (!user) {
       return { error: "Thông tin đăng nhập không đúng!" };
     } else if (user.is_verify_email == false) {
@@ -130,7 +131,8 @@ exports.manualLogin = async (usernameReq, passwordReq) => {
       };
     }
 
-    const isPasswordValid = bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log("isPasswordValid", isPasswordValid);
     if (isPasswordValid == false) {
       return { error: "Mật khẩu bạn nhập chưa chính xác" };
     }
