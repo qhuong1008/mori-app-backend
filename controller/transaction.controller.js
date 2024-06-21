@@ -1,4 +1,7 @@
+const userVoucherController = require("../controller/userVoucher.controller");
+const notiController = require("../controller/notification.controller");
 const Transaction = require("../model/transaction.model");
+const discountVoucher = require("../model/discountVoucher.model");
 const moment = require("moment");
 
 exports.create = async (req, res) => {
@@ -16,7 +19,18 @@ exports.create = async (req, res) => {
   }
   const newTransaction = new Transaction(transactionData);
   try {
-    const savedTransaction = await newTransaction.save();
+    const userVoucherId = req.body.userVoucher;
+    if (userVoucherId) {
+      // cập nhật trạng thái voucher sang đã dùng
+      await userVoucherController.updateUserVoucherUsedStatus(userVoucherId);
+    }
+    // nếu user mua dc N sách lẻ thì dc tặng voucher tương ứng
+    const savedTransaction = await newTransaction.save().then(() => {
+      this.checkUserLoyaltyThenGiveNewVoucher(
+        transactionData.account,
+        userVoucherId
+      );
+    });
     res.status(200).json({ transaction: savedTransaction, statusCode: 200 });
   } catch (err) {
     console.log(err);
@@ -89,5 +103,64 @@ exports.listTransactionsByDateRange = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Error retrieving transactions" });
+  }
+};
+
+exports.checkUserLoyaltyThenGiveNewVoucher = async (
+  accountId,
+  userVoucherId
+) => {
+  try {
+    const retailBookTransactions = await Transaction.find({
+      account: accountId,
+      productType: "Book",
+    });
+    if (retailBookTransactions.length === 1) {
+      // Giảm 20% khi mua 1 cuốn sách bán lẻ bất kì
+      const targetVoucher = await discountVoucher.findOne({
+        code: "LOYALTY20",
+      });
+      await userVoucherController.createUserVoucherAction(
+        accountId,
+        targetVoucher._id
+      );
+      // gửi thông báo người dùng đã được nhận voucher giảm giá
+      await notiController.createNewVoucherReceivedNotification(
+        accountId,
+        userVoucherId
+      );
+    }
+    if (retailBookTransactions.length === 2) {
+      // Giảm 30% khi mua 2 cuốn sách bán lẻ bất kì
+      const targetVoucher = await discountVoucher.findOne({
+        code: "LOYALTY30",
+      });
+      await userVoucherController.createUserVoucherAction(
+        accountId,
+        targetVoucher._id
+      );
+      // gửi thông báo người dùng đã được nhận voucher giảm giá
+      await notiController.createNewVoucherReceivedNotification(
+        accountId,
+        userVoucherId
+      );
+    }
+    if (retailBookTransactions.length === 4) {
+      // Giảm 70% khi mua 4 cuốn sách bán lẻ bất kì
+      const targetVoucher = await discountVoucher.findOne({
+        code: "LOYALTY70",
+      });
+      await userVoucherController.createUserVoucherAction(
+        accountId,
+        targetVoucher._id
+      );
+      // gửi thông báo người dùng đã được nhận voucher giảm giá
+      await notiController.createNewVoucherReceivedNotification(
+        accountId,
+        userVoucherId
+      );
+    }
+  } catch (err) {
+    console.error(err);
   }
 };
