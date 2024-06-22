@@ -108,6 +108,7 @@ exports.createUserVoucherAction = async (account, voucher) => {
     });
 
     await newUserVoucher.save();
+    return newUserVoucher;
   } catch (error) {
     console.error("Error creating user voucher:", error);
   }

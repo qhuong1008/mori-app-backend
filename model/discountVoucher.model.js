@@ -7,6 +7,9 @@ const discountVoucherSchema = new mongoose.Schema({
   discount: {
     type: Number,
   },
+  booksBought: {
+    type: Number,
+  },
   description: {
     type: String,
   },

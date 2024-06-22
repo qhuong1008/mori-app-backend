@@ -1,3 +1,6 @@
+const userVoucherController = require("../controller/userVoucher.controller");
+const notiController = require("../controller/notification.controller");
+const discountVoucherController = require("../controller/discountVoucher.controller");
 const Account = require("../model/account.model");
 const bcrypt = require("bcrypt");
 
@@ -19,7 +22,26 @@ exports.checkCreateByUsername = async (user) => {
     const isExist = await Account.findOne({ $or: [{ username }, { email }] });
     if (!isExist) {
       var accountDetail = new Account(user);
-      await accountDetail.save();
+      await accountDetail.save().then(async (resp) => {
+        // create new voucher for newbies
+        const targetVouchers =
+          await discountVoucherController.findVouchersForNewUsers();
+        const accountId = resp._id;
+        console.log("targetVouchers", targetVouchers);
+        targetVouchers.forEach(async (t) => {
+          const userVoucher =
+            await userVoucherController.createUserVoucherAction(
+              accountId,
+              t._id
+            );
+          // gửi thông báo người dùng đã được nhận voucher giảm giá
+          await notiController.createNewVoucherReceivedNotification(
+            accountId,
+            userVoucher._id
+          );
+        });
+      });
+
       return 1;
     } else if (isExist) {
       console.log("isExist", isExist);
