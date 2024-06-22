@@ -6,5 +6,7 @@ const discountVoucherController = require("../controller/discountVoucher.control
 router.get("/", cors(), discountVoucherController.getAllDiscountVouchers);
 router.get("/:id", cors(), discountVoucherController.getDiscountVoucherById);
 router.post("/", cors(), discountVoucherController.createDiscountVoucher);
+router.put("/:id", cors(), discountVoucherController.editDiscountVoucher);
+router.delete("/:id", cors(), discountVoucherController.deleteDiscountVoucher);
 
 module.exports = router;
