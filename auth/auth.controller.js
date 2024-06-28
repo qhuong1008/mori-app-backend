@@ -1,4 +1,7 @@
 const accountController = require("../controller/account.controller");
+const userVoucherController = require("../controller/userVoucher.controller");
+const discountVoucherController = require("../controller/discountVoucher.controller");
+const notiController = require("../controller/notification.controller");
 const account = require("../model/account.model");
 const authMethod = require("./auth.methods");
 const randToken = require("rand-token");
@@ -43,7 +46,7 @@ exports.registerAccount = async (req, res) => {
 
   // Return the result
   if (createUser === 1) {
-    const verifyEmail = `${protocol}://${host}/api/auth/verify?email=${email}&token=${token}`;
+    const verifyEmail = `${process.env.BACKEND_URL}/api/auth/verify?email=${email}&token=${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,
@@ -173,6 +176,21 @@ exports.login = async (req, res) => {
         console.log("create new account using google account");
         let newAccountResp = await accountController.createNewAccount(
           newAccount
+        );
+        // create new voucher for newbies
+        const targetVoucher =
+          await discountVoucherController.findTargetVoucherById(
+            "66719559d3a6e7ae7a358d65"
+          );
+        const accountId = newAccountResp._id;
+        const userVoucher = await userVoucherController.createUserVoucherAction(
+          accountId,
+          targetVoucher._id
+        );
+        // gửi thông báo người dùng đã được nhận voucher giảm giá
+        await notiController.createNewVoucherReceivedNotification(
+          accountId,
+          userVoucher._id
         );
         console.log("newAccountResp", newAccountResp);
         user = newAccountResp;

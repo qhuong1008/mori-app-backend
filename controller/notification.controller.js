@@ -209,7 +209,12 @@ exports.createNewVoucherReceivedNotification = async (
       .findById(userVoucherId)
       .populate("voucher");
 
-    const message = `Từ việc mua sách lẻ bạn đã nhận được voucher ${userVoucher.voucher.description}!`;
+    let message = "";
+    if (userVoucher.voucher.code.includes("WELCOME")) {
+      message = `Bạn được tặng voucher dành cho người mới ${userVoucher.voucher.description}!`;
+    } else {
+      message = `Từ việc mua sách lẻ bạn đã nhận được voucher ${userVoucher.voucher.description}!`;
+    }
     const newNotification = new notificationModel({
       account: userId,
       message,
