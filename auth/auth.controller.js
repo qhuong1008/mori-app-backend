@@ -119,7 +119,6 @@ exports.manualLogin = async (usernameReq, passwordReq) => {
     const username = usernameReq.toLowerCase();
     const password = passwordReq;
     const user = await accountController.findByUsername(username);
-    console.log("user", user);
     console.log("password", password);
     if (!user) {
       return { error: "Thông tin đăng nhập không đúng!" };
