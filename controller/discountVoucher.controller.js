@@ -80,6 +80,8 @@ exports.findVouchersForNewUsers = async () => {
 exports.editDiscountVoucher = async (req, res) => {
   try {
     const voucherId = req.params.id;
+    const { booksBought, code, description, discount, expiresIn } = req.body;
+    const updateData = { booksBought, code, description, discount, expiresIn };
     const updatedVoucher = await DiscountVoucher.findByIdAndUpdate(
       voucherId,
       updateData,
