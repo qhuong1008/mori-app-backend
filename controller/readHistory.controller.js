@@ -61,7 +61,7 @@ exports.createOrUpdateReadHistory = async (req, res) => {
     res.json({ message: "Lịch sử đọc đã được cập nhật." });
   } catch (error) {
     console.error("Lỗi khi cập nhật lịch sử đọc:", error);
-    res.status(500).json({ error: "error", message: "Đã có lỗi xảy ra." });
+    res.status(500).json({ err: "Server error" });
   }
 };
 
@@ -102,7 +102,7 @@ exports.findOne = async (req, res) => {
     }
   } catch (error) {
     console.error("Lỗi khi tìm kiếm lịch sử đọc", error);
-    res.status(500).json({ error: "error", message: "Đã có lỗi xảy ra." });
+    res.status(500).json({ err: "Server error" });
   }
 };
 
