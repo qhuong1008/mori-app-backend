@@ -90,8 +90,7 @@ describe("ReadHistory Controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({
-        error: "error",
-        message: "Đã có lỗi xảy ra.",
+        error: "Server error"
       });
     });
   });
@@ -200,8 +199,7 @@ describe("ReadHistory Controller", () => {
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({
-        error: "error",
-        message: "Đã có lỗi xảy ra.",
+        error: "Server error"
       });
     });
   });
