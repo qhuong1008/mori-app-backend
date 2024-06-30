@@ -11,7 +11,7 @@ const currentDate = new Date(getCurrentDate());
 
 exports.create = async (req, res) => {
   try {
-    console.log("body create memmbership:", req.body);
+    // console.log("body create memmbership:", req.body);
     const isExist = await membership.findOne({ user: req.body.user });
     if (isExist && isExist.outdated_on > currentDate) {
       return res.status(400).json({
@@ -19,7 +19,7 @@ exports.create = async (req, res) => {
           "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!",
       });
     } else {
-      var membershipDetail = new membership(req.body.user);
+      var membershipDetail = new membership(req.body);
       await membershipDetail.save();
       res.json({ message: "membership added successfully!" });
     }
