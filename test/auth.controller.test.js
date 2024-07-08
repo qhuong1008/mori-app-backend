@@ -180,7 +180,6 @@ describe("login-authController", () => {
 
     // Mock isGoogleAccountExist to return true
     accountController.isGoogleAccountExist.mockResolvedValue(true);
-
     // Mock getGoogleAccount to return a user
     accountController.getGoogleAccount.mockResolvedValue(user);
 

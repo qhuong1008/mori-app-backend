@@ -7,12 +7,6 @@ const bookController = require("../controller/book.controller");
 jest.mock("../model/book.model");
 
 describe("Book Controller", () => {
-  const bookMock = {
-    title: "Test Book",
-    author: "Test Author",
-    save: jest.fn(),
-  };
-
   beforeEach(() => {
     res = {
       json: jest.fn(),
