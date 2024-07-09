@@ -21,7 +21,9 @@ exports.getNotesForBookByUser = async (req, res) => {
     const book = req.params.book_id;
     const user = req.params.user_id;
 
-    const allNotesForBook = await Note.find({ user: user, book: book }).sort({ _id: -1 });;
+    const allNotesForBook = await Note.find({ user: user, book: book }).sort({
+      _id: -1,
+    });
 
     if (allNotesForBook) {
       res.json({ notes: allNotesForBook, statusCode: 200 });
@@ -41,20 +43,22 @@ exports.getNotesForBookByUser = async (req, res) => {
 exports.updateNote = async (req, res) => {
   try {
     const noteId = req.params.noteId;
-    const { title, page, content } = req.body;
+    const { user, book, content, cfiRange, color } = req.body;
     const noteToUpdate = await Note.findById(noteId);
 
     if (!noteToUpdate) {
       return res.status(404).json({ message: "Note not found" });
     }
     // Cập nhật thông tin note
-    noteToUpdate.title = title;
-    noteToUpdate.page = page;
+    noteToUpdate.user = user;
+    noteToUpdate.book = book;
     noteToUpdate.content = content;
+    noteToUpdate.cfiRange = cfiRange;
+    noteToUpdate.color = color;
 
     await noteToUpdate.save();
     return res.status(200).json({
-      message: "Note updated successfully",
+      message: "Cập nhật note thành công!",
       updatedNote: noteToUpdate,
     });
   } catch (error) {
@@ -66,8 +70,8 @@ exports.updateNote = async (req, res) => {
 // Hàm xóa một note
 exports.deleteNote = async (req, res) => {
   try {
-    const noteId = req.params.noteId;
-    const deletedNote = await Note.findByIdAndRemove(noteId);
+    const noteId = req.params.id;
+    const deletedNote = await Note.findByIdAndDelete(noteId);
 
     if (!deletedNote) {
       return res.status(404).json({ message: "Note not found" });
@@ -75,7 +79,7 @@ exports.deleteNote = async (req, res) => {
 
     return res
       .status(200)
-      .json({ message: "Note deleted successfully", deletedNote });
+      .json({ message: "Xóa note thành công", deletedNote });
   } catch (error) {
     console.error("Error deleting note:", error);
     return res.status(500).json({ error: "Internal Server Error" });
