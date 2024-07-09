@@ -1,8 +1,14 @@
 const accountController = require("../controller/account.controller");
+const userVoucherController = require("../controller/userVoucher.controller");
+const notiController = require("../controller/notification.controller");
+const discountVoucherController = require("../controller/discountVoucher.controller");
 const Account = require("../model/account.model");
 const bcrypt = require("bcrypt");
 
 jest.mock("../model/account.model");
+jest.mock('../controller/userVoucher.controller');
+jest.mock('../controller/notification.controller');
+jest.mock('../controller/discountVoucher.controller');
 
 describe("checkCreateByUsername-accountController", () => {
   const user = { username: "nguyenlien", email: "test@example.com" };
@@ -22,6 +28,19 @@ describe("checkCreateByUsername-accountController", () => {
 
   test("should return 1 when the username and email do not exist in the database", async () => {
     Account.findOne.mockResolvedValueOnce(null);
+    const mockSave = jest.fn().mockResolvedValueOnce({ _id: 'accountId' });
+    Account.prototype.save = mockSave;
+
+    discountVoucherController.findVouchersForNewUsers.mockResolvedValueOnce([
+      { _id: 'voucher1' },
+      { _id: 'voucher2' },
+    ]);
+
+    userVoucherController.createUserVoucherAction.mockResolvedValue({
+      _id: 'userVoucherId',
+    });
+
+    notiController.createNewVoucherReceivedNotification.mockResolvedValue({});
 
     const result = await accountController.checkCreateByUsername(user);
     expect(result).toBe(1);
@@ -43,7 +62,7 @@ describe("checkCreateByUsername-accountController", () => {
   });
 });
 
-//////////// Change Password /////////////////
+// //////////// Change Password /////////////////
 jest.mock("bcrypt");
 describe("changePassword-accountController", () => {
   const user = {

@@ -128,8 +128,10 @@ describe("ReadHistory Controller", () => {
       req.params.id = userId;
       const mockExec = jest.fn().mockResolvedValueOnce(mockReadHistories);
       const mockPopulate = jest.fn().mockReturnThis();
+      const mockSort = jest.fn().mockReturnThis()
       readHistory.find.mockReturnValue({
         populate: mockPopulate,
+        sort: mockSort,
         exec: mockExec,
       });
 

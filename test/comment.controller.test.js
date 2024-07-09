@@ -3,10 +3,16 @@ const {
   createReplyComment,
   getAllCommentsByUserId,
   likeComment,
+  
 } = require("../controller/comment.controller");
 const Comment = require("../model/comment.model");
+const axios = require("axios");
 
 jest.mock("../model/comment.model");
+jest.mock("axios");
+jest.mock("../types", () => ({
+  NLP_URL: "http://mocked-nlp-url",
+}));
 
 describe("Comment Controller", () => {
   beforeEach(() => {
@@ -20,21 +26,23 @@ describe("Comment Controller", () => {
   });
 
   describe("createComment", () => {
-    it("should create a new comment", async () => {
-      const req = {
-        body: {
-          content: "This is a test comment",
-          account: "accountId123",
-          post: "postId123",
-        },
-      };
-      const savedComment = {
-        _id: "commentId123",
+    const req = {
+      body: {
         content: "This is a test comment",
         account: "accountId123",
         post: "postId123",
-      };
-      Comment.prototype.save.mockResolvedValueOnce(savedComment);
+      },
+    };
+    const newComment = {
+      content: "This is a test comment",
+      account: "accountId123",
+      post: "postId123",
+    };
+    it("should create a comment successfully with a positive sentiment", async () => {
+      // Comment.prototype.save.mockResolvedValueOnce(savedComment);
+      const mockSave = jest.fn().mockResolvedValueOnce(newComment);
+      Comment.prototype.save = mockSave;
+      axios.post.mockResolvedValueOnce({ data: { sentiment: "POSITIVE" } });
 
       await createComment(req, res);
 
@@ -43,76 +51,130 @@ describe("Comment Controller", () => {
       expect(res.json).toHaveBeenCalledWith({
         message: "Thêm bình luận thành công!",
         statusCode: 200,
-        data: savedComment,
       });
     });
 
-    it("should handle errors", async () => {
-      const req = {
-        body: {},
-      };
-      const errorMessage = "An error occurred";
-      Comment.mockReturnValueOnce({
-        save: jest.fn().mockRejectedValueOnce(new Error(errorMessage)),
+    it("should create a comment and mark it as toxic if sentiment is negative", async () => {
+      const mockSave = jest.fn().mockResolvedValueOnce(newComment);
+      Comment.prototype.save = mockSave;
+      axios.post.mockResolvedValueOnce({ data: { sentiment: "NEGATIVE" } });
+
+      await createComment(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(200);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Thêm bình luận thành công!",
+        statusCode: 200,
       });
+      expect(mockSave).toHaveBeenCalled();
+    });
+
+    it("should handle classification errors and return a 500 status code", async () => {
+      const classificationError = new Error("Classification error");
+      axios.post.mockRejectedValueOnce(classificationError);
 
       await createComment(req, res);
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.json).toHaveBeenCalledWith({
         error: "error",
-        message: errorMessage,
+        message: "Classification error",
       });
+      expect(Comment.prototype.save).not.toHaveBeenCalled();
     });
   });
 
   describe("createReplyComment", () => {
-    it("should create a new reply comment", async () => {
-      const req = {
-        body: {
-          content: "This is a test reply comment",
-          account: "accountId123",
-          post: "postId123",
-          parent_comment: "parentCommentId123",
-        },
-      };
-      const savedComment = {
-        _id: "replyCommentId123",
+    req = {
+      body: {
         content: "This is a test reply comment",
-        account: "accountId123",
-        post: "postId123",
-        parent_comment: "parentCommentId123",
-      };
-      Comment.prototype.save.mockResolvedValueOnce(savedComment);
-      Comment.findById.mockResolvedValueOnce({
-        replies: [],
-        save: jest.fn(),
+        account: "testAccountId",
+        post: "testPostId",
+        parent_comment: "testParentCommentId"
+      },
+    };
+    it('should create a reply comment successfully with a positive sentiment', async () => {
+      const mockSave = jest.fn().mockResolvedValueOnce({
+        _id: "newCommentId",
+        content: "This is a test reply comment",
+        account: "testAccountId",
+        post: "testPostId",
+        parent_comment: "testParentCommentId",
+        save: jest.fn().mockResolvedValueOnce({}),
+        populate: jest.fn().mockResolvedValueOnce({})
       });
-
+      Comment.prototype.save = mockSave;
+      axios.post.mockResolvedValueOnce({ data: { sentiment: "POSITIVE" } });
+      Comment.findById.mockResolvedValueOnce({
+        _id: "testParentCommentId",
+        replies: [],
+        save: jest.fn().mockResolvedValueOnce({})
+      });
+  
       await createReplyComment(req, res);
-
-      expect(Comment).toHaveBeenCalledWith(req.body);
-      expect(Comment.findById).toHaveBeenCalledWith("parentCommentId123");
+  
       expect(res.status).toHaveBeenCalledWith(201);
       expect(res.json).toHaveBeenCalledWith({
         message: "Trả lời bình luận thành công!",
-        data: savedComment,
+        data: expect.objectContaining({
+          content: "This is a test reply comment",
+          account: "testAccountId",
+          post: "testPostId",
+          parent_comment: "testParentCommentId"
+        })
       });
+      expect(mockSave).toHaveBeenCalled();
+      expect(Comment.findById).toHaveBeenCalledWith("testParentCommentId");
     });
-
-    it("should handle errors", async () => {
-      const req = {
-        body: {},
-      };
-      const errorMessage = "An error occurred";
-      Comment.mockReturnValueOnce({
-        save: jest.fn().mockRejectedValueOnce(new Error(errorMessage)),
+  
+    it('should create a reply comment and mark it as toxic if sentiment is negative', async () => {
+      const mockSave = jest.fn().mockResolvedValueOnce({
+        _id: "newCommentId",
+        content: "This is a test reply comment",
+        account: "testAccountId",
+        post: "testPostId",
+        parent_comment: "testParentCommentId",
+        is_toxic: true,
+        save: jest.fn().mockResolvedValueOnce({}),
+        populate: jest.fn().mockResolvedValueOnce({})
       });
-
+      Comment.prototype.save = mockSave;
+      axios.post.mockResolvedValueOnce({ data: { sentiment: "NEGATIVE" }});
+      Comment.findById.mockResolvedValueOnce({
+        _id: "testParentCommentId",
+        replies: [],
+        save: jest.fn().mockResolvedValueOnce({})
+      });
+  
       await createReplyComment(req, res);
-
+  
+      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Trả lời bình luận thành công!",
+        data: expect.objectContaining({
+          content: "This is a test reply comment",
+          account: "testAccountId",
+          post: "testPostId",
+          parent_comment: "testParentCommentId",
+          is_toxic: true
+        })
+      });
+      expect(mockSave).toHaveBeenCalled();
+      expect(Comment.findById).toHaveBeenCalledWith("testParentCommentId");
+    });
+  
+  
+    it('should handle classification errors and return a 400 status code', async () => {
+      const classificationError = new Error('Classification error');
+      axios.post.mockRejectedValueOnce(classificationError);
+  
+      await createReplyComment(req, res);
+  
       expect(res.status).toHaveBeenCalledWith(400);
-      expect(res.json).toHaveBeenCalledWith({ message: errorMessage });
+      expect(res.json).toHaveBeenCalledWith({
+        message: "Classification error",
+      });
+      expect(Comment.prototype.save).not.toHaveBeenCalled();
     });
   });
 
@@ -122,6 +184,7 @@ describe("Comment Controller", () => {
         body: {
           account: "userId123",
           post: "postId123",
+          is_approved: true,
         },
       };
       const comments = [
@@ -151,6 +214,7 @@ describe("Comment Controller", () => {
       expect(Comment.find).toHaveBeenCalledWith({
         account: "userId123",
         post: "postId123",
+        is_approved: true,
       });
       expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith({ data: comments });
