@@ -1,6 +1,6 @@
 const Review = require("../model/review.model");
 const Account = require("../model/account.model");
-
+const mongoose = require("mongoose");
 // rating book
 exports.ratingBook = async (req, res) => {
   try {
@@ -14,6 +14,8 @@ exports.ratingBook = async (req, res) => {
       { user_id },
       { content: null }
     );
+
+    console.log("existingRating", existingRating);
 
     if (existingRating && existingRating.content == null) {
       return res
@@ -75,10 +77,11 @@ exports.reviewBook = async (req, res) => {
 // get ratings by book
 exports.getRatingsByBook = async (req, res) => {
   try {
-    const bookId = req.params.id;
+    const bookId = new mongoose.Types.ObjectId(req.params.id);
 
     // Tính tổng số lượt review
     const totalReviews = await Review.countDocuments({ book_id: bookId });
+    console.log(totalReviews)
 
     // Tính tổng rating
     const totalRating = await Review.aggregate([
@@ -96,6 +99,7 @@ exports.getRatingsByBook = async (req, res) => {
       averageRating: averageRating,
     });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ error: "error", message: error.message });
   }
 };
