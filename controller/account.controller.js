@@ -137,7 +137,6 @@ exports.createManualAccount = async (req, res) => {
         is_verify_email: false,
       });
       await accountDetail.save();
-      console.log("accountDetailllllllllllllllllllllll", accountDetail);
       return res.status(200).json({ data: accountDetail });
     } else {
       return res

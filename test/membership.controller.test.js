@@ -26,17 +26,22 @@ describe("Membership Controller", () => {
 
       expect(Membership.findOne).toHaveBeenCalledWith({ user: "userId123" });
       expect(Membership.prototype.save).toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalledWith(0);
+      expect(res.json).toHaveBeenCalledWith({
+        message: "membership added successfully!",
+      });
     });
 
-    it("should not create new membership if already exists", async () => {
-      const mockMembership = { user: "userId123", otherData: "otherData" };
+    it('should not create new membership if already exists and is still valid', async () => {
+      const mockMembership = { user: 'userId123', outdated_on: new Date(Date.now() + 1000 * 60 * 60 * 24) }; // Outdated date in the future
       Membership.findOne.mockResolvedValueOnce(mockMembership);
-
+  
       await create(req, res);
-
-      expect(Membership.findOne).toHaveBeenCalledWith({ user: "userId123" });
-      expect(res.json).toHaveBeenCalledWith(1);
+  
+      expect(Membership.findOne).toHaveBeenCalledWith({ user: 'userId123' });
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!'
+      });
     });
   });
 
@@ -69,8 +74,7 @@ describe("Membership Controller", () => {
 
       expect(Membership.findOne).toHaveBeenCalledWith({ user: "userId123" });
       expect(res.json).toHaveBeenCalledWith({
-        membership: mockMembership,
-        statusCode: 200,
+        membership: mockMembership
       });
     });
 

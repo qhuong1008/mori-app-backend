@@ -1,6 +1,9 @@
 // Import dependencies
 const authController = require("../auth/auth.controller");
 const accountController = require("../controller/account.controller");
+const userVoucherController = require("../controller/userVoucher.controller");
+const discountVoucherController = require("../controller/discountVoucher.controller");
+const notiController = require("../controller/notification.controller");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
@@ -198,13 +201,25 @@ describe("login-authController", () => {
         googleAccount,
       },
     };
+    const newUser = user;
+    const targetVoucher = { _id: '66719559d3a6e7ae7a358d65' };
+    const newAccountResp = { _id: '67890', ...newUser };
+    const userVoucher = { _id: '98765', accountId: newAccountResp._id, voucherId: targetVoucher._id };
 
     // Mock isGoogleAccountExist to return false
     accountController.isGoogleAccountExist.mockResolvedValue(false);
 
     // Mock createNewAccount to return a new user
-    const newUser = user;
-    accountController.createNewAccount.mockResolvedValue(newUser);
+    accountController.createNewAccount = jest.fn().mockResolvedValue(newAccountResp);
+
+    // Mock findTargetVoucherById to return a target voucher
+    discountVoucherController.findTargetVoucherById = jest.fn().mockResolvedValue(targetVoucher);
+
+    // Mock createUserVoucherAction to return a new user voucher
+    userVoucherController.createUserVoucherAction = jest.fn().mockResolvedValue(userVoucher);
+
+    // Mock createNewVoucherReceivedNotification
+    notiController.createNewVoucherReceivedNotification = jest.fn();
 
     await authController.login(req, res);
 
