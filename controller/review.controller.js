@@ -18,7 +18,7 @@ exports.ratingBook = async (req, res) => {
     if (existingRating && existingRating.content == null) {
       return res
         .status(400)
-        .json({ error: "You have already rated this book." });
+        .json({ error: "Bạn đã thêm rating cho cuốn sách này rồi." });
     }
     const account = await Account.findById(user_id);
 
@@ -32,7 +32,7 @@ exports.ratingBook = async (req, res) => {
     await newRating.save();
     return res
       .status(200)
-      .json({ rating: rating, message: "Rating added successfully!" });
+      .json({ rating: rating, message: "Thêm rating thành công!" });
   } catch (err) {
     console.log({ err });
     return res.status(500).json({ error: "Something went wrong!" });
