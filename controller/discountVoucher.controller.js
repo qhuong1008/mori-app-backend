@@ -109,3 +109,15 @@ exports.deleteDiscountVoucher = async (req, res) => {
     res.status(500).send({ error: "Internal server error" });
   }
 };
+
+exports.findWelcomeVouchers = async () => {
+  try {
+    const vouchers = await DiscountVoucher.find({
+      code: { $regex: "WELCOME", $options: "i" },
+    });
+    return vouchers;
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
