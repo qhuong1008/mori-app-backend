@@ -3,6 +3,7 @@ const authMethod = require("./auth.methods");
 const authController = require("./auth.controller");
 const jwt = require("jsonwebtoken");
 const { encode, decode } = require("base64-js");
+const Account = require("../model/account.model");
 
 // một middleware trung gian để xác thực có đúng client đã đăng nhập không
 exports.isAuth = async (req, res, next) => {
@@ -55,7 +56,7 @@ exports.isAuthAdmin = async (req, res, next) => {
   const decoded = await authMethod.decodeToken(accessTokenFromHeader);
   console.log("decoded", decoded);
 
-  const user = await accountController.findOne({
+  const user = await Account.findOne({
     _id: decoded._id,
     role: decoded.role,
   });
