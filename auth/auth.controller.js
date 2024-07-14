@@ -149,6 +149,7 @@ exports.manualLogin = async (usernameReq, passwordReq) => {
 };
 
 exports.login = async (req, res) => {
+  console.log("152");
   try {
     var user = null;
     // check if is google account
@@ -174,27 +175,30 @@ exports.login = async (req, res) => {
           avatar: req.body.googleAccount.picture,
         };
         console.log("create new account using google account");
-        let newAccountResp = await accountController.createNewAccount(
-          newAccount
-        );
-        // create new voucher for newbies
-        const targetVoucher =
-          await discountVoucherController.findTargetVoucherById(
-            "66719559d3a6e7ae7a358d65"
-          );
-        const accountId = newAccountResp._id;
-        const userVoucher = await userVoucherController.createUserVoucherAction(
-          accountId,
-          targetVoucher._id
-        );
-        // gửi thông báo người dùng đã được nhận voucher giảm giá
-        await notiController.createNewVoucherReceivedNotification(
-          accountId,
-          userVoucher._id
-        );
-        console.log("newAccountResp", newAccountResp);
-        user = newAccountResp;
-        console.log("login google");
+        await accountController
+          .createNewAccount(newAccount)
+          .then(async (newAccountResp) => {
+            // create new voucher for newbies
+            const targetVouchers =
+              await discountVoucherController.findWelcomeVouchers();
+            console.log("targetVouchers", targetVouchers);
+            const accountId = newAccountResp._id;
+            targetVouchers.forEach(async (v) => {
+              const userVoucher =
+                await userVoucherController.createUserVoucherAction(
+                  accountId,
+                  v._id
+                );
+              // gửi thông báo người dùng đã được nhận voucher giảm giá
+              await notiController.createNewVoucherReceivedNotification(
+                accountId,
+                userVoucher._id
+              );
+            });
+            user = newAccountResp;
+            console.log("newAccountResp", newAccountResp);
+            console.log("login google");
+          });
       }
     }
     // handle for manual account
@@ -217,9 +221,11 @@ exports.login = async (req, res) => {
         user = manualUserResp.user;
       }
     }
-    // console.log("user", user);
+    console.log("user", user);
+
     // check if get user success
     if (user) {
+      console.log("user", user);
       if (user.is_blocked) {
         return res
           .status(200)
@@ -238,6 +244,7 @@ exports.login = async (req, res) => {
         message: "Đăng nhập thành công!",
       });
     } else {
+      console.log("Đăng nhập thất bại! Vui lòng thử lại");
       return res
         .status(200)
         .json({ error: "Đăng nhập thất bại! Vui lòng thử lại" });
