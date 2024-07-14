@@ -13,6 +13,14 @@ exports.findByUsername = async (username) => {
     return null;
   }
 };
+exports.findByIdController = async (id) => {
+  try {
+    const data = await Account.findOne({ _id: id });
+    return data;
+  } catch {
+    return null;
+  }
+};
 
 // tạo user khi dùng username, mật khẩu, mail
 exports.checkCreateByUsername = async (user) => {
