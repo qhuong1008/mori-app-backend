@@ -8,10 +8,7 @@ const axios = require("axios");
 exports.createComment = async (req, res) => {
   try {
     const newComment = new Comment(req.body);
-    res.status(200).json({
-      message: "Thêm bình luận thành công!",
-      statusCode: 200,
-    });
+
     // Classify the comment before saving
     const classificationResult = await classifyCommentHandler(
       newComment.content
@@ -21,6 +18,10 @@ exports.createComment = async (req, res) => {
     }
     // Lưu comment vào cơ sở dữ liệu
     await newComment.save();
+    res.status(200).json({
+      message: "Thêm bình luận thành công!",
+      statusCode: 200,
+    });
   } catch (error) {
     console.error("Error creating comment:", error);
     res.status(500).json({ error: "error", message: error.message });
