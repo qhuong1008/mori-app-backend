@@ -37,7 +37,8 @@ exports.isAuth = async (req, res, next) => {
 
 exports.isAuthAdmin = async (req, res, next) => {
   // Lấy access token từ header
-  const accessTokenFromHeader = req.headers.x_authorization;
+  var authHeader = req.headers["authorization"];
+  accessTokenFromHeader = authHeader.split(" ")[1].slice(1, -1);
   if (!accessTokenFromHeader) {
     return res.status(401).send({ error: "Unauthorized" });
   }
@@ -49,17 +50,18 @@ exports.isAuthAdmin = async (req, res, next) => {
     accessTokenSecret
   );
   if (!verified) {
-    return res
-      .status(401)
-      .send({ error: "Bạn không có quyền truy cập vào tính năng này!" });
+    return res.status(401).send({ error: "Unauthorized" });
   }
+  const decoded = await authMethod.decodeToken(accessTokenFromHeader);
+  console.log("decoded", decoded);
 
-  const user = await accountController.findOne(
-    (username = verified.payload.username),
-    (role = 1)
-  );
-  req.user = user;
-
+  const user = await accountController.findOne({
+    _id: decoded._id,
+    role: decoded.role,
+  });
+  if (user.role !== 1) {
+    return res.status(401).send({ error: "Unauthorized" });
+  }
   return next();
 };
 

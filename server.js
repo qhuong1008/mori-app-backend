@@ -27,6 +27,7 @@ const authRouter = require("./auth/auth.routes");
 const postRouter = require("./route/post.route");
 const azureStorageRouter = require("./azure/azure-storage.routes");
 const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
+const { isAuthAdmin } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 const payment = require("./route/payment.route");
 const commentRouter = require("./route/comment.route");
@@ -131,6 +132,9 @@ app.get(`/api/postimg/:imgName`, cors(), (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "postimg", imgName);
   res.sendFile(imagePath);
+});
+app.get(`/api/admin`, isAuthAdmin, cors(), (req, res) => {
+  res.json({ message: "Welcome admin!" });
 });
 
 const PORT = process.env.PORT || 8080;
