@@ -79,6 +79,9 @@ exports.checkToken = async (req, res) => {
       passwordResetExpires: { $gt: Date.now() },
     });
 
+    if (account) {
+      res.status(200).json({ message: "Token is valid" });
+    }
   } catch (error) {
     const accountToken = await Account.findOne({
       passwordResetToken: req.body.token,
