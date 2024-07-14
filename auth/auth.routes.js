@@ -7,6 +7,7 @@ const fogotController = require("./forgotPassword.controller");
 
 router.post("/register", cors(), authController.registerAccount);
 router.post("/login", cors(), authController.login);
+router.post("/refresh-token", cors(), authController.refreshToken);
 
 // verify email
 router.get("/verify", cors(), authController.verifyEmail);
