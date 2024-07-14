@@ -13,7 +13,7 @@ const account = new Schema({
   phoneNumber: { type: String },
   avatar: {
     type: String,
-    default: "avt.jpg",
+    default: "http://ebook.workon.space/api/accountimg/avt.jpg",
   },
   role: {
     type: Number,
@@ -25,8 +25,7 @@ const account = new Schema({
   is_verify_email: { type: Boolean, default: false },
   passwordResetToken: { type: String, default: null },
   passwordResetExpires: { type: Date, default: null },
-  recommendations: [{ type: Schema.Types.ObjectId, ref: 'Book' }]
-
+  recommendations: [{ type: Schema.Types.ObjectId, ref: "Book" }],
 });
 
 // Middleware để băm mật khẩu trước khi lưu vào cơ sở dữ liệu

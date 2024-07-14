@@ -130,7 +130,7 @@ exports.createManualAccount = async (req, res) => {
         username: req.body.username,
         password: hashedPassword,
         displayName: req.body.displayName,
-        avatar: "avt.jpg",
+        avatar: "http://ebook.workon.space/api/accountimg/avt.jpg",
         is_member: false,
         is_blocked: false,
         is_active: true,
