@@ -46,7 +46,7 @@ exports.registerAccount = async (req, res) => {
 
   // Return the result
   if (createUser === 1) {
-    const verifyEmail = `https://ebook.workon.space/api/auth/verify?email=${email}&token=${token}`;
+    const verifyEmail = `${process.env.BACKEND_URL}/api/auth/verify?email=${email}&token=${token}`;
     const mailOptions = {
       from: process.env.EMAIL_USER,
       to: email,

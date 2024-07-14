@@ -48,17 +48,31 @@ exports.authenticateAllowedOrigins = (req, res, next) => {
       "http://localhost:3001/",
       "https://sandbox.vnpayment.vn",
       "https://sandbox.vnpayment.vn/",
-      "http://localhost:3001",
       "https://mail.google.com",
+      "https://mail.google.com/",
+      "https://www.google.com/",
+      "https://www.google.com",
     ];
+    // Define paths that should bypass the origin check
+    const bypassPaths = ["/api/auth/verify"];
 
-    const isAllowedOrigin = allowedOrigins.some(
-      (allowedOrigin) => origin && origin.startsWith(allowedOrigin)
-    );
-    if (isAllowedOrigin == true) {
+    // Check if request path is in the bypassPaths list
+    const isBypassPath = bypassPaths.some((path) => req.path.startsWith(path));
+
+    if (isBypassPath) {
       next();
+    } else {
+      const isAllowedOrigin = allowedOrigins.some(
+        (allowedOrigin) => origin && origin.startsWith(allowedOrigin)
+      );
+      if (isAllowedOrigin == true) {
+        next();
+      } else {
+        res.status(403).send("Forbidden: Invalid origin");
+      }
     }
   } catch (err) {
     console.log("err", err);
+    res.status(500).send("Internal server error");
   }
 };
