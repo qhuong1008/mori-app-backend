@@ -68,6 +68,19 @@ const uploadBookEpub = multer({
   storage: bookEpubStorage,
 });
 
+const bookAudioStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "../data/bookaudio/"));
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname + "-" + Date.now());
+  },
+});
+
+const uploadBookAudio = multer({
+  storage: bookAudioStorage,
+});
+
 router.post(
   "/upload-image",
   uploadBookImg.single("image"),
@@ -79,6 +92,12 @@ router.post(
   uploadBookEpub.single("file"),
   cors(),
   book.uploadEpub
+);
+router.post(
+  "/upload-audio",
+  uploadBookAudio.single("file"),
+  cors(),
+  book.uploadAudio
 );
 
 module.exports = router;

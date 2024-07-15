@@ -62,6 +62,22 @@ exports.getChapterById = async (req, res) => {
   }
 };
 
+exports.getAllChaptersByBookId = async (req, res) => {
+  const bookId = req.params.bookId;
+
+  try {
+    const chapters = await Chapter.find({ book_id: bookId });
+    if (!chapters) {
+      return res.status(404).json({ error: "Chapters not found" });
+    }
+
+    res.status(200).json({ data: chapters });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error });
+  }
+};
+
 // Sửa một chapter
 exports.updateChapter = async (req, res) => {
   const { chapterId } = req.params;
@@ -93,16 +109,13 @@ exports.deleteChapter = async (req, res) => {
   const { chapterId } = req.params;
 
   try {
-    // Kiểm tra xem chapter có tồn tại không
-    const existingChapter = await Chapter.findById(chapterId);
-    if (!existingChapter) {
-      return res.status(404).json({ error: "Chapter not found" });
+    const deletedChapter = await Chapter.findByIdAndDelete(chapterId);
+
+    if (!deletedChapter) {
+      return res.status(404).json({ message: "Chapter not found" });
     }
 
-    // Xóa chapter khỏi cơ sở dữ liệu
-    await existingChapter.remove();
-
-    res.status(204).json({ message: "Chapter deleted successfully" });
+    res.status(200).json({ message: "Chapter deleted successfully" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Internal Server Error" });
