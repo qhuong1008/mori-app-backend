@@ -13,7 +13,7 @@ exports.findByUsername = async (username) => {
     return null;
   }
 };
-exports.findByIdController = async (id) => {
+exports.findById = async (id) => {
   try {
     const data = await Account.findOne({ _id: id });
     return data;
@@ -85,9 +85,11 @@ exports.createByUsername = async (req, res) => {
 // nếu nó đã tồn tại (đã được phát sinh ở lần đăng nhập trước) thì không phát sinh lại
 exports.updateRefreshToken = async (username, refreshToken) => {
   try {
-    await Account.find({ username: username })
-      .assign({ refreshToken: refreshToken })
-      .write();
+    await Account.findOneAndUpdate(
+      { username: username },
+      { refreshToken: refreshToken },
+      { new: true } // Trả về tài liệu đã được cập nhật
+    );
     return true;
   } catch {
     return false;
