@@ -1,14 +1,47 @@
 const accountController = require("../controller/account.controller");
 const authMethod = require("./auth.methods");
+const authController = require("./auth.controller");
 const jwt = require("jsonwebtoken");
 const { encode, decode } = require("base64-js");
+const Account = require("../model/account.model");
 
 // một middleware trung gian để xác thực có đúng client đã đăng nhập không
 exports.isAuth = async (req, res, next) => {
   // Lấy access token từ header
-  const accessTokenFromHeader = req.headers.x_authorization;
+  var authHeader = req.headers["authorization"];
+  accessTokenFromHeader = authHeader.split(" ")[1].slice(1, -1);
+  console.log("accessTokenFromHeader", accessTokenFromHeader);
   if (!accessTokenFromHeader) {
-    return res.status(401).send({ error: "Không tìm thấy access token!" });
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+
+  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+  const isTokenExpired = authController.checkTokenExpiration(
+    accessTokenFromHeader
+  );
+  if (isTokenExpired.expired === true) {
+    return res
+      .status(402)
+      .send({ error: "Token expired", reason: isTokenExpired.reason });
+  }
+  const verified = await authMethod.verifyToken(
+    accessTokenFromHeader,
+    accessTokenSecret
+  );
+  console.log("verified", verified);
+  if (!verified) {
+    return res.status(403).send({ error: "Forbidden" });
+  }
+
+  return next();
+};
+
+exports.isAuthAdmin = async (req, res, next) => {
+  // Lấy access token từ header
+  var authHeader = req.headers["authorization"];
+  accessTokenFromHeader = authHeader.split(" ")[1].slice(1, -1);
+  if (!accessTokenFromHeader) {
+    return res.status(401).send({ error: "Unauthorized" });
   }
 
   const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -18,16 +51,18 @@ exports.isAuth = async (req, res, next) => {
     accessTokenSecret
   );
   if (!verified) {
-    return res
-      .status(401)
-      .send({ error: "Bạn không có quyền truy cập vào tính năng này!" });
+    return res.status(401).send({ error: "Unauthorized" });
   }
+  const decoded = await authMethod.decodeToken(accessTokenFromHeader);
+  console.log("decoded", decoded);
 
-  const user = await accountController.findByUsername(
-    verified.payload.username
-  );
-  req.user = user;
-
+  const user = await Account.findOne({
+    _id: decoded._id,
+    role: decoded.role,
+  });
+  if (user.role !== 1) {
+    return res.status(401).send({ error: "Unauthorized" });
+  }
   return next();
 };
 

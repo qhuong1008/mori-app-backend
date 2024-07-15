@@ -37,7 +37,9 @@ exports.getAllBooksInMyLibrary = async (req, res) => {
   try {
     const libraryResult = await MyLibrary.find({
       user: userId,
-    }).populate("book").exec();
+    })
+      .populate("book")
+      .exec();
     return res.json({ myLibrary: libraryResult });
   } catch (err) {
     console.log(err);
@@ -50,7 +52,9 @@ exports.deleteBookFromMyLibrary = async (req, res) => {
     const deletedEntry = await MyLibrary.deleteOne(req.body);
 
     if (deletedEntry) {
-      return res.status(200).json(0);
+      return res
+        .status(200)
+        .json({ message: "Xóa sách khỏi thư viện thành công!" });
     } else {
       return res.status(404).json(404);
     }
@@ -85,8 +89,9 @@ const removeDuplicateMyLibraries = async () => {
 
     if (duplicateRecords.length > 0) {
       // Nếu đã có, tìm bản ghi có thời gian lớn nhất
-      const maxTimeRecord = duplicateRecords.reduce((maxRecord, currentRecord) =>
-        currentRecord.time > maxRecord.time ? currentRecord : maxRecord
+      const maxTimeRecord = duplicateRecords.reduce(
+        (maxRecord, currentRecord) =>
+          currentRecord.time > maxRecord.time ? currentRecord : maxRecord
       );
 
       if (record.time > maxTimeRecord.time) {

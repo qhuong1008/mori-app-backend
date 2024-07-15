@@ -13,7 +13,7 @@ const account = new Schema({
   phoneNumber: { type: String },
   avatar: {
     type: String,
-    default: "http://ebook.workon.space/api/accountimg/avt.jpg",
+    default: "avt.jpg",
   },
   role: {
     type: Number,

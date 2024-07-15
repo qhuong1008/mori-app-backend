@@ -13,6 +13,14 @@ exports.findByUsername = async (username) => {
     return null;
   }
 };
+exports.findByIdController = async (id) => {
+  try {
+    const data = await Account.findOne({ _id: id });
+    return data;
+  } catch {
+    return null;
+  }
+};
 
 // tạo user khi dùng username, mật khẩu, mail
 exports.checkCreateByUsername = async (user) => {
@@ -130,7 +138,7 @@ exports.createManualAccount = async (req, res) => {
         username: req.body.username,
         password: hashedPassword,
         displayName: req.body.displayName,
-        avatar: "http://ebook.workon.space/api/accountimg/avt.jpg",
+        avatar: "avt.jpg",
         is_member: false,
         is_blocked: false,
         is_active: true,

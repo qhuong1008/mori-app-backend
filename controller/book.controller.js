@@ -24,7 +24,7 @@ exports.findAll = async (req, res) => {
 };
 
 exports.findAllNameBook = async (req, res) => {
-  const books = await Book.find({}, 'name')
+  const books = await Book.find({}, "name");
   res.json({ books: books, statusCode: 200 });
 };
 
@@ -222,6 +222,28 @@ exports.uploadEpub = async (req, res) => {
 
     if (!imageController.isValidEpubFormat(req.file)) {
       return res.status(400).json({ error: "Invalid epub format!" });
+    }
+    return res.status(200).json({
+      message: "File uploaded successfully!",
+      filename: req.file.filename,
+    });
+  } catch (err) {
+    console.log("err", err);
+    return res.status(400).json({ err: err });
+  }
+};
+
+exports.uploadAudio = async (req, res) => {
+  console.log("uploadAudio 123");
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded" });
+    }
+
+    if (!imageController.isValidAudioFormat(req.file)) {
+      return res
+        .status(400)
+        .json({ error: "Invalid audio format! Audio format must be .m3u8" });
     }
     return res.status(200).json({
       message: "File uploaded successfully!",
