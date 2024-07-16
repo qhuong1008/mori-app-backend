@@ -381,7 +381,7 @@ exports.refreshToken = async (req, res, next) => {
         error: "Tạo access token không thành công, vui lòng thử lại.",
       });
     }
-    console.log("newAccessToken", newAccessToken);
+    // console.log("newAccessToken", newAccessToken);
     // Thiết lập lại header để phản ánh accessToken mới
     req.headers["authorization"] = `Bearer ${newAccessToken}`;
     next();

@@ -4,10 +4,10 @@ var cors = require("cors");
 const bookCategoryController = require("../controller/bookCategory.controller");
 
 // Routes for book categories
-router.post("/add-category", cors(), bookCategoryController.createBookCategory);
-router.get("/get-categories", cors(), bookCategoryController.findAll);
-router.get("/get-category/:id", cors(), bookCategoryController.findById);
-router.put("/update/:id", cors(), bookCategoryController.update);
-router.delete("/delete/:id", cors(), bookCategoryController.delete);
+router.post("/add-category", bookCategoryController.createBookCategory);
+router.get("/get-categories", bookCategoryController.findAll);
+router.get("/get-category/:id", bookCategoryController.findById);
+router.put("/update/:id", bookCategoryController.update);
+router.delete("/delete/:id", bookCategoryController.delete);
 
 module.exports = router;

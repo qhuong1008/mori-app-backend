@@ -10,7 +10,7 @@ exports.isAuth = async (req, res, next) => {
   try {
     // Lấy access token từ header
     const authHeader = req.headers["authorization"];
-    console.log("authHeader", authHeader);
+    // console.log("authHeader", authHeader);
     // Kiểm tra xem authHeader có tồn tại và có định dạng "Bearer <token>"
     if (!authHeader || !authHeader.startsWith("Bearer")) {
       return res.status(401).json({ error: "Access token không tồn tại" });

@@ -7,10 +7,9 @@ const readHistory = require("../controller/readHistory.controller");
 const authMiddleware = require("../auth/auth.middlewares");
 const isAuth = authMiddleware.isAuth;
 
-router.get("/get-readHistory", cors(), readHistory.findAll);
+router.get("/get-readHistory", readHistory.findAll);
 router.get("/get-readHistory/:id", isAuth, readHistory.findAllWithUser);
 router.get("/get-readHistory/:book_id/:user_id", isAuth, readHistory.findOne);
-
-router.post("/add-readHistory", cors(), readHistory.createOrUpdateReadHistory);
+router.post("/add-readHistory", readHistory.createOrUpdateReadHistory);
 
 module.exports = router;
