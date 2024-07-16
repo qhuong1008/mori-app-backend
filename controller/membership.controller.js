@@ -12,16 +12,23 @@ const currentDate = new Date(getCurrentDate());
 exports.create = async (req, res) => {
   try {
     // console.log("body create memmbership:", req.body);
-    const isExist = await membership.findOne({ user: req.body.user });
-    if (isExist && isExist.outdated_on > currentDate) {
-      return res.status(400).json({
-        error:
-          "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!",
-      });
-    } else {
-      var membershipDetail = new membership(req.body);
-      await membershipDetail.save();
-      res.json({ message: "membership added successfully!" });
+    const existingMembership = await membership.findOne({
+      user: req.body.user,
+    });
+    if (existingMembership) {
+      // Check if it's not outdated (outdated_on is in the future or doesn't exist)
+      if (existingMembership.outdated_on > currentDate) {
+        return res.status(400).json({
+          error:
+            "Đăng kí gói cước thất bại, vui lòng sử dụng hết gói cước đã đăng kí!",
+        });
+      } else {
+        // If this membership is Outdated - Delete existing and create new
+        await membership.deleteOne({ _id: existingMembership._id });
+        const newMembership = new membership(req.body);
+        await newMembership.save();
+        return res.json({ message: "Membership updated successfully!" });
+      }
     }
   } catch (error) {
     console.error("Lỗi khi cập đăng ký hội viên", error);

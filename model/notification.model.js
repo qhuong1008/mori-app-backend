@@ -15,6 +15,10 @@ const notificationSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "ReadingGoal",
   },
+  membership: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Membership",
+  },
   message: {
     type: String,
     default: "",
@@ -37,6 +41,7 @@ const notificationSchema = new mongoose.Schema({
       "comment_disapproved",
       "comment_approved",
       "voucher",
+      "membership",
     ],
     required: true,
   },
