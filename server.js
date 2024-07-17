@@ -26,7 +26,7 @@ const chapterRouter = require("./route/chapter.route");
 const authRouter = require("./auth/auth.routes");
 const postRouter = require("./route/post.route");
 const azureStorageRouter = require("./azure/azure-storage.routes");
-const { authenticateAllowedOrigins } = require("./auth/auth.middlewares");
+const { authenticateAllowedOrigins, allowedOrigins } = require("./auth/auth.middlewares");
 const { isAuthAdmin } = require("./auth/auth.middlewares");
 const uploadImg = require("./controller/upload-file/upload-image.controller");
 const payment = require("./route/payment.route");
@@ -38,13 +38,25 @@ const userVoucherRouter = require("./route/userVoucher.route");
 const discountVoucherRouter = require("./route/discountVoucher.route");
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Kiểm tra nếu nguồn gốc của yêu cầu nằm trong danh sách cho phép
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true, // Cho phép gửi cookie
+};
+app.use(cors(corsOptions));
+app.use(authenticateAllowedOrigins);
+// app.use(cors());
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(cookieParser());
 app.use(express.json({ extended: false }));
 app.set("trust proxy", 1);
 
@@ -54,9 +66,9 @@ app.set("view engine", "hbs");
 app.use(logger("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
-app.use(authenticateAllowedOrigins);
+app.use(cookieParser());
+
 
 const databaseUrl = process.env.MONGODB_URL;
 
@@ -99,17 +111,17 @@ app.use("/api/readingGoal", readingGoalRouter);
 app.use("/api/userVoucher", userVoucherRouter);
 app.use("/api/discountVoucher", discountVoucherRouter);
 
-app.get(`/api/accountimg/:imgName`, cors(), (req, res) => {
+app.get(`/api/accountimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "accountimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookimg/:imgName`, cors(), (req, res) => {
+app.get(`/api/bookimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookimg", imgName);
   res.sendFile(imagePath);
 });
-app.get(`/api/bookepub/:imgName`, cors(), (req, res) => {
+app.get(`/api/bookepub/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "bookepub", imgName);
   res.sendFile(imagePath);
@@ -128,18 +140,23 @@ app.get("/api/bookaudio/:book/:chapter/:imgName", (req, res) => {
   );
   res.sendFile(imagePath);
 });
+
 app.get("/api/bookaudio/:imgName", (req, res) => {
   const imgName = req.params.imgName;
-  const imagePath = path.join(__dirname, "data", "bookaudio", imgName);
+  const imagePath = path.join(
+    __dirname,
+    "data",
+    "bookaudio",
+    imgName
+  );
   res.sendFile(imagePath);
 });
-app.get(`/api/postimg/:imgName`, cors(), (req, res) => {
+app.get(`/api/postimg/:imgName`, (req, res) => {
   const imgName = req.params.imgName;
   const imagePath = path.join(__dirname, "data", "postimg", imgName);
   res.sendFile(imagePath);
 });
-
-app.get(`/api/admin`, isAuthAdmin, cors(), (req, res) => {
+app.get(`/api/admin`, isAuthAdmin, (req, res) => {
   res.json({ message: "Welcome admin!" });
 });
 
