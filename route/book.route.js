@@ -62,7 +62,7 @@ const bookAudioStorage = multer.diskStorage({
     cb(null, path.join(__dirname, "../data/bookaudio/"));
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname + "-" + Date.now());
+    cb(null, Date.now() + file.originalname);
   },
 });
 

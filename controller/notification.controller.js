@@ -226,3 +226,39 @@ exports.createNewVoucherReceivedNotification = async (
     console.error("Error creating notification:", error);
   }
 };
+
+exports.createMembershipWillBeOutdatedNotification = async (req, res) => {
+  try {
+    const { accountId } = req.params;
+    const membershipId = req.body.membership;
+
+    if (accountId && membershipId) {
+      const existingNotification = await notificationModel.find({
+        account: accountId,
+        membership: membershipId,
+      });
+      console.log("existingNotification", existingNotification);
+      if (existingNotification.length === 0) {
+        const notification = new notificationModel({
+          account: accountId,
+          message:
+            "Còn 2 ngày cho tới ngày hết hạn thẻ hội viên. Để tiếp tục là hội viên Mori hãy gia hạn gói cước sau khi hết hạn nhé!",
+          action: "membership",
+          membership: membershipId,
+        });
+        await notification.save();
+        console.log("Tạo thông báo mới thành công!");
+        return res
+          .status(200)
+          .json({ message: "Tạo thông báo mới thành công!" });
+      } else {
+        return res
+          .status(200)
+          .json({ message: "Thông báo về gói hội viên đã được tạo trước đó!" });
+      }
+    }
+  } catch (err) {
+    console.error("Lỗi:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};

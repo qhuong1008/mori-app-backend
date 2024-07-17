@@ -251,3 +251,30 @@ exports.changePassword = async (req, res) => {
 };
 
 exports.delete = (req, res) => {};
+
+exports.updateMembershipStatus = async (req, res) => {
+  try {
+    const accountId = req.params.accountId;
+    const { is_member } = req.body;
+
+    // Validate input (optional)
+    if (typeof is_member !== "boolean") {
+      return res.status(400).json({ error: "is_member must be a boolean" });
+    }
+
+    const updatedAccount = await Account.findByIdAndUpdate(
+      accountId,
+      { is_member },
+      { new: true }
+    );
+
+    if (!updatedAccount) {
+      return res.status(404).json({ error: "Account not found" });
+    }
+
+    res.json(updatedAccount);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

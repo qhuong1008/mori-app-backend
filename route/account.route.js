@@ -8,6 +8,10 @@ const authMiddleware = require("../auth/auth.middlewares");
 const isAuth = authMiddleware.isAuth;
 
 router.get("/get-account", account.findAll);
+router.put(
+  "/update-membership-status/:accountId",
+  account.updateMembershipStatus
+);
 router.get("/email", account.findByEmail);
 router.patch("/:id", isAuth, account.update);
 router.get("/get-account/:id", isAuth, account.findById);
@@ -16,7 +20,10 @@ router.post("/add-manual-account", account.createManualAccount);
 router.post("/find-account", account.findOne);
 router.post("/change-password", account.changePassword);
 
-router.post("/add-recommendations", recommend.createOrUpdateUserRecommendations);
+router.post(
+  "/add-recommendations",
+  recommend.createOrUpdateUserRecommendations
+);
 router.post("/addAll-recommendations", recommend.createAllUserRecommendations);
 router.get("/get-recommendations/:id", recommend.getUserRecommendations);
 
