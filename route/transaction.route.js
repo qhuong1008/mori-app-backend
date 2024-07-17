@@ -8,11 +8,13 @@ const authMiddleware = require("../auth/auth.middlewares");
 const isAuth = authMiddleware.isAuth;
 
 router.get("/get-usertrans", isAuth, transaction.getUserTrans);
+router.get(
+  "/get-transaction/:book_id/:user_id",
+  isAuth,
+  transaction.checkUserBuyBook
+);
 router.post("/add-transaction", transaction.create);
 router.get("/get-transaction", transaction.getAllTransactions);
-router.get(
-  "/get-by-date-range",
-  transaction.listTransactionsByDateRange
-);
+router.get("/get-by-date-range", transaction.listTransactionsByDateRange);
 
 module.exports = router;
