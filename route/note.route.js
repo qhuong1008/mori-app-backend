@@ -4,12 +4,13 @@ const cors = require("cors");
 const noteController = require("../controller/note.controller");
 
 // Routes for notes
-router.post("/add-note", noteController.createNote);
+router.post("/add-note", cors(), noteController.createNote);
 router.get(
   "/get-note/:book_id/:user_id",
+  cors(),
   noteController.getNotesForBookByUser
 );
-router.put("/:noteId", noteController.updateNote);
-router.delete("/:id", noteController.deleteNote);
+router.put("/:noteId", cors(), noteController.updateNote);
+router.delete("/:id", cors(), noteController.deleteNote);
 
 module.exports = router;

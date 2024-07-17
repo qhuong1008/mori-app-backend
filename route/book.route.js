@@ -7,28 +7,39 @@ const path = require("path");
 const book = require("../controller/book.controller");
 const recommend = require("../controller/recommendation.controller");
 
-router.get("/get-book", book.findAll);
-router.get("/get-namebook", book.findAllNameBook);
-router.get("/get-book/ebook", book.findAllEBooks);
+router.get("/get-book", cors(), book.findAll);
+router.get("/get-namebook", cors(), book.findAllNameBook);
+router.get("/get-book/ebook", cors(), book.findAllEBooks);
 
-router.post("/get-book/textToSpeech", book.textToSpeech);
+router.post("/get-book/textToSpeech", cors(), book.textToSpeech);
 router.get(
   "/get-recommendations/:id",
+  cors(),
   recommend.getRecommendationsOfBook
 );
-router.get("/add-recommendations", recommend.createRecommendations);
+router.get("/add-recommendations", cors(), recommend.createRecommendations);
 
-router.get("/get-book/audio-book", book.findAllAudioBooks);
-router.get("/search", book.searchBookByName);
-router.patch("/:id", book.update);
-router.delete("/:id", book.delete);
-router.get("/get-book/:id", book.findById);
-router.post("/get-book/category", book.findBookByCategory);
-router.post("/add-book", book.create);
-router.post("/search", book.findBookWithSearchValue);
-router.post("/total-read/:id", book.increaseTotalRead);
-router.post("/total-hearted/:id", book.increaseTotalHearted);
-router.post("/total-saved/:id", book.updateTotalSaved);
+router.get("/get-book/audio-book", cors(), book.findAllAudioBooks);
+router.get("/search", cors(), book.searchBookByName);
+router.patch("/:id", cors(), book.update);
+router.delete("/:id", cors(), book.delete);
+router.get("/get-book/:id", cors(), book.findById);
+router.post("/get-book/category", cors(), book.findBookByCategory);
+router.post("/add-book", cors(), book.create);
+router.post("/search", cors(), book.findBookWithSearchValue);
+router.post("/total-read/:id", cors(), book.increaseTotalRead);
+router.post(
+  "/total-hearted/:id",
+  cors(),
+
+  book.increaseTotalHearted
+);
+router.post(
+  "/total-saved/:id",
+  cors(),
+
+  book.updateTotalSaved
+);
 
 // Multer Configuration
 const bookImgStorage = multer.diskStorage({
@@ -70,8 +81,23 @@ const uploadBookAudio = multer({
   storage: bookAudioStorage,
 });
 
-router.post("/upload-image", uploadBookImg.single("image"), book.uploadImage);
-router.post("/upload-epub", uploadBookEpub.single("file"), book.uploadEpub);
-router.post("/upload-audio", uploadBookAudio.single("file"), book.uploadAudio);
+router.post(
+  "/upload-image",
+  uploadBookImg.single("image"),
+  cors(),
+  book.uploadImage
+);
+router.post(
+  "/upload-epub",
+  uploadBookEpub.single("file"),
+  cors(),
+  book.uploadEpub
+);
+router.post(
+  "/upload-audio",
+  uploadBookAudio.single("file"),
+  cors(),
+  book.uploadAudio
+);
 
 module.exports = router;

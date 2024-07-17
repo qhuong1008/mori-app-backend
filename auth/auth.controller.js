@@ -4,11 +4,10 @@ const discountVoucherController = require("../controller/discountVoucher.control
 const notiController = require("../controller/notification.controller");
 const account = require("../model/account.model");
 const authMethod = require("./auth.methods");
+const randToken = require("rand-token");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const randtoken = require("rand-token");
-
 require("dotenv/config");
 const jwtVariable = {
   refreshTokenSize: 16, // Kích thước refresh token mong muốn
@@ -228,7 +227,6 @@ exports.login = async (req, res) => {
           .status(200)
           .json({ error: "Đăng nhập thất bại! Vui lòng thử lại" });
       }
-      // tạo 2 loại token
       const accessToken = await this.generateAccessToken({
         _id: user._id,
         role: user.role,
@@ -244,17 +242,6 @@ exports.login = async (req, res) => {
         process.env.ACCESS_TOKEN_SECRET
       );
       console.log("decoded", decoded);
-
-      let refreshToken = randtoken.generate(jwtVariable.refreshTokenSize); // tạo 1 refresh token ngẫu nhiên
-      if (!user.refreshToken) {
-        // Nếu user này chưa có refresh token thì lưu refresh token đó vào database
-        await accountController.updateRefreshToken(user.username, refreshToken);
-      } else {
-        // Nếu user này đã có refresh token thì lấy refresh token đó từ database
-        refreshToken = user.refreshToken;
-      }
-      res.cookie("refreshToken", refreshToken, { httpOnly: true, maxAge: 604800000, secure: true, sameSite: 'strict' })
-
       return res.status(200).json({
         user: {
           avatar: user.avatar,
@@ -265,8 +252,7 @@ exports.login = async (req, res) => {
           _id: user._id,
           role: user.role,
         },
-        accessToken: accessToken.token,
-        refreshToken: refreshToken,
+        token: accessToken.token,
         message: "Đăng nhập thành công!",
       });
     } else {
@@ -283,12 +269,60 @@ exports.login = async (req, res) => {
   }
 };
 
+// Phát sinh một access token khi cái cũ hết hạn
+exports.refreshToken = async (req, res) => {
+  // Lấy access token từ header
+  const accessTokenFromHeader = req.body.token.slice(1, -1);
+  if (!accessTokenFromHeader) {
+    return { error: "Không tìm thấy access token." };
+  }
+
+  const accessTokenSecret =
+    process.env.ACCESS_TOKEN_SECRET || jwtVariable.accessTokenSecret;
+  const accessTokenLife =
+    process.env.ACCESS_TOKEN_LIFE || jwtVariable.accessTokenLife;
+
+  // Decode access token đó
+  const decoded = await authMethod.decodeToken(accessTokenFromHeader);
+  console.log("decoded", decoded);
+  if (!decoded) {
+    return res.status(400).send({ error: "Access token không hợp lệ." });
+  }
+
+  // look for user in the database
+  const userId = decoded._id;
+
+  const user = await accountController.findByIdController(userId);
+  console.log("user", user);
+  if (!user) {
+    return res.status(400).send({ error: "User không tồn tại." });
+  }
+  // Tạo access token mới
+  const newPayload = decoded;
+
+  const accessToken = await authMethod.generateToken(
+    newPayload,
+    accessTokenSecret,
+    accessTokenLife
+  );
+  if (!accessToken) {
+    return res
+      .status(400)
+      .send({ error: "Tạo access token không thành công, vui lòng thử lại." });
+  }
+  return res.json({
+    token: accessToken,
+  });
+};
+
 // Tạo access token sau khi đăng nhập
 exports.generateAccessToken = async (userObject) => {
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-  const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
+  const accessTokenSecret =
+    process.env.ACCESS_TOKEN_SECRET || jwtVariable.accessTokenSecret;
+  const accessTokenLife =
+    process.env.ACCESS_TOKEN_LIFE || jwtVariable.accessTokenLife;
 
-  const user = await account.findById(userObject._id);
+  const user = await accountController.findByUsername(userObject.username);
   if (!user) {
     return res.status(401).send({ error: "User không tồn tại." });
   }
@@ -309,7 +343,6 @@ exports.generateAccessToken = async (userObject) => {
   }
   return { token: accessToken };
 };
-
 exports.checkTokenExpiration = (token) => {
   try {
     const decoded = jwt.decode(token, { complete: true }); // Decode without verification
@@ -327,69 +360,5 @@ exports.checkTokenExpiration = (token) => {
     return { expired: false };
   } catch (error) {
     return { expired: true, reason: "Token verification failed", error };
-  }
-};
-
-// Phát sinh một access token khi cái cũ hết hạn
-exports.refreshToken = async (req, res, next) => {
-  try {
-    // Lấy access token từ header
-    const accessToken = req.headers["authorization"].split(" ")[1].replace(/^"|"$/g, '');
-    // console.log("accessToken", accessToken);
-    if (!accessToken) {
-      return res.status(404).json({ error: "Không tìm thấy access token." });
-    }
-    // Lấy refresh token từ cookies
-    const refreshToken = req.cookies.refreshToken;
-    // console.log("req.cookies", req.cookies);
-    if (!refreshToken) {
-      console.log("Không tìm thấy refresh token.");
-      return res.status(404).json({ error: "Không tìm thấy refresh token." });
-    }
-    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-    const accessTokenLife = process.env.ACCESS_TOKEN_LIFE;
-    // Decode access token đó
-    const decoded = await authMethod.decodeToken(
-      accessToken,
-      accessTokenSecret
-    );
-    // console.log("decoded", decoded);
-    if (!decoded) {
-      return res.status(400).send("Access token không hợp lệ.");
-    }
-
-    // look for user in the database
-    const userId = decoded.payload._id;
-    const user = await account.findById(userId);
-    if (!user) {
-      return res.status(400).send({ error: "User không tồn tại." });
-    }
-
-    if (refreshToken !== user.refreshToken) {
-      return res.status(400).send("Refresh token không hợp lệ.");
-    }
-
-    // Tạo access token mới
-    const newPayload = decoded;
-    const newAccessToken = await authMethod.generateToken(
-      newPayload,
-      accessTokenSecret,
-      accessTokenLife
-    );
-    if (!newAccessToken) {
-      return res.status(400).send({
-        error: "Tạo access token không thành công, vui lòng thử lại.",
-      });
-    }
-    // console.log("newAccessToken", newAccessToken);
-    // Thiết lập lại header để phản ánh accessToken mới
-    req.headers["authorization"] = `Bearer ${newAccessToken}`;
-    next();
-  } catch (error) {
-    console.error("Lỗi refresh token:", error);
-    return res.status(500).json({
-      success: false,
-      mess: "Lỗi khi làm mới trạng thái đăng nhập. Vui lòng đăng nhập lại!",
-    });
   }
 };

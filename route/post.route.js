@@ -4,17 +4,14 @@ const cors = require("cors");
 const postController = require("../controller/post.controller");
 const multer = require("multer");
 const path = require("path");
-// Route cho các API cần xác thực đăng nhập bằng username, password
-const authMiddleware = require("../auth/auth.middlewares");
-const isAuth = authMiddleware.isAuth;
 
 // Routes for replies
-router.post("/", isAuth, postController.createPost);
-router.put("/:id", isAuth, postController.editPost);
-router.get("/", postController.findAll);
-router.get("/:id", postController.findById);
-router.get("/user/:id", postController.findByUserId);
-router.delete("/:id", isAuth, postController.deletePost);
+router.post("/", cors(), postController.createPost);
+router.put("/:id", cors(), postController.editPost);
+router.get("/", cors(), postController.findAll);
+router.get("/:id", cors(), postController.findById);
+router.get("/user/:id", cors(), postController.findByUserId);
+router.delete("/:id", cors(), postController.deletePost);
 // Multer Configuration
 const postImgStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -36,7 +33,7 @@ router.post(
   postController.uploadImage
 );
 
-router.post("/:id/like", postController.likePost);
-router.post("/:id/share", postController.sharePost);
+router.post("/:id/like", cors(), postController.likePost);
+router.post("/:id/share", cors(), postController.sharePost);
 
 module.exports = router;

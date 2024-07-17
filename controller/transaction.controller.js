@@ -58,24 +58,6 @@ exports.getUserTrans = async (req, res) => {
   }
 };
 
-exports.checkUserBuyBook = async (req, res) => {
-  try {
-    const bookId = req.params.book_id;
-    const accountId = req.params.user_id;
-
-    const transaction = await Transaction.findOne({
-      account: accountId,
-      product: bookId,
-      productType: "Book",
-      status: { $in: 1 },
-    });
-    res.status(200).json({ transaction: transaction });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
-
 exports.getAllTransactions = async (req, res) => {
   try {
     const transactions = await Transaction.find({})

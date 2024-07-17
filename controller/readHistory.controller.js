@@ -72,19 +72,14 @@ exports.findAll = async (req, res) => {
 };
 exports.findAllWithUser = async (req, res) => {
   // await cleanReadHistory();
-  try {
-    const result = await readHistory
-      .find({
-        user: req.params.id,
-      })
-      .populate("book")
-      .sort({ time: -1 })
-      .exec();
-    res.json({ readHistory: result, statusCode: 200 });
-  } catch (error) {
-    console.error("Error getReadhistories", error);
-    res.status(500).json({ error: "Server error" });
-  }
+  const result = await readHistory
+    .find({
+      user: req.params.id,
+    })
+    .populate("book")
+    .sort({ time: -1 })
+    .exec();
+  res.json({ readHistory: result, statusCode: 200 });
 };
 
 exports.findOne = async (req, res) => {
